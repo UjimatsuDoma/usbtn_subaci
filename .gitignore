@@ -1,5 +1,6 @@
 app/src/main/assets/
-app/src/main/res/raw/*.json
+app/src/main/res/raw/audio_list.json
+app/src/main/res/raw/class_list.json
 
 # Gradle files
 .gradle/
