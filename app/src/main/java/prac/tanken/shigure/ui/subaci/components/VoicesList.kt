@@ -18,6 +18,7 @@ import prac.tanken.shigure.ui.subaci.model.Voice
 @Composable
 fun VoicesList(
     voices: Array<Voice>,
+    onButtonClicked: (Voice) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (!voices.isEmpty()) {
@@ -26,7 +27,7 @@ fun VoicesList(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(items = voices, key = { voice -> voice.id }) { voice ->
-                Button(onClick = {}) {
+                Button(onClick = { onButtonClicked(voice) }) {
                     Text(text = voice.label)
                 }
             }

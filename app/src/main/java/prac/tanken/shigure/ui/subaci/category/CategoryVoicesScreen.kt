@@ -27,6 +27,7 @@ import prac.tanken.shigure.ui.subaci.model.Voice
 fun CategoryVoicesScreen(
     categories: Array<Category>,
     voices: Array<Voice>,
+    onButtonClicked: (Voice) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -76,7 +77,8 @@ fun CategoryVoicesScreen(
         if (!isLoading) {
             VoicesList(
                 voices = categoryVoices,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                onButtonClicked = onButtonClicked,
             )
         } else {
             Box(

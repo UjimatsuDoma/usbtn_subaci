@@ -1,5 +1,6 @@
 package prac.tanken.shigure.ui.subaci.playlist
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -42,20 +43,19 @@ fun PlaylistScreen(
                 items = playlist,
                 key = { index, voice -> index }
             ) { index, voice ->
+                val defaultTextColor = if(isSystemInDarkTheme()) Color.White else Color.Black
+
                 Text(
                     text = voice.label,
                     color = playingIndex?.let {
                         if (playingIndex == index) MaterialTheme.colorScheme.primary
-                        else Color.White
-                    } ?: Color.White
+                        else defaultTextColor
+                    } ?: defaultTextColor
                 )
             }
         }
         FloatingActionButton(
-            onClick = {
-                onPlay(playlist)
-                println("clicked")
-            },
+            onClick = { onPlay(playlist) },
             modifier = Modifier.padding(bottom = 16.dp)
         ) {
             Icon(

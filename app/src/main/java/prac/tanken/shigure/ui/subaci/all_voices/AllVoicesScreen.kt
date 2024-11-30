@@ -9,10 +9,12 @@ import prac.tanken.shigure.ui.subaci.model.Voice
 @Composable
 fun AllVoicesScreen(
     voices: Array<Voice>,
+    onButtonClicked: (Voice) -> Unit,
     modifier: Modifier = Modifier
 ) {
     VoicesList(
         voices = voices,
+        onButtonClicked = onButtonClicked,
         modifier = modifier.fillMaxSize()
     )
 }

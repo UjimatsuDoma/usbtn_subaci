@@ -1,6 +1,7 @@
 [versions]
 agp = "8.7.2"
 commonsIo = "2.18.0"
+ijkplayerJava = "0.8.8"
 kotlin = "2.0.21"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -16,6 +17,7 @@ composeBom = "2024.11.00"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commonsIo" }
+ijkplayer-java = { module = "tv.danmaku.ijk.media:ijkplayer-java", version.ref = "ijkplayerJava" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
