@@ -50,6 +50,7 @@ class MainActivity : ComponentActivity() {
 
     private fun play(
         voiceId: String,
+        volume: Float
     ) {
         mediaPlayer.apply {
             reset()
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
                 setDataSource(it.fileDescriptor, it.startOffset, it.length)
             }
             prepareAsync()
+            setVolume(volume, volume)
             setOnPreparedListener {
                 start()
             }
@@ -169,7 +171,7 @@ class MainActivity : ComponentActivity() {
                                         AllVoicesScreen(
                                             voices = voices,
                                             onButtonClicked = {
-                                                play(it.id)
+                                                play(it.id, it.volume.toFloat())
                                             },
                                             modifier = Modifier.fillMaxSize()
                                         )
@@ -181,7 +183,7 @@ class MainActivity : ComponentActivity() {
                                             voices = voices,
                                             modifier = Modifier.fillMaxSize(),
                                             onButtonClicked = {
-                                                play(it.id)
+                                                play(it.id, it.volume.toFloat())
                                             },
                                         )
                                     }
@@ -231,7 +233,7 @@ class MainActivity : ComponentActivity() {
                                 TextButton(onClick = { screen = "cat" }) {
                                     Text(
                                         text = "分类",
-                                        fontWeight = if (screen == "all") FontWeight.Bold else FontWeight.Normal
+                                        fontWeight = if (screen == "cat") FontWeight.Bold else FontWeight.Normal
                                     )
                                 }
                             }
@@ -244,7 +246,7 @@ class MainActivity : ComponentActivity() {
                                 TextButton(onClick = { screen = "list" }) {
                                     Text(
                                         text = "列表",
-                                        fontWeight = if (screen == "all") FontWeight.Bold else FontWeight.Normal
+                                        fontWeight = if (screen == "list") FontWeight.Bold else FontWeight.Normal
                                     )
                                 }
                             }
