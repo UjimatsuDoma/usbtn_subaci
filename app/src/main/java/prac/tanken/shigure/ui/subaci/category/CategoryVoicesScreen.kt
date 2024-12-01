@@ -22,12 +22,14 @@ import androidx.compose.ui.unit.dp
 import prac.tanken.shigure.ui.subaci.components.VoicesList
 import prac.tanken.shigure.ui.subaci.model.Category
 import prac.tanken.shigure.ui.subaci.model.Voice
+import prac.tanken.shigure.ui.subaci.model.VoiceReference
 
 @Composable
 fun CategoryVoicesScreen(
     categories: Array<Category>,
     voices: Array<Voice>,
     onButtonClicked: (Voice) -> Unit,
+    onAddList: (VoiceReference) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -79,6 +81,7 @@ fun CategoryVoicesScreen(
                 voices = categoryVoices,
                 modifier = Modifier.weight(1f),
                 onButtonClicked = onButtonClicked,
+                onAddList = onAddList,
             )
         } else {
             Box(

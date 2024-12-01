@@ -26,12 +26,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import prac.tanken.shigure.ui.subaci.model.Voice
+import prac.tanken.shigure.ui.subaci.model.VoiceReference
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun VoicesList(
     voices: Array<Voice>,
     onButtonClicked: (Voice) -> Unit,
+    onAddList: (VoiceReference) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (!voices.isEmpty()) {
@@ -80,12 +82,18 @@ fun VoicesList(
                     ) {
                         DropdownMenuItem(
                             text = { Text("加入播放列表") },
-                            onClick = {}
+                            onClick = {
+                                println("add playlist clicked")
+                                onAddList(VoiceReference(voice.id))
+                                expanded = false
+                            }
                         )
                         DropdownMenuItem(
                             text = { Text("查看语音来源") },
                             enabled = voice.videoId != null,
-                            onClick = {}
+                            onClick = {
+                                expanded = false
+                            }
                         )
                     }
                 }
