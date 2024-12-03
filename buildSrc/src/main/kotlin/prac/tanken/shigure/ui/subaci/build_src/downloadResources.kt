@@ -8,6 +8,7 @@ import java.util.Scanner
 import java.util.regex.Pattern
 import org.apache.commons.io.FileUtils
 import prac.tanken.shigure.ui.subaci.build_src.model.Category
+import prac.tanken.shigure.ui.subaci.build_src.model.SourceVideo
 import java.io.File
 import java.net.URI
 
@@ -35,6 +36,8 @@ val categoryRegex = buildString {
     append("\\t*\\]\\n")
     append("\\t*\\}")
 }
+val sourceRegex =
+    "\\t*<div><a href=\"https://www.youtube.com/watch\\?v=(.*)\" target=\"_blank\" class=\"ellipsis\">(.*)</a></div>\n"
 
 fun readTextFile(path: String) = buildString {
     Scanner(FileReader(path)).useDelimiter("\\A").use { scanner ->
@@ -64,7 +67,7 @@ fun getVoices(htmlPath: String, voiceDownloadDestination: String): String {
         val fileName = voice.src.let { src -> src.substring(src.indexOfLast { it == '/' }) }
         val downloadUrl = BASE_URL + relPath
         val downloadFile = File(voiceDownloadDestination + fileName)
-        if(!downloadFile.exists()) {
+        if (!downloadFile.exists()) {
             FileUtils.copyURLToFile(URI(downloadUrl).toURL(), downloadFile)
             downloadCount++
             print("\rDownloaded: $downloadCount")
@@ -98,4 +101,23 @@ fun getCategories(htmlPath: String): String {
 
     val categoriesJson = Json.encodeToString<List<Category>>(categories as List<Category>)
     return categoriesJson
+}
+
+fun getSourceVideos(htmlPath: String): String {
+    val html = readTextFile(htmlPath)
+    val matcher = Pattern.compile(sourceRegex).matcher(html)
+
+    val sourceVideos = mutableListOf<SourceVideo>()
+
+    while (matcher.find()) {
+        sourceVideos.add(
+            SourceVideo(
+                id = matcher.group(1),
+                videoName = matcher.group(2)
+            )
+        )
+    }
+
+    val sourceVideosJson = Json.encodeToString(sourceVideos)
+    return sourceVideosJson
 }

@@ -1,6 +1,7 @@
 import org.apache.commons.io.FileUtils
 import prac.tanken.shigure.ui.subaci.build_src.BASE_URL
 import prac.tanken.shigure.ui.subaci.build_src.getCategories
+import prac.tanken.shigure.ui.subaci.build_src.getSourceVideos
 import prac.tanken.shigure.ui.subaci.build_src.getVoices
 import java.io.File
 import java.io.FileWriter
@@ -19,7 +20,7 @@ android {
     defaultConfig {
         applicationId = "prac.tanken.shigure.ui.subaci"
         minSdk = 23
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -29,10 +30,14 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            isDebuggable = true
         }
     }
     compileOptions {
@@ -76,8 +81,10 @@ tasks.register("downloadResource") {
 
         val voices = getVoices(targetPath, "${projectDir}/src/main/assets/subaciAudio/")
         val categories = getCategories(targetPath)
+        val sourceVideos = getSourceVideos(targetPath)
         FileWriter("${projectDir}/src/main/res/raw/audio_list.json").use { it.write(voices) }
         FileWriter("${projectDir}/src/main/res/raw/class_list.json").use { it.write(categories) }
+        FileWriter("${projectDir}/src/main/res/raw/video_list.json").use { it.write(sourceVideos) }
     }
 }
 
