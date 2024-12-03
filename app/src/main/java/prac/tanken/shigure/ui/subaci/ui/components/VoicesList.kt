@@ -1,4 +1,4 @@
-package prac.tanken.shigure.ui.subaci.components
+package prac.tanken.shigure.ui.subaci.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -25,8 +25,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import prac.tanken.shigure.ui.subaci.model.Voice
-import prac.tanken.shigure.ui.subaci.model.VoiceReference
+import prac.tanken.shigure.ui.subaci.data.model.Voice
+import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable

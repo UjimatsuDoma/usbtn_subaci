@@ -1,11 +1,11 @@
-package prac.tanken.shigure.ui.subaci.all_voices
+package prac.tanken.shigure.ui.subaci.ui.all_voices
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import prac.tanken.shigure.ui.subaci.components.VoicesList
-import prac.tanken.shigure.ui.subaci.model.Voice
-import prac.tanken.shigure.ui.subaci.model.VoiceReference
+import prac.tanken.shigure.ui.subaci.ui.components.VoicesList
+import prac.tanken.shigure.ui.subaci.data.model.Voice
+import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
 
 @Composable
 fun AllVoicesScreen(

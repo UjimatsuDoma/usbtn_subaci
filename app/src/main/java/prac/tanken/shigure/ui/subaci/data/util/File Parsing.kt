@@ -1,4 +1,4 @@
-package prac.tanken.shigure.ui.subaci.util
+package prac.tanken.shigure.ui.subaci.data.util
 
 import kotlinx.serialization.json.Json
 import java.io.InputStream

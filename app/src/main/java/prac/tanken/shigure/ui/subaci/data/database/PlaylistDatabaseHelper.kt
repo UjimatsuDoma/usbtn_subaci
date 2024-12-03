@@ -1,11 +1,11 @@
-package prac.tanken.shigure.ui.subaci.database
+package prac.tanken.shigure.ui.subaci.data.database
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 class PlaylistDatabaseHelper(
-    val context: Context,
+    context: Context,
     name: String,
     version: Int
 ): SQLiteOpenHelper(context, name, null, version) {

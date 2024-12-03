@@ -44,17 +44,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
-import prac.tanken.shigure.ui.subaci.all_voices.AllVoicesScreen
-import prac.tanken.shigure.ui.subaci.category.CategoryVoicesScreen
-import prac.tanken.shigure.ui.subaci.database.PlaylistDatabaseHelper
-import prac.tanken.shigure.ui.subaci.model.Category
-import prac.tanken.shigure.ui.subaci.model.Playlist
-import prac.tanken.shigure.ui.subaci.model.Voice
-import prac.tanken.shigure.ui.subaci.model.VoiceReference
-import prac.tanken.shigure.ui.subaci.playlist.PlaylistScreen
+import prac.tanken.shigure.ui.subaci.ui.all_voices.AllVoicesScreen
+import prac.tanken.shigure.ui.subaci.ui.category.CategoryVoicesScreen
+import prac.tanken.shigure.ui.subaci.data.database.PlaylistDatabaseHelper
+import prac.tanken.shigure.ui.subaci.data.model.Category
+import prac.tanken.shigure.ui.subaci.data.model.Playlist
+import prac.tanken.shigure.ui.subaci.data.model.Voice
+import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
+import prac.tanken.shigure.ui.subaci.ui.playlist.PlaylistScreen
 import prac.tanken.shigure.ui.subaci.ui.theme.ShigureUiButtonAppComposeImplementationTheme
-import prac.tanken.shigure.ui.subaci.util.parseJsonText
-import prac.tanken.shigure.ui.subaci.util.readIStoText
+import prac.tanken.shigure.ui.subaci.data.util.parseJsonText
+import prac.tanken.shigure.ui.subaci.data.util.readIStoText
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -106,7 +106,7 @@ class MainActivity : ComponentActivity() {
                         mutableStateOf<Playlist>(
                             Playlist(
                                 "No playlists",
-                                emptyArray()
+                                emptyList()
                             )
                         )
                     }
@@ -159,7 +159,6 @@ class MainActivity : ComponentActivity() {
                                         val voicesParsed =
                                             parseJsonText<Array<String>>(voicesStr)
                                         val voices = voicesParsed.map { VoiceReference(it) }
-                                            .toTypedArray()
                                         playLists.add(Playlist(name, voices))
                                     } while (moveToNext())
                                 }
@@ -173,7 +172,7 @@ class MainActivity : ComponentActivity() {
                             return
                         }
                         playlists = playlists.toMutableList().apply {
-                            add(Playlist(name, emptyArray()))
+                            add(Playlist(name, emptyList()))
                         }.toTypedArray()
                         val voicesStr =
                             Json.encodeToString<Array<String>>(emptyArray())
@@ -240,6 +239,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
+                        // top app bar
                         when (screen) {
                             "all" -> {}
                             "cat" -> {}
@@ -330,6 +330,7 @@ class MainActivity : ComponentActivity() {
 
                             else -> {}
                         }
+
                         Box(
                             modifier = Modifier
                                 .weight(1f),
@@ -346,10 +347,8 @@ class MainActivity : ComponentActivity() {
                                             onAddList = {
                                                 updatePlaylist(
                                                     playlist.copy(
-                                                        voices = playlist.voices.toMutableSet()
-                                                            .apply {
-                                                                add(it)
-                                                            }.toTypedArray()
+                                                        voices = playlist.voices.toMutableList()
+                                                            .apply { add(it) }.toList()
                                                     )
                                                 )
                                             },
@@ -368,10 +367,8 @@ class MainActivity : ComponentActivity() {
                                             onAddList = {
                                                 updatePlaylist(
                                                     playlist.copy(
-                                                        voices = playlist.voices.toMutableSet()
-                                                            .apply {
-                                                                add(it)
-                                                            }.toTypedArray()
+                                                        voices = playlist.voices.toMutableList()
+                                                            .apply { add(it) }.toList()
                                                     )
                                                 )
                                             },
@@ -385,6 +382,27 @@ class MainActivity : ComponentActivity() {
                                                 playingIndex = playingIndex,
                                                 onPlay = { playlist(0) },
                                                 onStop = { stopList() },
+                                                onMove = { index, flag ->
+                                                    val targetIndex =
+                                                        if (flag) index - 1 else index + 1
+
+                                                    playlist = Playlist(
+                                                        name = playlist.name,
+                                                        voices = playlist.voices.toMutableList().also { arr ->
+                                                            val temp: VoiceReference = arr[index]
+                                                            arr[index] = arr[targetIndex]
+                                                            arr[targetIndex] = temp
+                                                        }.toList()
+                                                    )
+                                                    updatePlaylist(playlist)
+                                                },
+                                                onDelete = { voice ->
+                                                    playlist = playlist.copy(
+                                                        voices = playlist.voices
+                                                            .filter { it.id != voice.id }.toList()
+                                                    )
+                                                    updatePlaylist(playlist)
+                                                },
                                                 voices = voices,
                                                 modifier = Modifier.weight(1f)
                                             )

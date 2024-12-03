@@ -1,4 +1,4 @@
-package prac.tanken.shigure.ui.subaci.category
+package prac.tanken.shigure.ui.subaci.ui.category
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,10 +19,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import prac.tanken.shigure.ui.subaci.components.VoicesList
-import prac.tanken.shigure.ui.subaci.model.Category
-import prac.tanken.shigure.ui.subaci.model.Voice
-import prac.tanken.shigure.ui.subaci.model.VoiceReference
+import prac.tanken.shigure.ui.subaci.ui.components.VoicesList
+import prac.tanken.shigure.ui.subaci.data.model.Category
+import prac.tanken.shigure.ui.subaci.data.model.Voice
+import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
 
 @Composable
 fun CategoryVoicesScreen(

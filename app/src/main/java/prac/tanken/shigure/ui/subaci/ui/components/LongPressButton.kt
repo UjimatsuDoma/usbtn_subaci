@@ -1,4 +1,4 @@
-package prac.tanken.shigure.ui.subaci.components
+package prac.tanken.shigure.ui.subaci.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
