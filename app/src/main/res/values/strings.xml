@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">SUBACI</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="home_all_voices">All</string>
+    <string name="home_category">Category</string>
+    <string name="home_playlist">Playlist</string>
+    <string name="home_all_voices_desc">All voices screen</string>
+    <string name="home_category_desc">Category voices screen</string>
+    <string name="home_playlist_desc">Playlist screen</string>
+    <string name="loading">Loading</string>
+    <string name="daily_random_voice">Daily random voice</string>
 </resources>

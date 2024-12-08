@@ -10,7 +10,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     kotlin("plugin.serialization") version "2.0.21"
 }
@@ -21,8 +21,8 @@ android {
 
     defaultConfig {
         applicationId = "prac.tanken.shigure.ui.subaci"
-        minSdk = 23
-        targetSdk = 34
+        minSdk = 21
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -30,8 +30,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            isDebuggable = true
+        }
         release {
             isMinifyEnabled = false
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -70,14 +74,29 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
+    // Kotlin Reflect
+    implementation(libs.kotlin.reflect)
 
+    // DI stuff
     implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
-}
+    ksp(libs.hilt.android.compiler)
 
-kapt {
-    correctErrorTypes = true
+    // Jetpack Navigation
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // Microsoft Fluent Design Icons
+    implementation(libs.fluent.system.icons)
+    // Google Material Icons
+    implementation(libs.androidx.material.icons.core)
+    implementation(libs.androidx.material.icons.extended)
+
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+
 }
 
 tasks.register("downloadResource") {
