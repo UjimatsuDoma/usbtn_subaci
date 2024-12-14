@@ -83,6 +83,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     // Kotlin Reflect
     implementation(libs.kotlin.reflect)
+    // KotlinX DateTime
+    implementation(libs.kotlinx.datetime)
 
     // DI stuff
     implementation(libs.hilt.android)
@@ -98,9 +100,12 @@ dependencies {
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
 
+    // Room Database
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+    // Preferences DataStore
+    implementation(libs.androidx.datastore.preferences)
 
 }
 

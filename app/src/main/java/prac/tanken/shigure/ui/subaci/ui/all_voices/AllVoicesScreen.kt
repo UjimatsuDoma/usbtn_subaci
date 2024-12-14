@@ -42,7 +42,9 @@ fun AllVoicesScreen(
             LoadingTopBar()
             LoadingScreenBody()
         } else {
-            AllVoicesTopBar()
+            AllVoicesTopBar(
+                onDailyVoice = viewModel::playDailyVoice
+            )
             AllVoicesScreen(
                 voices = viewModel.voices,
                 onPlay = viewModel::onButtonClicked,
@@ -58,8 +60,8 @@ fun AllVoicesScreen(
 @Composable
 fun AllVoicesTopBar(
     modifier: Modifier = Modifier,
+    onDailyVoice: () -> Unit,
 ) {
-
     TopAppBar(
         modifier = modifier,
         windowInsets = WindowInsets(0),
@@ -71,7 +73,7 @@ fun AllVoicesTopBar(
             )
         },
         actions = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = onDailyVoice) {
                 Icon(
                     imageVector = Icons.Default.Casino,
                     contentDescription = stringResource(TankenR.string.daily_random_voice)

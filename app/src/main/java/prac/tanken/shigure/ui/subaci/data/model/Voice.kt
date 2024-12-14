@@ -1,8 +1,10 @@
 package prac.tanken.shigure.ui.subaci.data.model
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Immutable
 data class Voice(
     // 音频文件的唯一识别码
     val id: String,
