@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,11 +32,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import prac.tanken.shigure.ui.subaci.data.model.CategoryDTO
+import prac.tanken.shigure.ui.subaci.data.model.CategoryVO
 import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.ui.component.VoicesFlowRow
+import prac.tanken.shigure.ui.subaci.ui.theme.NotoSansJP
 import prac.tanken.shigure.ui.subaci.ui.theme.NotoSerifJP
 import com.microsoft.fluent.mobile.icons.R as FluentR
 
@@ -43,7 +45,7 @@ import com.microsoft.fluent.mobile.icons.R as FluentR
 @Composable
 fun CategoryScreen(
     modifier: Modifier = Modifier,
-    viewModel: CategoryViewModel = hiltViewModel(),
+    viewModel: CategoryViewModel,
 ) {
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
@@ -56,17 +58,13 @@ fun CategoryScreen(
                     .weight(1f)
             )
         } else {
-            var selected by remember { mutableStateOf(viewModel.categoriesUi[0]) }
-            val selectedVoices by remember {
-                derivedStateOf {
-                    viewModel.selectByDTO(selected)
-                }
-            }
+            val selectedIndex by viewModel.selectedIndex.collectAsStateWithLifecycle()
+            val selectedVoices = viewModel.selectedVoices.value
 
             CategoryTopBar(
                 categories = viewModel.categoriesUi,
-                selected = selected,
-                onCategoryChanged = { selected = it }
+                selectedIndex = selectedIndex,
+                onCategoryChanged = viewModel::selectByIndex
             )
             CategoryScreen(
                 voices = selectedVoices,
@@ -79,9 +77,9 @@ fun CategoryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryTopBar(
-    categories: List<CategoryDTO>,
-    selected: CategoryDTO,
-    onCategoryChanged: (CategoryDTO) -> Unit,
+    categories: List<CategoryVO>,
+    selectedIndex: Int,
+    onCategoryChanged: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     TopAppBar(
@@ -101,7 +99,7 @@ fun CategoryTopBar(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = selected.className,
+                        text = categories[selectedIndex].className,
                         fontWeight = FontWeight.Bold,
                         fontFamily = NotoSerifJP
                     )
@@ -118,9 +116,12 @@ fun CategoryTopBar(
                 ) {
                     categories.forEachIndexed { index, category ->
                         DropdownMenuItem(
-                            text = { Text(category.className) },
+                            text = { Text(
+                                text = category.className,
+                                fontFamily = NotoSansJP
+                            ) },
                             onClick = {
-                                onCategoryChanged(category)
+                                onCategoryChanged(index)
                                 expanded = false
                             }
                         )

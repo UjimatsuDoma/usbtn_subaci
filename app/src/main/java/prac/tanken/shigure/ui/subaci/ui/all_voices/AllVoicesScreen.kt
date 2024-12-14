@@ -33,7 +33,7 @@ import prac.tanken.shigure.ui.subaci.R as TankenR
 @Composable
 fun AllVoicesScreen(
     modifier: Modifier = Modifier,
-    viewModel: AllVoicesViewModel = hiltViewModel(),
+    viewModel: AllVoicesViewModel,
 ) {
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
@@ -42,11 +42,9 @@ fun AllVoicesScreen(
             LoadingTopBar()
             LoadingScreenBody()
         } else {
-            val voices = viewModel.voices
-
             AllVoicesTopBar()
             AllVoicesScreen(
-                voices = voices,
+                voices = viewModel.voices,
                 onPlay = viewModel::onButtonClicked,
                 modifier = Modifier
                     .fillMaxWidth()

@@ -1,6 +1,10 @@
 package prac.tanken.shigure.ui.subaci.ui.all_voices
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.player.MyPlayer
@@ -13,14 +17,17 @@ class AllVoicesViewModel @Inject constructor(
     val resRepository: ResRepository,
     val myPlayer: MyPlayer
 ) : LoadingViewModel() {
-    lateinit var voices: List<Voice>
+    private var _voices = mutableStateListOf<Voice>()
+    val voices get() = _voices
 
     init {
-        loading {
-            voices = resRepository.loadVoices()
+        loading(Dispatchers.IO) {
+            _voices.addAll(resRepository.loadVoices())
         }
     }
 
     fun onButtonClicked(voiceReference: VoiceReference) =
-        myPlayer.playByReference(voiceReference)
+        viewModelScope.launch(Dispatchers.Default) {
+            myPlayer.playByReference(voiceReference)
+        }
 }

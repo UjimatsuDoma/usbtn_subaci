@@ -19,7 +19,7 @@ class MyPlayer @Inject constructor(
     fun playByReference(vr: VoiceReference) {
         stopIfPlaying()
         val afd = am.openFd("subaciAudio/${vr.id}.mp3")
-        player.apply {
+        with(player) {
             setDataSource(
                 afd.fileDescriptor,
                 afd.startOffset,

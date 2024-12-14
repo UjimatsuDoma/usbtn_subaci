@@ -8,13 +8,13 @@ data class Category (
     val sectionId: String,
     val idList: List<VoiceReference>
 ) {
-    fun toCategoryDTO() = CategoryDTO(
+    fun toCategoryVO() = CategoryVO(
         className = className,
         sectionId = sectionId
     )
 }
 
-data class CategoryDTO(
+data class CategoryVO(
     val className: String,
     val sectionId: String,
 )

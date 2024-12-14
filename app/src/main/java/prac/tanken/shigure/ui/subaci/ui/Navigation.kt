@@ -19,7 +19,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.serialization.Serializable
 import prac.tanken.shigure.ui.subaci.ui.all_voices.AllVoicesScreen
+import prac.tanken.shigure.ui.subaci.ui.all_voices.AllVoicesViewModel
 import prac.tanken.shigure.ui.subaci.ui.category.CategoryScreen
+import prac.tanken.shigure.ui.subaci.ui.category.CategoryViewModel
+import prac.tanken.shigure.ui.subaci.ui.playlist.PlaylistScreen
+import prac.tanken.shigure.ui.subaci.ui.playlist.PlaylistViewModel
 import com.microsoft.fluent.mobile.icons.R as FluentR
 import prac.tanken.shigure.ui.subaci.R as TankenR
 
@@ -63,14 +67,24 @@ fun MainNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    val allVoicesViewModel = hiltViewModel<AllVoicesViewModel>()
+    val categoryViewModel = hiltViewModel<CategoryViewModel>()
+    val playlistViewModel = hiltViewModel<PlaylistViewModel>()
+
     NavHost(
         navController = navController,
         startDestination = MainDestinations.AllVoices,
         modifier = modifier
     ) {
-        composable<MainDestinations.AllVoices> { AllVoicesScreen() }
-        composable<MainDestinations.CategoryVoices> { CategoryScreen() }
-        composable<MainDestinations.Playlist> {}
+        composable<MainDestinations.AllVoices> {
+            AllVoicesScreen(viewModel = allVoicesViewModel)
+        }
+        composable<MainDestinations.CategoryVoices> {
+            CategoryScreen(viewModel = categoryViewModel)
+        }
+        composable<MainDestinations.Playlist> {
+            PlaylistScreen(viewModel = playlistViewModel)
+        }
     }
 }
 

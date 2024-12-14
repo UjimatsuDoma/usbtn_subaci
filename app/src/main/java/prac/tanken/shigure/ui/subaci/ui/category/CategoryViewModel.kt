@@ -1,8 +1,16 @@
 package prac.tanken.shigure.ui.subaci.ui.category
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import prac.tanken.shigure.ui.subaci.data.model.Category
-import prac.tanken.shigure.ui.subaci.data.model.CategoryDTO
+import prac.tanken.shigure.ui.subaci.data.model.CategoryVO
 import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.ui.LoadingViewModel
@@ -10,28 +18,46 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
-    resRepository: ResRepository
+    val resRepository: ResRepository
 ) : LoadingViewModel() {
-    lateinit var categories: List<Category>
-    lateinit var voices: List<Voice>
-    val categoriesUi: List<CategoryDTO>
-        get() = categories.map { it.toCategoryDTO() }
+    private var _categories = mutableStateListOf<Category>()
+    val categories: List<Category> get() = _categories
+    val categoriesUi: List<CategoryVO>
+        get() = categories.map { it.toCategoryVO() }
+    private var _selectedVoices = mutableStateOf(emptyList<Voice>())
+    val selectedVoices get() = _selectedVoices
+    private var _selectedIndex = MutableStateFlow(0)
+    val selectedIndex = _selectedIndex.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            loading(Dispatchers.IO) {
+                _categories.addAll(resRepository.loadCategories())
+            }
+            selectedIndex.collect { index ->
+                updateSelectedVoicesByIndex(index)
+            }
+        }
+    }
+
+    fun updateSelectedVoicesByIndex(index: Int) {
         loading {
-            voices = resRepository.loadVoices()
-            categories = resRepository.loadCategories()
+            var voices = emptyList<Voice>()
+            withContext(Dispatchers.IO) {
+                _selectedVoices.value = emptyList<Voice>()
+                voices = resRepository.loadVoices()
+            }
+            withContext(Dispatchers.Default) {
+                val selectedCategory = categories[index]
+                val selectedVoices = voices.filter {
+                    it.id in selectedCategory.idList.map { it.id }
+                }.toList()
+                _selectedVoices.value = selectedVoices
+            }
         }
     }
 
-    fun selectByIndex(index: Int) = voices.filter { voice ->
-        voice.id in categories[index].idList.map { it.id }
-    }
-
-    fun selectByDTO(dto: CategoryDTO): List<Voice> {
-        val selectedCategory = categories.filter { it.sectionId == dto.sectionId }[0]
-        return voices.filter { voice ->
-            voice.id in selectedCategory.idList.map { it.id }
-        }
+    fun selectByIndex(index: Int) {
+        _selectedIndex.value = index
     }
 }
