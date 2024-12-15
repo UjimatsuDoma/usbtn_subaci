@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,41 +59,36 @@ fun PlaylistScreen(
             LoadingTopBar()
             LoadingScreenBody(Modifier.weight(1f))
         } else {
-            val playlists by viewModel.playlists.collectAsStateWithLifecycle()
+            val playlists = viewModel.playlists
             val selectedPlaylistVO = viewModel.selectedPlaylistVO
             val selectedPlaylist = viewModel.selectedPlaylist
 
-            if (playlists.isEmpty()) {
+            if (playlists.value.isEmpty()) {
                 NoPlaylistsTopBar(
                     onAddPlaylist = viewModel::createPlaylist
                 )
                 Box(Modifier.weight(1f))
             } else {
-                Box(Modifier.wrapContentSize()) {
-                    selectedPlaylistVO?.let {
-                        PlaylistTopBar(
-                            playlistSelection = playlists.map { it.toSelectionVO() }.toList(),
-                            selected = it,
-                            onPlaylistSelect = viewModel::updatePlaylistItemsById
-                        )
-                    } ?: LoadingTopBar()
-                }
+                PlaylistTopBar(
+                    playlistSelection = playlists.value.map { it.toSelectionVO() }.toList(),
+                    selected = selectedPlaylistVO,
+                    onPlaylistSelect = viewModel::selectPlaylist,
+                    onAddPlaylist = viewModel::createPlaylist
+                )
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    selectedPlaylist?.let {
-                        if (it.playlistItems.isEmpty()) {
-                            PlaylistNoItemScreen()
-                        } else {
-                            PlaylistScreen(
-                                voices = it.playlistItems,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                    } ?: LoadingScreenBody()
+                    if (selectedPlaylist?.playlistItems?.isEmpty() == true) {
+                        PlaylistNoItemScreen()
+                    } else {
+                        PlaylistScreen(
+                            voices = selectedPlaylist?.playlistItems,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             }
         }
@@ -144,10 +140,12 @@ internal fun PlaylistNoItemScreen(modifier: Modifier = Modifier) {
 @Composable
 internal fun PlaylistTopBar(
     playlistSelection: List<PlaylistSelectionVO>,
-    selected: PlaylistSelectionVO,
+    selected: PlaylistSelectionVO?,
     onPlaylistSelect: (Int) -> Unit,
+    onAddPlaylist: suspend () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     CenterAlignedTopAppBar(
@@ -179,14 +177,15 @@ internal fun PlaylistTopBar(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val trailingIcon = if (expanded) {
-                        painterResource(FluentR.drawable.ic_fluent_caret_up_24_filled)
-                    } else {
-                        painterResource(FluentR.drawable.ic_fluent_caret_down_24_filled)
-                    }
+                    val trailingIcon =
+                        if (expanded) {
+                            painterResource(FluentR.drawable.ic_fluent_caret_up_24_filled)
+                        } else {
+                            painterResource(FluentR.drawable.ic_fluent_caret_down_24_filled)
+                        }
 
                     Text(
-                        text = selected.playlistName,
+                        text = selected?.playlistName ?: "__SELECT__",
                         fontFamily = NotoSerifJP,
                         fontWeight = FontWeight.Bold
                     )
@@ -219,35 +218,50 @@ internal fun PlaylistTopBar(
                 }
             }
         },
+        actions = {
+            IconButton(
+                onClick = { scope.launch { onAddPlaylist() } }
+            ) {
+                Icon(
+                    painter = painterResource(FluentR.drawable.ic_fluent_add_24_regular),
+                    contentDescription = null
+                )
+            }
+        },
         modifier = modifier
     )
 }
 
 @Composable
 internal fun PlaylistScreen(
-    voices: List<Voice>,
+    voices: List<Voice>?,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        state = lazyListState,
-        horizontalAlignment = Alignment.Start,
-    ) {
-        itemsIndexed(
-            items = voices,
-            key = { index, voice -> Pair(index, voice) }
-        ) { index, voice ->
-            Text(
-                text = voice.label,
-                modifier = Modifier.padding(8.dp)
-            )
-            if (index in 0 until voices.lastIndex) {
-                HorizontalDivider(
-                    modifier = Modifier.padding(2.dp)
+    voices?.let {
+        LazyColumn(
+            modifier = modifier.fillMaxSize(),
+            state = lazyListState,
+            horizontalAlignment = Alignment.Start,
+        ) {
+            itemsIndexed(
+                items = voices,
+                key = { index, voice -> Pair(index, voice) }
+            ) { index, voice ->
+                Text(
+                    text = voice.label,
+                    modifier = Modifier.padding(8.dp)
                 )
+                if (index in 0 until voices.lastIndex) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(2.dp)
+                    )
+                }
             }
         }
+    } ?: @Composable {
+        Text("Please select playlist.")
     }
+
 }

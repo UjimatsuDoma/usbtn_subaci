@@ -54,7 +54,6 @@ fun getVoices(htmlPath: String, voiceDownloadDestination: String): String {
     val matcher = Pattern.compile(voiceRegex).matcher(html)
 
     val voices = mutableListOf<Voice>()
-    var downloadCount = 0
 
     while (matcher.find()) {
         val voiceJson = matcher.group()
@@ -66,14 +65,10 @@ fun getVoices(htmlPath: String, voiceDownloadDestination: String): String {
         val downloadFile = File(voiceDownloadDestination + fileName)
         if(!downloadFile.exists()) {
             FileUtils.copyURLToFile(URI(downloadUrl).toURL(), downloadFile)
-            downloadCount++
-            print("\rDownloaded: $downloadCount")
-            if (downloadCount % 100 == 0) println()
         }
 
         voices.add(voice)
     }
-    println()
 
     val voicesJson = Json.encodeToString<List<Voice>>(voices as List<Voice>)
     return voicesJson

@@ -8,6 +8,7 @@ import prac.tanken.shigure.ui.subaci.data.model.PlaylistEntity
 
 @Dao
 interface PlaylistDao {
+    // 播放列表CRUD
     @Query("SELECT * FROM playlists")
     fun getAll(): Flow<List<PlaylistEntity>>
 

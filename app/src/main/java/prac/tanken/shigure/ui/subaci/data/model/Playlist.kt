@@ -2,6 +2,7 @@ package prac.tanken.shigure.ui.subaci.data.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import prac.tanken.shigure.ui.subaci.data.util.parseJsonString
@@ -11,12 +12,10 @@ import prac.tanken.shigure.ui.subaci.data.util.parseJsonString
     indices = [Index(value = ["playlist_name"], unique = true)]
 )
 data class PlaylistEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "playlist_name") val playlistName: String,
     @ColumnInfo(name = "playlist_items") val playlistItems: String,
 ) {
-    @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
-
     fun toPlaylist(voices: List<Voice>) = Playlist(
         id = id,
         playlistName = playlistName,
@@ -30,6 +29,24 @@ data class PlaylistEntity(
         playlistName = playlistName
     )
 }
+
+@Entity(
+    tableName = "playlist_selected",
+    indices = [Index(
+        value = ["selected_id"],
+        unique = true
+    )],
+    foreignKeys = [ForeignKey(
+        entity = PlaylistEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["selected_id"],
+        onDelete = ForeignKey.Companion.SET_DEFAULT
+    )]
+)
+data class PlaylistSelected(
+    @PrimaryKey val position: Int = 1,
+    @ColumnInfo("selected_id") val selectedId: Int = 0
+)
 
 data class Playlist(
     val id: Int,

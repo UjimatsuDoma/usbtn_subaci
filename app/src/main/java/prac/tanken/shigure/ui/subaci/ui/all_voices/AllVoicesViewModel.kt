@@ -55,7 +55,6 @@ class AllVoicesViewModel @Inject constructor(
             val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
             dailyVoice.value?.addDate?.let { encode(today) != encode(it) } == true
         }.invoke()
-        println(dailyVoice.value == null)
         if (dailyVoice.value == null || expired) {
             viewModelScope.launch {
                 dailyVoiceRepository.updateDailyVoice(

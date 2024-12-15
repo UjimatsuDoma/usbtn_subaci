@@ -12,7 +12,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
-    kotlin("plugin.serialization") version "2.0.21"
+    kotlin("plugin.serialization") version "2.1.0"
     id("androidx.room")
 }
 
@@ -111,14 +111,24 @@ dependencies {
 
 tasks.register("downloadResource") {
     doLast {
-        val htmlUrl = BASE_URL + "usbtn.html"
-        val targetPath = "${projectDir}/build/downloadedResources/usbtn.txt"
-        FileUtils.copyURLToFile(URI(htmlUrl).toURL(), File(targetPath))
+        var tries = 0
+        while (tries < 10) {
+            try {
+                val htmlUrl = BASE_URL + "usbtn.html"
+                val targetPath = "${projectDir}/build/downloadedResources/usbtn.txt"
+                FileUtils.copyURLToFile(URI(htmlUrl).toURL(), File(targetPath))
 
-        val voices = getVoices(targetPath, "${projectDir}/src/main/assets/subaciAudio/")
-        val categories = getCategories(targetPath)
-        FileWriter("${projectDir}/src/main/res/raw/audio_list.json").use { it.write(voices) }
-        FileWriter("${projectDir}/src/main/res/raw/class_list.json").use { it.write(categories) }
+                val voices = getVoices(targetPath, "${projectDir}/src/main/assets/subaciAudio/")
+                FileWriter("${projectDir}/src/main/res/raw/audio_list.json").use { it.write(voices) }
+                val categories = getCategories(targetPath)
+                FileWriter("${projectDir}/src/main/res/raw/class_list.json").use { it.write(categories) }
+                break
+            } catch (e: Exception) {
+                println("ERROR RETRY: $tries/10")
+                tries++
+                continue
+            }
+        }
     }
 }
 
