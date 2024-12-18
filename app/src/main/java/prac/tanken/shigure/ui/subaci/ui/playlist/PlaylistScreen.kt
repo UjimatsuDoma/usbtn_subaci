@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -26,7 +25,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -59,18 +57,18 @@ fun PlaylistScreen(
             LoadingTopBar()
             LoadingScreenBody(Modifier.weight(1f))
         } else {
-            val playlists = viewModel.playlists
+            val playlistsSelections = viewModel.playlistsSelections
             val selectedPlaylistVO = viewModel.selectedPlaylistVO
             val selectedPlaylist = viewModel.selectedPlaylist
 
-            if (playlists.value.isEmpty()) {
+            if (playlistsSelections.isEmpty()) {
                 NoPlaylistsTopBar(
                     onAddPlaylist = viewModel::createPlaylist
                 )
                 Box(Modifier.weight(1f))
             } else {
                 PlaylistTopBar(
-                    playlistSelection = playlists.value.map { it.toSelectionVO() }.toList(),
+                    playlistSelection = playlistsSelections,
                     selected = selectedPlaylistVO,
                     onPlaylistSelect = viewModel::selectPlaylist,
                     onAddPlaylist = viewModel::createPlaylist

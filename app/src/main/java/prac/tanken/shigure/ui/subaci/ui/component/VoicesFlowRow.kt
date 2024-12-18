@@ -7,12 +7,10 @@ import androidx.compose.foundation.layout.ContextualFlowRowOverflowScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Badge
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -22,8 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import prac.tanken.shigure.ui.subaci.data.model.Voice
-import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
-import prac.tanken.shigure.ui.subaci.ui.theme.NotoSansJP
 import com.microsoft.fluent.mobile.icons.R as FluentR
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -33,7 +29,7 @@ fun VoicesFlowRow(
     modifier: Modifier = Modifier,
     initialMaxLines: Int = 10,
     linesDeltaStep: Int = 5,
-    onButtonClicked: (VoiceReference) -> Unit = {},
+    elementContent: @Composable (Voice) -> Unit = {}
 ) {
     val totalItems = voices.size
     val lazyThreshold = 20
@@ -45,17 +41,7 @@ fun VoicesFlowRow(
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             voices.forEachIndexed { index, voice ->
-                AdvancedButton(
-                    onClick = { onButtonClicked(voice.toReference()) },
-                    contentFontFamily = NotoSansJP,
-                ) {
-                    Text(text = voice.label)
-                    if (voice.new == true) {
-                        Badge {
-                            Text("NEW")
-                        }
-                    }
-                }
+                elementContent(voice)
             }
         }
     } else {
@@ -115,18 +101,7 @@ fun VoicesFlowRow(
             itemCount = totalItems
         ) {
             voices.forEachIndexed { index, voice ->
-                AdvancedButton(
-                    onClick = { onButtonClicked(voice.toReference()) },
-                    onLongPress = { println("long click") },
-                    contentFontFamily = NotoSansJP,
-                ) {
-                    Text(text = voice.label)
-                    if (voice.new == true) {
-                        Badge {
-                            Text("NEW")
-                        }
-                    }
-                }
+                elementContent(voice)
             }
         }
     }

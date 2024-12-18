@@ -2,12 +2,9 @@ package prac.tanken.shigure.ui.subaci.data.di
 
 import android.content.Context
 import android.content.res.Resources
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
-import androidx.room.RoomDatabase
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +14,6 @@ import prac.tanken.shigure.ui.subaci.data.database.PlaylistDatabase
 import prac.tanken.shigure.ui.subaci.data.preferences.dailyVoiceDataStore
 import prac.tanken.shigure.ui.subaci.data.preferences.settingsDataStore
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
-import java.util.concurrent.Executors
 import javax.inject.Singleton
 
 @Module
@@ -37,11 +33,6 @@ object DataModule {
         appContext,
         PlaylistDatabase::class.java,
         "playlists.db"
-    ).setQueryCallback(
-        RoomDatabase.QueryCallback { sqlQuery, bindArgs ->
-            Log.d("ROOM_QUERY", "SQL: $sqlQuery BindArgs: $bindArgs")
-        },
-        Executors.newSingleThreadExecutor()
     ).build()
 
     @DailyVoiceDataStore

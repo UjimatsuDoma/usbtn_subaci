@@ -5,9 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistEntity
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelected
@@ -31,12 +28,9 @@ class PlaylistViewModel @Inject constructor(
     private val voices get() = _voices
 
     // 全部播放列表数据。CRUD完备。
-    private var _playlists = mutableStateOf(emptyList<PlaylistEntity>())
-    val playlists get() = _playlists
-
-    // 选中的播放列表在数据库的ID序号。初始值是0；数据库ID自增初始值是1.
-    private var _selected = MutableStateFlow(0)
-    private val selected = _selected.asStateFlow()
+    private var _playlists = mutableStateOf<List<PlaylistEntity>>(emptyList())
+    private val playlists get() = _playlists
+    val playlistsSelections get() = playlists.value.map { it.toSelectionVO() }.toList()
 
     // 选中的播放列表。
     private var _selectedPlaylistEntity = mutableStateOf<PlaylistEntity?>(null)
@@ -57,33 +51,16 @@ class PlaylistViewModel @Inject constructor(
     private fun observePlaylists() =
         viewModelScope.launch(Dispatchers.Default) {
             playlistRepository.getAllPlaylists()
-                .collect { list ->
-                    _playlists.value = list
+                .collect {
+                    _playlists.value = it
                 }
         }
 
-    private fun observePlaylistSelection() = {
-        viewModelScope.launch {
-            playlistRepository.getSelected()
-                .collect { selected ->
-                    val selectedId = selected.selectedId
-                    _selected.update { selectedId }
-                }
-        }
+    private fun observePlaylistSelection() =
         viewModelScope.launch(Dispatchers.Default) {
-            selected.collect {
-                updatePlaylistItemsById(it)
-            }
+            playlistRepository.selectedPlaylist
+                .collect { _selectedPlaylistEntity.value = it }
         }
-    }.invoke()
-
-    private fun updatePlaylistItemsById(id: Int) {
-        loading(Dispatchers.IO) {
-            _selectedPlaylistEntity.value = null
-            val selectedPlaylist = playlistRepository.getById(id)
-            _selectedPlaylistEntity.value = selectedPlaylist
-        }
-    }
 
     fun selectPlaylist(id: Int) {
         loading(Dispatchers.IO) {
@@ -92,6 +69,7 @@ class PlaylistViewModel @Inject constructor(
     }
 
     suspend fun createPlaylist() {
-        _selected.value = playlistRepository.testCreatePlaylist()
+        val createdId = playlistRepository.testCreatePlaylist()
+        selectPlaylist(createdId)
     }
 }
