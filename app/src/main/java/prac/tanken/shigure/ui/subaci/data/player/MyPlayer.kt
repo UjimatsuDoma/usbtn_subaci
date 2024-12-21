@@ -3,6 +3,7 @@ package prac.tanken.shigure.ui.subaci.data.player
 import android.content.res.AssetManager
 import android.media.MediaPlayer
 import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
+import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
 import javax.inject.Inject
 
 class MyPlayer @Inject constructor(
@@ -16,7 +17,11 @@ class MyPlayer @Inject constructor(
         }
     }
 
-    fun playByReference(vr: VoiceReference) {
+    fun playByReference(
+        vr: VoiceReference,
+        onStart: CallbackInvokedAsIs = {},
+        onComplete: CallbackInvokedAsIs = {},
+    ) {
         stopIfPlaying()
         val afd = am.openFd("subaciAudio/${vr.id}.mp3")
         with(player) {
@@ -27,12 +32,33 @@ class MyPlayer @Inject constructor(
             )
             prepareAsync()
             setOnPreparedListener {
+                onStart()
                 start()
             }
             setOnCompletionListener {
                 stop()
                 reset()
+                onComplete()
             }
         }
+    }
+
+    fun playByList(
+        list: List<VoiceReference>,
+        onStart: (Int) -> Unit = {},
+        onComplete: () -> Unit = {},
+    ) {
+        fun play(index: Int) {
+            playByReference(
+                vr = list[index],
+                onStart = { onStart(index) },
+                onComplete = {
+                    onComplete()
+                    if (index < list.lastIndex)
+                        play(index + 1)
+                }
+            )
+        }
+        play(0)
     }
 }

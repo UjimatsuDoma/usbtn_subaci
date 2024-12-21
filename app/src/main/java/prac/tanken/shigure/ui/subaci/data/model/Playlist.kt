@@ -19,8 +19,8 @@ data class PlaylistEntity(
     fun toPlaylist(voices: List<Voice>) = Playlist(
         id = id,
         playlistName = playlistName,
-        playlistItems = voices.filter {
-            it.id in parseJsonString<List<String>>(playlistItems)
+        playlistItems = parseJsonString<List<String>>(playlistItems).map { voiceId->
+            voices.filter { it.id==voiceId }.toList()[0]
         }.toList()
     )
 
@@ -40,13 +40,15 @@ data class PlaylistEntity(
         entity = PlaylistEntity::class,
         parentColumns = ["id"],
         childColumns = ["selected_id"],
-        onDelete = ForeignKey.Companion.SET_DEFAULT
+        onDelete = ForeignKey.Companion.CASCADE
     )]
 )
 data class PlaylistSelected(
+    @ColumnInfo("selected_id") val selectedId: Int,
     @PrimaryKey val position: Int = 1,
-    @ColumnInfo("selected_id") val selectedId: Int = 0
 )
+
+val playlistNotSelected = PlaylistSelected(0)
 
 data class Playlist(
     val id: Int,

@@ -15,4 +15,7 @@ interface PlaylistSelectedDao {
 
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun selectPlaylist(playlistSelected: PlaylistSelected)
+
+    @Query("DELETE FROM playlist_selected WHERE position = 1")
+    suspend fun deleteSelection()
 }

@@ -1,6 +1,8 @@
 package prac.tanken.shigure.ui.subaci.ui.playlist
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +25,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelectionVO
@@ -58,8 +60,9 @@ fun PlaylistScreen(
             LoadingScreenBody(Modifier.weight(1f))
         } else {
             val playlistsSelections = viewModel.playlistsSelections
-            val selectedPlaylistVO = viewModel.selectedPlaylistVO
-            val selectedPlaylist = viewModel.selectedPlaylist
+            val selectedPlaylistVO by viewModel.selectedPlaylistVO
+            val selectedPlaylist by viewModel.selectedPlaylist
+            val playbackState by viewModel.playbackState.collectAsStateWithLifecycle()
 
             if (playlistsSelections.isEmpty()) {
                 NoPlaylistsTopBar(
@@ -71,7 +74,10 @@ fun PlaylistScreen(
                     playlistSelection = playlistsSelections,
                     selected = selectedPlaylistVO,
                     onPlaylistSelect = viewModel::selectPlaylist,
-                    onAddPlaylist = viewModel::createPlaylist
+                    onAddPlaylist = viewModel::createPlaylist,
+                    onDeletePlaylist = viewModel::deletePlaylist,
+                    playbackState = playbackState,
+                    onPlayOrStop = viewModel::dispatchPlaybackIntent
                 )
                 Box(
                     modifier = Modifier
@@ -83,7 +89,11 @@ fun PlaylistScreen(
                         PlaylistNoItemScreen()
                     } else {
                         PlaylistScreen(
+                            playbackState = playbackState,
                             voices = selectedPlaylist?.playlistItems,
+                            onItemClicked = viewModel::playItem,
+                            onItemMove = viewModel::movePlaylistItem,
+                            onItemDelete = viewModel::removePlaylistItem,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -101,7 +111,7 @@ internal fun NoPlaylistsTopBar(
 ) {
     val scope = rememberCoroutineScope()
 
-    TopAppBar(
+    CenterAlignedTopAppBar(
         windowInsets = WindowInsets(0),
         title = {
             Text(
@@ -138,9 +148,12 @@ internal fun PlaylistNoItemScreen(modifier: Modifier = Modifier) {
 @Composable
 internal fun PlaylistTopBar(
     playlistSelection: List<PlaylistSelectionVO>,
+    playbackState: PlaylistPlaybackState,
     selected: PlaylistSelectionVO?,
     onPlaylistSelect: (Int) -> Unit,
     onAddPlaylist: suspend () -> Unit,
+    onDeletePlaylist: suspend () -> Unit,
+    onPlayOrStop: (PlaylistPlaybackIntent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
@@ -149,16 +162,25 @@ internal fun PlaylistTopBar(
     CenterAlignedTopAppBar(
         windowInsets = WindowInsets(0),
         navigationIcon = {
+            val playIcon = when (playbackState) {
+                is PlaylistPlaybackState.Playing -> FluentR.drawable.ic_fluent_stop_24_filled
+                PlaylistPlaybackState.Stopped -> FluentR.drawable.ic_fluent_play_24_filled
+            }
+            val action = when (playbackState) {
+                is PlaylistPlaybackState.Playing -> PlaylistPlaybackIntent.Stop
+                PlaylistPlaybackState.Stopped -> PlaylistPlaybackIntent.Play
+            }
+
             Row {
-                IconButton(onClick = {}) {
+                IconButton(onClick = { onPlayOrStop(action) }) {
                     Icon(
-                        painter = painterResource(FluentR.drawable.ic_fluent_play_24_filled),
+                        painter = painterResource(playIcon),
                         contentDescription = null
                     )
                 }
                 IconButton(onClick = {}) {
                     Icon(
-                        painter = painterResource(FluentR.drawable.ic_fluent_arrow_shuffle_24_filled),
+                        painter = painterResource(FluentR.drawable.ic_fluent_arrow_clockwise_24_filled),
                         contentDescription = null
                     )
                 }
@@ -217,6 +239,8 @@ internal fun PlaylistTopBar(
             }
         },
         actions = {
+            var expanded by rememberSaveable { mutableStateOf(false) }
+
             IconButton(
                 onClick = { scope.launch { onAddPlaylist() } }
             ) {
@@ -225,14 +249,42 @@ internal fun PlaylistTopBar(
                     contentDescription = null
                 )
             }
+            IconButton(
+                onClick = { expanded = !expanded }
+            ) {
+                Icon(
+                    painter = painterResource(FluentR.drawable.ic_fluent_more_vertical_24_filled),
+                    contentDescription = "Overflow menu"
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(FluentR.drawable.ic_fluent_bin_full_24_filled),
+                            contentDescription = null
+                        )
+                    },
+                    text = { Text("Delete playlist") },
+                    onClick = { scope.launch { onDeletePlaylist() } }
+                )
+            }
         },
         modifier = modifier
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun PlaylistScreen(
+    playbackState: PlaylistPlaybackState,
     voices: List<Voice>?,
+    onItemClicked: (Int) -> Unit,
+    onItemMove: (Int, Boolean) -> Unit,
+    onItemDelete: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -247,10 +299,62 @@ internal fun PlaylistScreen(
                 items = voices,
                 key = { index, voice -> Pair(index, voice) }
             ) { index, voice ->
-                Text(
-                    text = voice.label,
-                    modifier = Modifier.padding(8.dp)
-                )
+
+                Column {
+                    var expanded by rememberSaveable { mutableStateOf(false) }
+
+                    Text(
+                        text = voice.label,
+//                        text = "$index. ${voice.label}",
+                        fontFamily = NotoSerifJP,
+                        fontSize = 24.sp,
+                        fontWeight = when (playbackState) {
+                            is PlaylistPlaybackState.Playing -> {
+                                if (playbackState.index == index) FontWeight.Bold
+                                else FontWeight.Normal
+                            }
+
+                            PlaylistPlaybackState.Stopped -> FontWeight.Normal
+                        },
+                        modifier = Modifier
+                            .combinedClickable(
+                                onClick = { onItemClicked(index) },
+                                onLongClick = { expanded = true }
+                            )
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Move up") },
+                            enabled = index in 1..voices.lastIndex,
+                            onClick = {
+                                expanded = false
+                                onItemMove(index, true)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Move down") },
+                            enabled = index in 0 until voices.lastIndex,
+                            onClick = {
+                                expanded = false
+                                onItemMove(index, false)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Delete") },
+                            onClick = {
+                                expanded = false
+                                onItemDelete(index)
+                            }
+                        )
+                    }
+                }
+
                 if (index in 0 until voices.lastIndex) {
                     HorizontalDivider(
                         modifier = Modifier.padding(2.dp)

@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 import prac.tanken.shigure.ui.subaci.data.database.PlaylistDatabase
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistEntity
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelected
+import prac.tanken.shigure.ui.subaci.data.model.playlistNotSelected
 import javax.inject.Inject
 import kotlin.collections.filter
 import kotlin.collections.isNotEmpty
@@ -20,7 +21,11 @@ class PlaylistRepository @Inject constructor(
 
     fun getAllPlaylists() = playlistDao.getAll()
     fun getSelected() = playlistSelectedDao.getSelected()
-        .map { it.filter { it.position == 1 }.toList()[0] }
+        .map {
+            it.filter { it.position == 1 }.toList().let {
+                if (it.isNotEmpty()) it[0] else playlistNotSelected
+            }
+        }
 
     val selectedPlaylist = getAllPlaylists()
         .combineTransform(getSelected()) { playlists, selected ->
@@ -34,6 +39,11 @@ class PlaylistRepository @Inject constructor(
         }
 
     @WorkerThread
+    suspend fun getMaxId() = withContext(Dispatchers.IO) {
+        return@withContext playlistDao.getMaxId()
+    }
+
+    @WorkerThread
     suspend fun getById(id: Int) = withContext(Dispatchers.IO) {
         return@withContext playlistDao.getById(id)
     }
@@ -45,9 +55,14 @@ class PlaylistRepository @Inject constructor(
 
     @WorkerThread
     suspend fun testCreatePlaylist(): Int = withContext(Dispatchers.IO) {
-        val maxId = playlistDao.getMaxId()?.let { it + 1 } ?: 1
+        val maxId = playlistDao.getAutoIncrement()?.let { it + 1 } ?: 1
         playlistDao.createPlaylist("Playlist $maxId")
         return@withContext maxId
+    }
+
+    @WorkerThread
+    suspend fun getAutoIncrement(): Int? = withContext(Dispatchers.IO) {
+        return@withContext playlistDao.getAutoIncrement()
     }
 
     @WorkerThread
@@ -56,7 +71,17 @@ class PlaylistRepository @Inject constructor(
     }
 
     @WorkerThread
+    suspend fun unselectPlaylist() = withContext(Dispatchers.IO) {
+        playlistSelectedDao.deleteSelection()
+    }
+
+    @WorkerThread
     suspend fun updatePlaylist(playlistEntity: PlaylistEntity) = withContext(Dispatchers.IO) {
         playlistDao.updatePlaylist(playlistEntity)
+    }
+
+    @WorkerThread
+    suspend fun deletePlaylist(playlistEntity: PlaylistEntity) = withContext(Dispatchers.IO) {
+        playlistDao.deletePlaylist(playlistEntity)
     }
 }

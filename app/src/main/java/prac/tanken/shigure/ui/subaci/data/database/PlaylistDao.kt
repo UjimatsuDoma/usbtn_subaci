@@ -1,6 +1,7 @@
 package prac.tanken.shigure.ui.subaci.data.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
@@ -18,9 +19,18 @@ interface PlaylistDao {
     @Query("SELECT MAX(id) FROM playlists")
     suspend fun getMaxId(): Int?
 
+    @Query("SELECT seq FROM sqlite_sequence WHERE name = 'playlists'")
+    suspend fun getAutoIncrement(): Int?
+
     @Query("INSERT INTO playlists (playlist_name, playlist_items) VALUES (:name, '[]')")
     suspend fun createPlaylist(name: String)
 
     @Update
     suspend fun updatePlaylist(playlistEntity: PlaylistEntity)
+
+    @Delete
+    suspend fun deletePlaylist(playlistEntity: PlaylistEntity)
+
+    @Query("DELETE FROM playlists WHERE id=:id")
+    suspend fun deletePlaylistById(id: Int)
 }

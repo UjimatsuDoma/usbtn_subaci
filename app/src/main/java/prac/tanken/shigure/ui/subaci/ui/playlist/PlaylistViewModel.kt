@@ -1,11 +1,18 @@
 package prac.tanken.shigure.ui.subaci.ui.playlist
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistEntity
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelected
 import prac.tanken.shigure.ui.subaci.data.model.Voice
@@ -13,6 +20,7 @@ import prac.tanken.shigure.ui.subaci.data.player.MyPlayer
 import prac.tanken.shigure.ui.subaci.data.repository.PlaylistRepository
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.data.util.ToastUtil
+import prac.tanken.shigure.ui.subaci.data.util.parseJsonString
 import prac.tanken.shigure.ui.subaci.ui.LoadingViewModel
 import javax.inject.Inject
 
@@ -35,10 +43,13 @@ class PlaylistViewModel @Inject constructor(
     // 选中的播放列表。
     private var _selectedPlaylistEntity = mutableStateOf<PlaylistEntity?>(null)
     private val selectedPlaylistEntity get() = _selectedPlaylistEntity
-    val selectedPlaylistVO
-        get() = selectedPlaylistEntity.value?.toSelectionVO()
-    val selectedPlaylist
-        get() = selectedPlaylistEntity.value?.toPlaylist(voices)
+    val selectedPlaylistVO = derivedStateOf { selectedPlaylistEntity.value?.toSelectionVO() }
+    val selectedPlaylist = derivedStateOf { selectedPlaylistEntity.value?.toPlaylist(voices) }
+
+    // 播放状态
+    private var _playbackState =
+        MutableStateFlow<PlaylistPlaybackState>(PlaylistPlaybackState.Stopped)
+    val playbackState = _playbackState.asStateFlow()
 
     init {
         loading(Dispatchers.IO) {
@@ -62,9 +73,43 @@ class PlaylistViewModel @Inject constructor(
                 .collect { _selectedPlaylistEntity.value = it }
         }
 
+    fun dispatchPlaybackIntent(intent: PlaylistPlaybackIntent) {
+        when (intent) {
+            PlaylistPlaybackIntent.Play -> playList()
+            PlaylistPlaybackIntent.Stop -> stop()
+        }
+    }
+
+    fun playItem(index: Int) =
+        myPlayer.playByReference(
+            voices.filter { it.id == selectedPlaylist.value?.playlistItems[index]?.id }[0].toReference(),
+            onStart = { _playbackState.update { PlaylistPlaybackState.Playing(index) } },
+            onComplete = { _playbackState.update { PlaylistPlaybackState.Stopped } }
+        )
+
+    fun playList() =
+        selectedPlaylist.value?.let { playlist ->
+            myPlayer.playByList(
+                playlist.playlistItems.map { it.toReference() },
+                onStart = { index -> _playbackState.update { PlaylistPlaybackState.Playing(index) } },
+                onComplete = { _playbackState.update { PlaylistPlaybackState.Stopped } }
+            )
+        }
+
+    fun stop() {
+        myPlayer.stopIfPlaying()
+        _playbackState.update { PlaylistPlaybackState.Stopped }
+    }
+
     fun selectPlaylist(id: Int) {
         loading(Dispatchers.IO) {
-            playlistRepository.selectPlaylist(PlaylistSelected(selectedId = id))
+            playlistRepository.selectPlaylist(PlaylistSelected(id))
+        }
+    }
+
+    fun unselectPlaylist() {
+        loading(Dispatchers.IO) {
+            playlistRepository.unselectPlaylist()
         }
     }
 
@@ -72,4 +117,52 @@ class PlaylistViewModel @Inject constructor(
         val createdId = playlistRepository.testCreatePlaylist()
         selectPlaylist(createdId)
     }
+
+    suspend fun deletePlaylist() = selectedPlaylistEntity.value?.let {
+        withContext(Dispatchers.IO) {
+            unselectPlaylist()
+            playlistRepository.deletePlaylist(it)
+            playlistRepository.getMaxId()?.let { selectPlaylist(it) }
+        }
+    }
+
+    fun movePlaylistItem(index: Int, moveUp: Boolean) =
+        selectedPlaylistEntity.value?.let { playlist ->
+            val items = parseJsonString<List<String>>(playlist.playlistItems)
+
+            require(index in items.indices) {
+                "Illegal index specified."
+            }
+            val moveUpValid = moveUp && index in 1..items.lastIndex
+            val moveDownValid = !moveUp && index in 0 until items.lastIndex
+            require(moveUpValid || moveDownValid) {
+                "Cannot move up or down."
+            }
+
+            val targetIndex = if (moveUp) index - 1 else index + 1
+            val newArr = items.toMutableList().also { arr ->
+                arr[index] = arr[targetIndex].apply {
+                    arr[targetIndex] = arr[index]
+                }
+            }.toList()
+            val newArrStr = Json.encodeToString(newArr)
+            viewModelScope.launch(Dispatchers.Default) {
+                playlistRepository.updatePlaylist(playlist.copy(playlistItems = newArrStr))
+            }
+        }
+
+    fun removePlaylistItem(index: Int) =
+        selectedPlaylistEntity.value?.let { playlist ->
+            val items = parseJsonString<List<String>>(playlist.playlistItems)
+
+            require(index in items.indices) {
+                "Illegal index specified."
+            }
+
+            val newArr = items.toMutableList().apply { removeAt(index) }.toList()
+            val newArrStr = Json.encodeToString(newArr)
+            viewModelScope.launch(Dispatchers.Default) {
+                playlistRepository.updatePlaylist(playlist.copy(playlistItems = newArrStr))
+            }
+        }
 }

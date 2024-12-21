@@ -12,13 +12,16 @@ import kotlinx.coroutines.withContext
 import prac.tanken.shigure.ui.subaci.data.model.Category
 import prac.tanken.shigure.ui.subaci.data.model.CategoryVO
 import prac.tanken.shigure.ui.subaci.data.model.Voice
+import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
+import prac.tanken.shigure.ui.subaci.data.player.MyPlayer
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.ui.LoadingViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
-    val resRepository: ResRepository
+    val resRepository: ResRepository,
+    val myPlayer: MyPlayer,
 ) : LoadingViewModel() {
     private var _categories = mutableStateListOf<Category>()
     val categories: List<Category> get() = _categories
@@ -40,7 +43,7 @@ class CategoryViewModel @Inject constructor(
         }
     }
 
-    fun updateSelectedVoicesByIndex(index: Int) {
+    private fun updateSelectedVoicesByIndex(index: Int) {
         loading {
             var voices = emptyList<Voice>()
             withContext(Dispatchers.IO) {
@@ -56,6 +59,11 @@ class CategoryViewModel @Inject constructor(
             }
         }
     }
+
+    fun onButtonClicked(voiceReference: VoiceReference) =
+        viewModelScope.launch(Dispatchers.Default) {
+            myPlayer.playByReference(voiceReference)
+        }
 
     fun selectByIndex(index: Int) {
         _selectedIndex.value = index

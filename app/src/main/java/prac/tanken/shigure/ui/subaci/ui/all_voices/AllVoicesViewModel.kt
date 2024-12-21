@@ -62,7 +62,7 @@ class AllVoicesViewModel @Inject constructor(
     }
 
     private suspend fun observePlaylist() = withContext(Dispatchers.IO) {
-        playlistRepository.selectedPlaylist.collect{
+        playlistRepository.selectedPlaylist.collect {
             _selectedPlaylist.value = it
         }
     }
