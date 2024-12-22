@@ -10,5 +10,5 @@ Development stage:
     - Milestone 0: things to comply with "copyright requirements".  [Nov. 24, 2024 - Nov. 27, 2024]
     - Milestone 1: Basic implementation of features.  [Nov. 28, 2024 - Dec. 3, 2024]
       (see `develop` branch)
-    - Milestone 2: Complete rewrite of Milestone 1, migrate to MVVM [Dec. 3, 2024 - TBA]
+    - Milestone 2: Complete rewrite of Milestone 1, migrate to MVVM [Dec. 3, 2024 - Dec. 22, 2024]
 - 1st Edition: TBA
