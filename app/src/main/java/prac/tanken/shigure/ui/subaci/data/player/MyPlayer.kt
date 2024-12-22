@@ -10,6 +10,13 @@ class MyPlayer @Inject constructor(
     val player: MediaPlayer,
     val am: AssetManager
 ) {
+    var isLooping = false
+        private set
+
+    fun toggleLooping(newValue: Boolean) {
+        isLooping = newValue
+    }
+
     fun stopIfPlaying() {
         if (player.isPlaying) {
             player.stop()
@@ -56,6 +63,8 @@ class MyPlayer @Inject constructor(
                     onComplete()
                     if (index < list.lastIndex)
                         play(index + 1)
+                    else if(isLooping)
+                        play(0)
                 }
             )
         }

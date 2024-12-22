@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">SUBACI</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main" translatable="false">MainActivity</string>
     <string name="home_all_voices">All</string>
     <string name="home_category">Category</string>
     <string name="home_playlist">Playlist</string>
@@ -9,4 +9,19 @@
     <string name="home_playlist_desc">Playlist screen</string>
     <string name="loading">Loading</string>
     <string name="daily_random_voice">Daily random voice</string>
+    <string name="error_illegal_index">Illegal index specified.</string>
+    <string name="error_playlist_move_item_oob">Cannot move item: out of bounds.</string>
+    <string name="playlist_no_playlists">No playlists</string>
+    <string name="playlist_desc_add_playlist">Add playlist</string>
+    <string name="playlist_no_item">No items in this playlist.</string>
+    <string name="playlist_desc_playback_control">Play or stop playing this playlist.</string>
+    <string name="playlist_desc_toggle_looping">Toggle on or off loop-playing.</string>
+    <string name="playlist_desc_overflow_menu">Overflow menu of Playlist screen.</string>
+    <string name="playlist_desc_delete_playlist">Delete this playlist.</string>
+    <string name="playlist_delete_playlist">Delete playlist</string>
+    <string name="playlist_select_playlist">__SELECT__</string>
+    <string name="playlist_move_up">Move up</string>
+    <string name="playlist_move_down">Move down</string>
+    <string name="playlist_delete_item">Delete</string>
+    <string name="playlist_select_playlist_content">Please select playlist.</string>
 </resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">羽音按钮</string>
+    <string name="home_all_voices">全语音</string>
+    <string name="home_category">分类</string>
+    <string name="home_playlist">播放列表</string>
+    <string name="home_all_voices_desc">“全部语音”页面</string>
+    <string name="home_category_desc">“分类语音”页面</string>
+    <string name="home_playlist_desc">“播放列表”页面</string>
+    <string name="loading">正在加载</string>
+    <string name="daily_random_voice">今日随机语音</string>
+    <string name="error_illegal_index">下标不合法</string>
+    <string name="error_playlist_move_item_oob">已在列表边界， 无法移动</string>
+    <string name="playlist_no_playlists">无播放列表</string>
+    <string name="playlist_desc_add_playlist">创建播放列表</string>
+    <string name="playlist_no_item">该播放列表内无项目</string>
+    <string name="playlist_desc_playback_control">播放或停止播放该播放列表</string>
+    <string name="playlist_desc_toggle_looping">循环播放的切换按钮</string>
+    <string name="playlist_desc_overflow_menu">“播放列表”页面的溢出菜单</string>
+    <string name="playlist_desc_delete_playlist">删除该播放列表</string>
+    <string name="playlist_delete_playlist">删除</string>
+    <string name="playlist_select_playlist">__请选择__</string>
+    <string name="playlist_move_up">上移</string>
+    <string name="playlist_move_down">下移</string>
+    <string name="playlist_delete_item">删除</string>
+    <string name="playlist_select_playlist_content">请选择播放列表。</string>
+</resources>

@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,6 +46,7 @@ import prac.tanken.shigure.ui.subaci.ui.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.ui.theme.NotoSansJP
 import prac.tanken.shigure.ui.subaci.ui.theme.NotoSerifJP
+import prac.tanken.shigure.ui.subaci.R as TankenR
 import com.microsoft.fluent.mobile.icons.R as FluentR
 
 @Composable
@@ -63,6 +65,7 @@ fun PlaylistScreen(
             val selectedPlaylistVO by viewModel.selectedPlaylistVO
             val selectedPlaylist by viewModel.selectedPlaylist
             val playbackState by viewModel.playbackState.collectAsStateWithLifecycle()
+            val looping by viewModel.isLooping.collectAsStateWithLifecycle()
 
             if (playlistsSelections.isEmpty()) {
                 NoPlaylistsTopBar(
@@ -77,7 +80,9 @@ fun PlaylistScreen(
                     onAddPlaylist = viewModel::createPlaylist,
                     onDeletePlaylist = viewModel::deletePlaylist,
                     playbackState = playbackState,
-                    onPlayOrStop = viewModel::dispatchPlaybackIntent
+                    onPlayOrStop = viewModel::dispatchPlaybackIntent,
+                    looping = looping,
+                    onToggleLooping = viewModel::toggleLooping
                 )
                 Box(
                     modifier = Modifier
@@ -115,7 +120,7 @@ internal fun NoPlaylistsTopBar(
         windowInsets = WindowInsets(0),
         title = {
             Text(
-                text = "No playlists",
+                text = stringResource(TankenR.string.playlist_no_playlists),
                 fontWeight = FontWeight.Bold,
                 fontFamily = NotoSerifJP
             )
@@ -126,7 +131,7 @@ internal fun NoPlaylistsTopBar(
             ) {
                 Icon(
                     painter = painterResource(FluentR.drawable.ic_fluent_add_24_regular),
-                    contentDescription = null
+                    contentDescription = stringResource(TankenR.string.playlist_desc_add_playlist)
                 )
             }
         },
@@ -140,7 +145,7 @@ internal fun PlaylistNoItemScreen(modifier: Modifier = Modifier) {
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        Text("No items in this playlist.")
+        Text(stringResource(TankenR.string.playlist_no_item))
     }
 }
 
@@ -150,6 +155,8 @@ internal fun PlaylistTopBar(
     playlistSelection: List<PlaylistSelectionVO>,
     playbackState: PlaylistPlaybackState,
     selected: PlaylistSelectionVO?,
+    looping: Boolean,
+    onToggleLooping: () -> Unit,
     onPlaylistSelect: (Int) -> Unit,
     onAddPlaylist: suspend () -> Unit,
     onDeletePlaylist: suspend () -> Unit,
@@ -166,22 +173,27 @@ internal fun PlaylistTopBar(
                 is PlaylistPlaybackState.Playing -> FluentR.drawable.ic_fluent_stop_24_filled
                 PlaylistPlaybackState.Stopped -> FluentR.drawable.ic_fluent_play_24_filled
             }
-            val action = when (playbackState) {
+            val loopingIcon = if (looping) {
+                FluentR.drawable.ic_fluent_arrow_clockwise_24_filled
+            } else {
+                FluentR.drawable.ic_fluent_arrow_clockwise_24_regular
+            }
+            val playbackAction = when (playbackState) {
                 is PlaylistPlaybackState.Playing -> PlaylistPlaybackIntent.Stop
                 PlaylistPlaybackState.Stopped -> PlaylistPlaybackIntent.Play
             }
 
             Row {
-                IconButton(onClick = { onPlayOrStop(action) }) {
+                IconButton(onClick = { onPlayOrStop(playbackAction) }) {
                     Icon(
                         painter = painterResource(playIcon),
-                        contentDescription = null
+                        contentDescription = stringResource(TankenR.string.playlist_desc_playback_control)
                     )
                 }
-                IconButton(onClick = {}) {
+                IconButton(onClick = onToggleLooping) {
                     Icon(
-                        painter = painterResource(FluentR.drawable.ic_fluent_arrow_clockwise_24_filled),
-                        contentDescription = null
+                        painter = painterResource(loopingIcon),
+                        contentDescription = stringResource(TankenR.string.playlist_desc_toggle_looping)
                     )
                 }
             }
@@ -205,7 +217,7 @@ internal fun PlaylistTopBar(
                         }
 
                     Text(
-                        text = selected?.playlistName ?: "__SELECT__",
+                        text = selected?.playlistName ?: stringResource(TankenR.string.playlist_select_playlist),
                         fontFamily = NotoSerifJP,
                         fontWeight = FontWeight.Bold
                     )
@@ -246,7 +258,7 @@ internal fun PlaylistTopBar(
             ) {
                 Icon(
                     painter = painterResource(FluentR.drawable.ic_fluent_add_24_regular),
-                    contentDescription = null
+                    contentDescription = stringResource(TankenR.string.playlist_desc_add_playlist)
                 )
             }
             IconButton(
@@ -254,7 +266,7 @@ internal fun PlaylistTopBar(
             ) {
                 Icon(
                     painter = painterResource(FluentR.drawable.ic_fluent_more_vertical_24_filled),
-                    contentDescription = "Overflow menu"
+                    contentDescription = stringResource(TankenR.string.playlist_desc_overflow_menu)
                 )
             }
             DropdownMenu(
@@ -265,10 +277,10 @@ internal fun PlaylistTopBar(
                     leadingIcon = {
                         Icon(
                             painter = painterResource(FluentR.drawable.ic_fluent_bin_full_24_filled),
-                            contentDescription = null
+                            contentDescription = stringResource(TankenR.string.playlist_desc_delete_playlist)
                         )
                     },
-                    text = { Text("Delete playlist") },
+                    text = { Text(stringResource(TankenR.string.playlist_delete_playlist)) },
                     onClick = { scope.launch { onDeletePlaylist() } }
                 )
             }
@@ -330,7 +342,7 @@ internal fun PlaylistScreen(
                         onDismissRequest = { expanded = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Move up") },
+                            text = { Text(stringResource(TankenR.string.playlist_move_up)) },
                             enabled = index in 1..voices.lastIndex,
                             onClick = {
                                 expanded = false
@@ -338,7 +350,7 @@ internal fun PlaylistScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Move down") },
+                            text = { Text(stringResource(TankenR.string.playlist_move_down)) },
                             enabled = index in 0 until voices.lastIndex,
                             onClick = {
                                 expanded = false
@@ -346,7 +358,7 @@ internal fun PlaylistScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Delete") },
+                            text = { Text(stringResource(TankenR.string.playlist_delete_item)) },
                             onClick = {
                                 expanded = false
                                 onItemDelete(index)
@@ -363,7 +375,7 @@ internal fun PlaylistScreen(
             }
         }
     } ?: @Composable {
-        Text("Please select playlist.")
+        Text(stringResource(TankenR.string.playlist_select_playlist_content))
     }
 
 }

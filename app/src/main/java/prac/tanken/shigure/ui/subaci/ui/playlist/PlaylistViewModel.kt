@@ -22,6 +22,7 @@ import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.data.util.ToastUtil
 import prac.tanken.shigure.ui.subaci.data.util.parseJsonString
 import prac.tanken.shigure.ui.subaci.ui.LoadingViewModel
+import prac.tanken.shigure.ui.subaci.R as TankenR
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,6 +51,8 @@ class PlaylistViewModel @Inject constructor(
     private var _playbackState =
         MutableStateFlow<PlaylistPlaybackState>(PlaylistPlaybackState.Stopped)
     val playbackState = _playbackState.asStateFlow()
+    private var _isLooping = MutableStateFlow(false)
+    val isLooping = _isLooping.asStateFlow()
 
     init {
         loading(Dispatchers.IO) {
@@ -57,6 +60,7 @@ class PlaylistViewModel @Inject constructor(
         }
         observePlaylists()
         observePlaylistSelection()
+        observeIsLooping()
     }
 
     private fun observePlaylists() =
@@ -71,6 +75,19 @@ class PlaylistViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Default) {
             playlistRepository.selectedPlaylist
                 .collect { _selectedPlaylistEntity.value = it }
+        }
+
+    private fun observeIsLooping() =
+        viewModelScope.launch(Dispatchers.Default) {
+            isLooping.collect { looping ->
+                _playbackState.update { state ->
+                    when (state) {
+                        is PlaylistPlaybackState.Playing -> state.copy(looping = looping)
+                        PlaylistPlaybackState.Stopped -> state
+                    }
+                }
+                myPlayer.toggleLooping(looping)
+            }
         }
 
     fun dispatchPlaybackIntent(intent: PlaylistPlaybackIntent) {
@@ -92,9 +109,13 @@ class PlaylistViewModel @Inject constructor(
             myPlayer.playByList(
                 playlist.playlistItems.map { it.toReference() },
                 onStart = { index -> _playbackState.update { PlaylistPlaybackState.Playing(index) } },
-                onComplete = { _playbackState.update { PlaylistPlaybackState.Stopped } }
+                onComplete = { _playbackState.update { PlaylistPlaybackState.Stopped } },
             )
         }
+
+    fun toggleLooping() = viewModelScope.launch {
+        _isLooping.update { !it }
+    }
 
     fun stop() {
         myPlayer.stopIfPlaying()
@@ -131,12 +152,12 @@ class PlaylistViewModel @Inject constructor(
             val items = parseJsonString<List<String>>(playlist.playlistItems)
 
             require(index in items.indices) {
-                "Illegal index specified."
+                resRepository.stringRes(TankenR.string.error_illegal_index)
             }
             val moveUpValid = moveUp && index in 1..items.lastIndex
             val moveDownValid = !moveUp && index in 0 until items.lastIndex
             require(moveUpValid || moveDownValid) {
-                "Cannot move up or down."
+                resRepository.stringRes(TankenR.string.error_playlist_move_item_oob)
             }
 
             val targetIndex = if (moveUp) index - 1 else index + 1
@@ -156,7 +177,7 @@ class PlaylistViewModel @Inject constructor(
             val items = parseJsonString<List<String>>(playlist.playlistItems)
 
             require(index in items.indices) {
-                "Illegal index specified."
+                resRepository.stringRes(TankenR.string.error_illegal_index)
             }
 
             val newArr = items.toMutableList().apply { removeAt(index) }.toList()

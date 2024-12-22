@@ -1,6 +1,7 @@
 package prac.tanken.shigure.ui.subaci.data.repository
 
 import android.content.res.Resources
+import androidx.annotation.StringRes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import prac.tanken.shigure.ui.subaci.R
@@ -24,4 +25,6 @@ class ResRepository @Inject constructor(
         val categories: List<Category> = parseJsonString(categoriesJson)
         return@withContext categories
     }
+
+    fun stringRes(@StringRes stringRes: Int) = res.getString(stringRes)
 }
