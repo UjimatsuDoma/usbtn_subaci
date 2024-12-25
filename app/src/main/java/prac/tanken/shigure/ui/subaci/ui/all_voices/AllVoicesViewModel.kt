@@ -5,12 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import prac.tanken.shigure.ui.subaci.data.model.DailyVoice
@@ -19,6 +16,7 @@ import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.player.MyPlayer
 import prac.tanken.shigure.ui.subaci.data.repository.DailyVoiceRepository
+import prac.tanken.shigure.ui.subaci.data.repository.DailyVoiceRepository.Companion.todayStr
 import prac.tanken.shigure.ui.subaci.data.repository.PlaylistRepository
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.data.util.ToastUtil
@@ -58,6 +56,18 @@ class AllVoicesViewModel @Inject constructor(
 
     private suspend fun observeDailyVoice() = withContext(Dispatchers.IO) {
         dailyVoiceRepository.dailyVoiceFlow
+            .onEach { dailyVoice ->
+                // check if daily voice exists AND is not expired
+                val expired = dailyVoice?.addDate?.let { todayStr != it } == true
+                if (dailyVoice == null || expired) {
+                    viewModelScope.launch {
+                        dailyVoiceRepository.updateDailyVoice(
+                            voices[voices.indices.random()].id
+                        )
+                        toastUtil.toast("Rolled the dice...")
+                    }
+                }
+            }
             .collect { _dailyVoice.value = it }
     }
 
@@ -68,20 +78,6 @@ class AllVoicesViewModel @Inject constructor(
     }
 
     fun playDailyVoice() {
-        // check if daily voice exists AND is not expired
-        val expired = {
-            fun encode(date: LocalDate) = LocalDate.Formats.ISO_BASIC.format(date)
-            val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-            dailyVoice.value?.addDate?.let { encode(today) != encode(it) } == true
-        }.invoke()
-        if (dailyVoice.value == null || expired) {
-            viewModelScope.launch {
-                dailyVoiceRepository.updateDailyVoice(
-                    voices[voices.indices.random()].id
-                )
-            }
-            toastUtil.toast("Rolled the dice...")
-        }
         dailyVoice.value?.let { dailyVoice ->
             myPlayer.playByReference(VoiceReference(dailyVoice.voiceId))
             val label = voices.filter { it.id == dailyVoice.voiceId }.toList()[0].label

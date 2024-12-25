@@ -4,5 +4,5 @@ import kotlinx.datetime.LocalDate
 
 data class DailyVoice(
     val voiceId: String,
-    val addDate: LocalDate
+    val addDate: String
 )
