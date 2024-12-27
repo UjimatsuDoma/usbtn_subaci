@@ -38,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -72,7 +73,7 @@ fun PlaylistScreen(
 
             if (playlistsSelections.isEmpty()) {
                 NoPlaylistsTopBar(onAddPlaylist = viewModel::createPlaylist)
-                NoPlaylistsScreen(modifier = Modifier.weight(1f))
+                NoPlaylistsScreen(modifier = Modifier.fillMaxWidth().weight(1f))
             } else {
                 PlaylistTopBar(
                     playlistSelection = playlistsSelections,
@@ -92,7 +93,7 @@ fun PlaylistScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     if (selectedPlaylist?.playlistItems?.isEmpty() == true) {
-                        PlaylistNoItemScreen()
+                        PlaylistNoItemScreen(Modifier.fillMaxSize())
                     } else {
                         PlaylistScreen(
                             playbackState = playbackState,
@@ -144,24 +145,30 @@ internal fun NoPlaylistsTopBar(
 internal fun NoPlaylistsScreen(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(TankenR.string.playlist_no_playlists_content)
-        )
-    }
+        contentAlignment = Alignment.Center,
+        content = {
+            Text(
+                stringResource(TankenR.string.playlist_no_playlists_content),
+                Modifier.fillMaxWidth(0.7f),
+                textAlign = TextAlign.Center,
+            )
+        }
+    )
 }
 
 @Composable
 internal fun PlaylistNoItemScreen(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(TankenR.string.playlist_no_item)
-        )
-    }
+        contentAlignment = Alignment.Center,
+        content = {
+            Text(
+                stringResource(TankenR.string.playlist_no_item),
+                Modifier.fillMaxWidth(0.7f),
+                textAlign = TextAlign.Center,
+            )
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -257,7 +264,6 @@ internal fun PlaylistTopBar(
                                 Text(
                                     text = selection.playlistName,
                                     fontFamily = NotoSansJP,
-                                    fontWeight = FontWeight.Normal,
                                 )
                             },
                             onClick = {

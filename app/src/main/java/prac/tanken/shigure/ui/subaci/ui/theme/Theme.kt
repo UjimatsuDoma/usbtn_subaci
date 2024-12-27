@@ -1,15 +1,18 @@
 package prac.tanken.shigure.ui.subaci.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import prac.tanken.shigure.ui.subaci.ui.NotoSansMultiLang
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -271,7 +274,11 @@ fun ShigureUiButtonAppComposeImplementationTheme(
   MaterialTheme(
     colorScheme = colorScheme,
     typography = AppTypography,
-    content = content
-  )
+  ) {
+      CompositionLocalProvider(
+          LocalTextStyle provides LocalTextStyle.current.copy(fontFamily = NotoSansMultiLang),
+          content = content
+      )
+  }
 }
 

@@ -2,9 +2,16 @@ package prac.tanken.shigure.ui.subaci.ui
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -123,6 +130,52 @@ fun MainNavigationBar(
                     navController.navigate(route = dest)
                 }
             )
+        }
+    }
+}
+
+@Composable
+fun MainNavigationRail(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    NavigationRail(
+        modifier = modifier,
+        windowInsets = WindowInsets(0)
+    ) {
+        val navBackStackEntry = navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry.value?.destination
+
+        Column(
+            verticalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxHeight()
+                .wrapContentWidth()
+        ) {
+            destinations.forEachIndexed { index, dest ->
+                val selected = currentDestination?.route == dest.javaClass.canonicalName
+                val icon = if (selected) {
+                    painterResource(dest.selectedIcon)
+                } else {
+                    painterResource(dest.unselectedIcon)
+                }
+
+                NavigationRailItem(
+                    icon = { Icon(icon, stringResource(dest.desc)) },
+                    label = {
+                        Text(
+                            text = stringResource(dest.displayName),
+                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+                        )
+                    },
+                    selected = selected,
+                    onClick = {
+                        navController.popBackStack()
+                        navController.navigate(route = dest)
+                    },
+                )
+            }
+
         }
     }
 }
