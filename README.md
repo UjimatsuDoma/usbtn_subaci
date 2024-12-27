@@ -11,4 +11,6 @@ Development stage:
     - Milestone 1: Basic implementation of features.  [Nov. 28, 2024 - Dec. 3, 2024]
       (see `develop` branch)
     - Milestone 2: Complete rewrite of Milestone 1, migrate to MVVM [Dec. 3, 2024 - Dec. 22, 2024]
+      - Revision 1 [Dec. 23, 2024 ~ Dec. 27, 2024]
+    - Milestone 3: Re-arrange pages and optimize navigation logic [TBA]
 - 1st Edition: TBA
