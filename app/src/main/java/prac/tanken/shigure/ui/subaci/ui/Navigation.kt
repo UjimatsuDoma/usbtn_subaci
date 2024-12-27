@@ -59,8 +59,10 @@ sealed class MainDestinations(
     )
 }
 
+val destinationClasses =
+    MainDestinations::class.sealedSubclasses
 val destinations =
-    MainDestinations::class.sealedSubclasses.map { it.objectInstance as MainDestinations }
+    destinationClasses.map { it.objectInstance as MainDestinations }
 
 @Composable
 fun MainNavHost(
@@ -99,7 +101,7 @@ fun MainNavigationBar(
         val navBackStackEntry = navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry.value?.destination
 
-        destinations.forEach { dest ->
+        destinations.forEachIndexed { index, dest ->
             val selected = currentDestination?.route == dest.javaClass.canonicalName
             val icon = if (selected) {
                 painterResource(dest.selectedIcon)
@@ -116,7 +118,10 @@ fun MainNavigationBar(
                     )
                 },
                 selected = selected,
-                onClick = { navController.navigate(route = dest) }
+                onClick = {
+                    navController.popBackStack()
+                    navController.navigate(route = dest)
+                }
             )
         }
     }

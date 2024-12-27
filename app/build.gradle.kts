@@ -24,8 +24,8 @@ android {
         applicationId = "prac.tanken.shigure.ui.subaci"
         minSdk = 21
         targetSdk = 35
-        versionCode = 3
-        versionName = "Milestone 2 Revision 1"
+        versionCode = 4
+        versionName = "Milestone 2 Revision 2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -138,6 +138,7 @@ tasks.register("downloadResource") {
                 FileWriter("${projectDir}/src/main/res/raw/class_list.json").use { it.write(categories) }
                 break
             } catch (e: Exception) {
+                e.printStackTrace()
                 println("ERROR RETRY: $tries/10")
                 tries++
                 continue

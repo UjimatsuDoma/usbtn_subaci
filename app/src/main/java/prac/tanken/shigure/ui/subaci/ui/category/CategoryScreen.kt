@@ -99,8 +99,8 @@ fun CategoryTopBar(
                 ) {
                     Text(
                         text = categories[selectedIndex].className,
+                        fontFamily = NotoSerifJP,
                         fontWeight = FontWeight.Bold,
-                        fontFamily = NotoSerifJP
                     )
                     Spacer(Modifier.width(8.dp))
                     Icon(
