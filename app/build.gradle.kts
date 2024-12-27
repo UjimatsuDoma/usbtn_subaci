@@ -24,8 +24,8 @@ android {
         applicationId = "prac.tanken.shigure.ui.subaci"
         minSdk = 21
         targetSdk = 35
-        versionCode = 2
-        versionName = "Milestone 2"
+        versionCode = 3
+        versionName = "Milestone 2 Revision 1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -43,6 +43,19 @@ android {
             )
         }
     }
+    flavorDimensions += "fontType"
+    productFlavors {
+        create("staticFont") {
+            dimension = "fontType"
+            minSdk = 21
+            maxSdk = 25
+        }
+        create("variableFont") {
+            dimension = "fontType"
+            minSdk = 26
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -52,6 +65,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     room {

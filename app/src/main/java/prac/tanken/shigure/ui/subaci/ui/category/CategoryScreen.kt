@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Badge
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,12 +31,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import prac.tanken.shigure.ui.subaci.data.model.CategoryVO
 import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
-import prac.tanken.shigure.ui.subaci.ui.component.AdvancedButton
+import prac.tanken.shigure.ui.subaci.ui.NotoSansJP
+import prac.tanken.shigure.ui.subaci.ui.NotoSerifJP
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingTopBar
+import prac.tanken.shigure.ui.subaci.ui.component.VoiceButton
 import prac.tanken.shigure.ui.subaci.ui.component.VoicesFlowRow
-import prac.tanken.shigure.ui.subaci.ui.theme.NotoSansJP
-import prac.tanken.shigure.ui.subaci.ui.theme.NotoSerifJP
 import com.microsoft.fluent.mobile.icons.R as FluentR
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -145,17 +144,10 @@ internal fun CategoryScreen(
             voices = voices,
             Modifier.verticalScroll(rememberScrollState())
         ) { voice ->
-            AdvancedButton(
-                onClick = { onPlay(voice.toReference()) },
-                contentFontFamily = NotoSansJP,
-            ) {
-                Text(text = voice.label)
-                if (voice.new == true) {
-                    Badge {
-                        Text("NEW")
-                    }
-                }
-            }
+            VoiceButton(
+                voice = voice,
+                onPlay = onPlay
+            )
         }
     }
 }

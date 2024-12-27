@@ -24,4 +24,5 @@
     <string name="playlist_move_down">Move down</string>
     <string name="playlist_delete_item">Delete</string>
     <string name="playlist_select_playlist_content">Please select playlist.</string>
+    <string name="voices_add_to_playlist">Add to playlist</string>
 </resources>

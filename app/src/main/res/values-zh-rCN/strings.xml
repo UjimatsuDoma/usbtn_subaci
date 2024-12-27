@@ -24,4 +24,5 @@
     <string name="playlist_move_down">下移</string>
     <string name="playlist_delete_item">删除</string>
     <string name="playlist_select_playlist_content">请选择播放列表。</string>
+    <string name="voices_add_to_playlist">添加到当前播放列表</string>
 </resources>

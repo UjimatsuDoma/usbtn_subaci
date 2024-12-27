@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ういボタン</string>
+    <string name="app_name">ういボタンC</string>
     <string name="home_all_voices">全一覧</string>
     <string name="home_category">用途別</string>
-    <string name="home_playlist">プレイリスト</string>
+    <string name="home_playlist">連続再生</string>
     <string name="home_all_voices_desc">ボイスの全一覧ページです。</string>
     <string name="home_category_desc">ボイスの用途別一覧ページです。</string>
-    <string name="home_playlist_desc">プレイリストのページです。</string>
+    <string name="home_playlist_desc">再生リストのページです。</string>
     <string name="loading">読み込み中</string>
     <string name="daily_random_voice">今日のランダムボイス</string>
     <string name="error_illegal_index">不当な添え字です。</string>
     <string name="error_playlist_move_item_oob">範囲外なため、移動は出来ません。</string>
-    <string name="playlist_no_playlists">プレイリストがありません。</string>
-    <string name="playlist_desc_add_playlist">プレイリストを作る</string>
-    <string name="playlist_no_item">このプレイリストにボイスがありません。</string>
-    <string name="playlist_desc_playback_control">プレイリストの再生、あるいは再生を停止します。</string>
+    <string name="playlist_no_playlists">再生リストがありません。</string>
+    <string name="playlist_desc_add_playlist">再生リストを作る</string>
+    <string name="playlist_no_item">この再生リストにボイスがありません。</string>
+    <string name="playlist_desc_playback_control">再生リストの再生、あるいは再生を停止します。</string>
     <string name="playlist_desc_toggle_looping">ループ再生するかどうかを切り替えます。</string>
-    <string name="playlist_desc_overflow_menu">「プレイリスト」ページのオーバーフローメニューです。</string>
-    <string name="playlist_desc_delete_playlist">このプレイリストを削除します。</string>
+    <string name="playlist_desc_overflow_menu">「連続再生」ページのオーバーフローメニューです。</string>
+    <string name="playlist_desc_delete_playlist">この再生リストを削除します。</string>
     <string name="playlist_delete_playlist">削除</string>
     <string name="playlist_select_playlist">__選択してください。__</string>
     <string name="playlist_move_up">上へ</string>
     <string name="playlist_move_down">下へ</string>
     <string name="playlist_delete_item">削除</string>
-    <string name="playlist_select_playlist_content">プレイリストを選択してください。</string>
+    <string name="playlist_select_playlist_content">再生リストを選択してください。</string>
+    <string name="voices_add_to_playlist">再生リストに追加する</string>
 </resources>

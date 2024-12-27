@@ -42,10 +42,10 @@ class AllVoicesViewModel @Inject constructor(
     init {
         loading(Dispatchers.IO) {
             _voices.addAll(resRepository.loadVoices())
-        }
-        viewModelScope.launch {
-            launch { observeDailyVoice() }
-            launch { observePlaylist() }
+            viewModelScope.launch {
+                launch { observeDailyVoice() }
+                launch { observePlaylist() }
+            }
         }
     }
 

@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,12 +43,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelectionVO
 import prac.tanken.shigure.ui.subaci.data.model.Voice
+import prac.tanken.shigure.ui.subaci.ui.NotoSansJP
+import prac.tanken.shigure.ui.subaci.ui.NotoSansMultiLang
+import prac.tanken.shigure.ui.subaci.ui.NotoSerifJP
+import prac.tanken.shigure.ui.subaci.ui.NotoSerifMultiLang
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingTopBar
-import prac.tanken.shigure.ui.subaci.ui.theme.NotoSansJP
-import prac.tanken.shigure.ui.subaci.ui.theme.NotoSerifJP
-import prac.tanken.shigure.ui.subaci.R as TankenR
 import com.microsoft.fluent.mobile.icons.R as FluentR
+import prac.tanken.shigure.ui.subaci.R as TankenR
 
 @Composable
 fun PlaylistScreen(
@@ -122,7 +125,7 @@ internal fun NoPlaylistsTopBar(
             Text(
                 text = stringResource(TankenR.string.playlist_no_playlists),
                 fontWeight = FontWeight.Bold,
-                fontFamily = NotoSerifJP
+                fontFamily = NotoSerifMultiLang
             )
         },
         actions = {
@@ -145,7 +148,10 @@ internal fun PlaylistNoItemScreen(modifier: Modifier = Modifier) {
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        Text(stringResource(TankenR.string.playlist_no_item))
+        Text(
+            text = stringResource(TankenR.string.playlist_no_item),
+            fontFamily = NotoSerifMultiLang
+        )
     }
 }
 
@@ -217,9 +223,12 @@ internal fun PlaylistTopBar(
                         }
 
                     Text(
-                        text = selected?.playlistName ?: stringResource(TankenR.string.playlist_select_playlist),
-                        fontFamily = NotoSerifJP,
-                        fontWeight = FontWeight.Bold
+                        text = selected?.playlistName
+                            ?: stringResource(TankenR.string.playlist_select_playlist),
+                        style = TextStyle(
+                            fontFamily = NotoSerifJP,
+                            fontWeight = FontWeight.Bold,
+                        )
                     )
                     Spacer(Modifier.width(8.dp))
                     Icon(
@@ -238,7 +247,10 @@ internal fun PlaylistTopBar(
                             text = {
                                 Text(
                                     text = selection.playlistName,
-                                    fontFamily = NotoSansJP
+                                    style = TextStyle(
+                                        fontFamily = NotoSansJP,
+                                        fontWeight = FontWeight.Normal
+                                    )
                                 )
                             },
                             onClick = {
@@ -251,38 +263,41 @@ internal fun PlaylistTopBar(
             }
         },
         actions = {
-            var expanded by rememberSaveable { mutableStateOf(false) }
+            if (playbackState !is PlaylistPlaybackState.Playing) {
+                var expanded by rememberSaveable { mutableStateOf(false) }
 
-            IconButton(
-                onClick = { scope.launch { onAddPlaylist() } }
-            ) {
-                Icon(
-                    painter = painterResource(FluentR.drawable.ic_fluent_add_24_regular),
-                    contentDescription = stringResource(TankenR.string.playlist_desc_add_playlist)
-                )
-            }
-            IconButton(
-                onClick = { expanded = !expanded }
-            ) {
-                Icon(
-                    painter = painterResource(FluentR.drawable.ic_fluent_more_vertical_24_filled),
-                    contentDescription = stringResource(TankenR.string.playlist_desc_overflow_menu)
-                )
-            }
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                DropdownMenuItem(
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(FluentR.drawable.ic_fluent_bin_full_24_filled),
-                            contentDescription = stringResource(TankenR.string.playlist_desc_delete_playlist)
-                        )
-                    },
-                    text = { Text(stringResource(TankenR.string.playlist_delete_playlist)) },
-                    onClick = { scope.launch { onDeletePlaylist() } }
-                )
+                IconButton(
+                    onClick = { scope.launch { onAddPlaylist() } }
+                ) {
+                    Icon(
+                        painter = painterResource(FluentR.drawable.ic_fluent_add_24_regular),
+                        contentDescription = stringResource(TankenR.string.playlist_desc_add_playlist)
+                    )
+                }
+                IconButton(
+                    onClick = { expanded = !expanded }
+                ) {
+                    Icon(
+                        painter = painterResource(FluentR.drawable.ic_fluent_more_vertical_24_filled),
+                        contentDescription = stringResource(TankenR.string.playlist_desc_overflow_menu)
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(FluentR.drawable.ic_fluent_bin_full_24_filled),
+                                contentDescription = stringResource(TankenR.string.playlist_desc_delete_playlist)
+                            )
+                        },
+                        text = { Text(stringResource(TankenR.string.playlist_delete_playlist)) },
+                        onClick = { scope.launch { onDeletePlaylist() } }
+                    )
+                }
+
             }
         },
         modifier = modifier
@@ -317,7 +332,6 @@ internal fun PlaylistScreen(
 
                     Text(
                         text = voice.label,
-//                        text = "$index. ${voice.label}",
                         fontFamily = NotoSerifJP,
                         fontSize = 24.sp,
                         fontWeight = when (playbackState) {
@@ -331,7 +345,10 @@ internal fun PlaylistScreen(
                         modifier = Modifier
                             .combinedClickable(
                                 onClick = { onItemClicked(index) },
-                                onLongClick = { expanded = true }
+                                onLongClick = {
+                                    if (playbackState !is PlaylistPlaybackState.Playing)
+                                        expanded = true
+                                }
                             )
                             .fillMaxWidth()
                             .padding(16.dp)
@@ -375,7 +392,10 @@ internal fun PlaylistScreen(
             }
         }
     } ?: @Composable {
-        Text(stringResource(TankenR.string.playlist_select_playlist_content))
+        Text(
+            text = stringResource(TankenR.string.playlist_select_playlist_content),
+            fontFamily = NotoSansMultiLang
+        )
     }
 
 }
