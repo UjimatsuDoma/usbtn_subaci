@@ -39,7 +39,7 @@ class PlaylistViewModel @Inject constructor(
     // 全部播放列表数据。CRUD完备。
     private var _playlists = mutableStateOf<List<PlaylistEntity>>(emptyList())
     private val playlists get() = _playlists
-    val playlistsSelections get() = playlists.value.map { it.toSelectionVO() }.toList()
+    val playlistsSelections = derivedStateOf { playlists.value.map { it.toSelectionVO() }.toList() }
 
     // 选中的播放列表。
     private var _selectedPlaylistEntity = mutableStateOf<PlaylistEntity?>(null)

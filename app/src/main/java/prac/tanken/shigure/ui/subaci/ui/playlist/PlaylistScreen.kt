@@ -1,6 +1,7 @@
 package prac.tanken.shigure.ui.subaci.ui.playlist
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +45,6 @@ import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelectionVO
 import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.ui.NotoSansJP
-import prac.tanken.shigure.ui.subaci.ui.NotoSansMultiLang
 import prac.tanken.shigure.ui.subaci.ui.NotoSerifJP
 import prac.tanken.shigure.ui.subaci.ui.NotoSerifMultiLang
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingScreenBody
@@ -64,17 +64,15 @@ fun PlaylistScreen(
             LoadingTopBar()
             LoadingScreenBody(Modifier.weight(1f))
         } else {
-            val playlistsSelections = viewModel.playlistsSelections
+            val playlistsSelections by viewModel.playlistsSelections
             val selectedPlaylistVO by viewModel.selectedPlaylistVO
             val selectedPlaylist by viewModel.selectedPlaylist
             val playbackState by viewModel.playbackState.collectAsStateWithLifecycle()
             val looping by viewModel.isLooping.collectAsStateWithLifecycle()
 
             if (playlistsSelections.isEmpty()) {
-                NoPlaylistsTopBar(
-                    onAddPlaylist = viewModel::createPlaylist
-                )
-                Box(Modifier.weight(1f))
+                NoPlaylistsTopBar(onAddPlaylist = viewModel::createPlaylist)
+                NoPlaylistsScreen(modifier = Modifier.weight(1f))
             } else {
                 PlaylistTopBar(
                     playlistSelection = playlistsSelections,
@@ -143,14 +141,25 @@ internal fun NoPlaylistsTopBar(
 }
 
 @Composable
+internal fun NoPlaylistsScreen(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(TankenR.string.playlist_no_playlists_content)
+        )
+    }
+}
+
+@Composable
 internal fun PlaylistNoItemScreen(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = stringResource(TankenR.string.playlist_no_item),
-            fontFamily = NotoSerifMultiLang
+            text = stringResource(TankenR.string.playlist_no_item)
         )
     }
 }
@@ -208,7 +217,6 @@ internal fun PlaylistTopBar(
             Column {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(0.5f)
                         .clickable {
                             expanded = !expanded
                         },
@@ -228,7 +236,8 @@ internal fun PlaylistTopBar(
                         style = TextStyle(
                             fontFamily = NotoSerifJP,
                             fontWeight = FontWeight.Bold,
-                        )
+                        ),
+                        modifier = Modifier.basicMarquee()
                     )
                     Spacer(Modifier.width(8.dp))
                     Icon(
@@ -247,10 +256,8 @@ internal fun PlaylistTopBar(
                             text = {
                                 Text(
                                     text = selection.playlistName,
-                                    style = TextStyle(
-                                        fontFamily = NotoSansJP,
-                                        fontWeight = FontWeight.Normal
-                                    )
+                                    fontFamily = NotoSansJP,
+                                    fontWeight = FontWeight.Normal,
                                 )
                             },
                             onClick = {
@@ -394,7 +401,6 @@ internal fun PlaylistScreen(
     } ?: @Composable {
         Text(
             text = stringResource(TankenR.string.playlist_select_playlist_content),
-            fontFamily = NotoSansMultiLang
         )
     }
 

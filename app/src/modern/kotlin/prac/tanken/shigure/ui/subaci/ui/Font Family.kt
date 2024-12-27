@@ -39,7 +39,7 @@ val NotoSansJP =
         Font(
             R.font.noto_sans_jp_variable,
             variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.SemiBold.weight)),
-            weight = FontWeight.Bold,
+            weight = FontWeight.SemiBold,
         ),
         Font(
             R.font.noto_sans_jp_variable,

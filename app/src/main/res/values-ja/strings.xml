@@ -25,4 +25,5 @@
     <string name="playlist_delete_item">削除</string>
     <string name="playlist_select_playlist_content">再生リストを選択してください。</string>
     <string name="voices_add_to_playlist">再生リストに追加する</string>
+    <string name="playlist_no_playlists_content">＋ボタンを押して再生リストを作ってみましょう。</string>
 </resources>
