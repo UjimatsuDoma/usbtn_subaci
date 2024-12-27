@@ -240,10 +240,8 @@ internal fun PlaylistTopBar(
                     Text(
                         text = selected?.playlistName
                             ?: stringResource(TankenR.string.playlist_select_playlist),
-                        style = TextStyle(
-                            fontFamily = NotoSerifJP,
-                            fontWeight = FontWeight.Bold,
-                        ),
+                        fontFamily = NotoSerifJP,
+                        fontWeight = FontWeight.Bold,
                         modifier = Modifier.basicMarquee()
                     )
                     Spacer(Modifier.width(8.dp))

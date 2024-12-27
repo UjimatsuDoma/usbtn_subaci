@@ -171,7 +171,13 @@ fun MainNavigationRail(
                     selected = selected,
                     onClick = {
                         navController.popBackStack()
-                        navController.navigate(route = dest)
+                        navController.navigate(route = dest) {
+                            popUpTo(route = dest) {
+                                inclusive = false
+                                saveState = true
+                            }
+                            restoreState = true
+                        }
                     },
                 )
             }

@@ -123,9 +123,11 @@ internal fun AllVoicesScreen(
         modifier = modifier,
         contentAlignment = Alignment.TopStart
     ) {
+        val scrollState = rememberScrollState()
+
         VoicesFlowRow(
             voices = voices,
-            modifier = modifier.verticalScroll(rememberScrollState()),
+            modifier = modifier.verticalScroll(scrollState),
         ) { voice ->
             var expanded by remember { mutableStateOf(false) }
 
