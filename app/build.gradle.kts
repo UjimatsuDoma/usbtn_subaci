@@ -43,15 +43,15 @@ android {
             )
         }
     }
-    flavorDimensions += "fontType"
+    flavorDimensions += "api"
     productFlavors {
-        create("staticFont") {
-            dimension = "fontType"
+        create("preOreo") {
+            dimension = "api"
             minSdk = 21
             maxSdk = 25
         }
-        create("variableFont") {
-            dimension = "fontType"
+        create("modern") {
+            dimension = "api"
             minSdk = 26
         }
     }
