@@ -54,7 +54,12 @@ data class Playlist(
     val id: Int,
     val playlistName: String,
     val playlistItems: List<Voice>,
-)
+) {
+    fun toSelectionVO() = PlaylistSelectionVO(
+        id = id,
+        playlistName = playlistName
+    )
+}
 
 data class PlaylistSelectionVO(
     val id: Int,

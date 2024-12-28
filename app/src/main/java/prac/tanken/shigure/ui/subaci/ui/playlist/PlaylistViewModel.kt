@@ -13,8 +13,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import prac.tanken.shigure.ui.subaci.data.model.Playlist
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistEntity
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelected
+import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelectionVO
 import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.data.player.MyPlayer
 import prac.tanken.shigure.ui.subaci.data.repository.PlaylistRepository
@@ -22,6 +24,11 @@ import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.data.util.ToastUtil
 import prac.tanken.shigure.ui.subaci.data.util.parseJsonString
 import prac.tanken.shigure.ui.subaci.ui.LoadingViewModel
+import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistPlaybackIntent
+import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistPlaybackState
+import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistUpsertError
+import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistUpsertIntent
+import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistUpsertState
 import prac.tanken.shigure.ui.subaci.R as TankenR
 import javax.inject.Inject
 
@@ -44,7 +51,6 @@ class PlaylistViewModel @Inject constructor(
     // 选中的播放列表。
     private var _selectedPlaylistEntity = mutableStateOf<PlaylistEntity?>(null)
     private val selectedPlaylistEntity get() = _selectedPlaylistEntity
-    val selectedPlaylistVO = derivedStateOf { selectedPlaylistEntity.value?.toSelectionVO() }
     val selectedPlaylist = derivedStateOf { selectedPlaylistEntity.value?.toPlaylist(voices) }
 
     // 播放状态
@@ -53,6 +59,10 @@ class PlaylistViewModel @Inject constructor(
     val playbackState = _playbackState.asStateFlow()
     private var _isLooping = MutableStateFlow(false)
     val isLooping = _isLooping.asStateFlow()
+
+    // 创建/修改播放列表相关状态
+    private var _upsertState = MutableStateFlow<PlaylistUpsertState>(PlaylistUpsertState.Closed)
+    val upsertState = _upsertState.asStateFlow()
 
     init {
         loading(Dispatchers.IO) {
@@ -137,6 +147,73 @@ class PlaylistViewModel @Inject constructor(
     suspend fun createPlaylist() {
         val createdId = playlistRepository.testCreatePlaylist()
         selectPlaylist(createdId)
+    }
+
+    suspend fun createPlaylist(name: String) {
+        val createdId = playlistRepository.createPlaylist(name)
+        selectPlaylist(createdId.toInt())
+    }
+
+    suspend fun updateUpsertState(playlistUpsertState: PlaylistUpsertState) =
+        when (playlistUpsertState) {
+            PlaylistUpsertState.Closed -> _upsertState.update { playlistUpsertState }
+            is PlaylistUpsertState.Draft -> {
+                val draft = playlistUpsertState
+                var errors: List<PlaylistUpsertError> = emptyList()
+                if (draft.name.isEmpty()) {
+                    errors = errors.toMutableList().apply {
+                        add(PlaylistUpsertError.BlankName)
+                    }.toList()
+                } else if (playlistRepository.playlistExists(draft.name)) {
+                    errors = errors.toMutableList().apply {
+                        add(PlaylistUpsertError.ReplicatedName)
+                    }.toList()
+                }
+                _upsertState.update { draft.copy(errors = errors) }
+            }
+        }
+
+    private suspend fun upsertPlaylist() {
+        require(upsertState.value is PlaylistUpsertState.Draft) {
+            resRepository.stringRes(TankenR.string.error_illegal_state)
+        }
+
+        val draft = upsertState.value as PlaylistUpsertState.Draft
+        when (draft.action) {
+            PlaylistUpsertIntent.Insert -> createPlaylist(draft.name)
+            is PlaylistUpsertIntent.Update -> selectedPlaylistEntity.value?.let { playlist ->
+                playlistRepository.updatePlaylist(playlist.copy(playlistName = draft.name))
+            }
+        }
+    }
+
+    fun showInsertDialog() = viewModelScope.launch() {
+        updateUpsertState(
+            PlaylistUpsertState.Draft(
+                action = PlaylistUpsertIntent.Insert,
+                name = "New Playlist"
+            )
+        )
+    }
+
+    fun showUpdateDialog(vo: PlaylistSelectionVO) = viewModelScope.launch() {
+        updateUpsertState(
+            PlaylistUpsertState.Draft(
+                action = PlaylistUpsertIntent.Update(
+                    originalId = vo.id
+                ),
+                name = vo.playlistName
+            )
+        )
+    }
+
+    fun submitUpsert() = viewModelScope.launch(Dispatchers.Default) {
+        upsertPlaylist()
+        updateUpsertState(PlaylistUpsertState.Closed)
+    }
+
+    fun cancelUpsert() = viewModelScope.launch {
+        updateUpsertState(PlaylistUpsertState.Closed)
     }
 
     suspend fun deletePlaylist() = selectedPlaylistEntity.value?.let {

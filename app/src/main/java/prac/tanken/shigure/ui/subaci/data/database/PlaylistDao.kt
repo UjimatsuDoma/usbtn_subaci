@@ -16,6 +16,9 @@ interface PlaylistDao {
     @Query("SELECT * FROM playlists WHERE id=:id")
     suspend fun getById(id: Int): PlaylistEntity
 
+    @Query("SELECT * FROM playlists WHERE playlist_name=:name")
+    suspend fun getByName(name: String): List<PlaylistEntity>
+
     @Query("SELECT MAX(id) FROM playlists")
     suspend fun getMaxId(): Int?
 
@@ -23,7 +26,7 @@ interface PlaylistDao {
     suspend fun getAutoIncrement(): Int?
 
     @Query("INSERT INTO playlists (playlist_name, playlist_items) VALUES (:name, '[]')")
-    suspend fun createPlaylist(name: String)
+    suspend fun createPlaylist(name: String): Long
 
     @Update
     suspend fun updatePlaylist(playlistEntity: PlaylistEntity)

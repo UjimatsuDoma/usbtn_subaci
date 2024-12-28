@@ -26,4 +26,12 @@
     <string name="playlist_select_playlist_content">Please select playlist.</string>
     <string name="voices_add_to_playlist">Add to playlist</string>
     <string name="playlist_no_playlists_content">Click + button to create playlist.</string>
+    <string name="playlist_upsert_dialog_insert_title">New playlist</string>
+    <string name="playlist_upsert_error_blank_name">Playlist name should not be blank.</string>
+    <string name="playlist_upsert_dialog_submit">Submit</string>
+    <string name="error_illegal_state">Illegal state.</string>
+    <string name="playlist_upsert_dialog_cancel">Cancel</string>
+    <string name="playlist_upsert_dialog_update_title">Rename playlist</string>
+    <string name="playlist_desc_rename_playlist">Rename playlist</string>
+    <string name="playlist_rename_playlist">Rename</string>
 </resources>

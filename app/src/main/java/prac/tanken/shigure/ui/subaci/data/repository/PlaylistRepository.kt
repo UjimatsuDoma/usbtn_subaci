@@ -71,6 +71,11 @@ class PlaylistRepository @Inject constructor(
     }
 
     @WorkerThread
+    suspend fun playlistExists(name: String) = withContext(Dispatchers.IO) {
+        playlistDao.getByName(name).isNotEmpty()
+    }
+
+    @WorkerThread
     suspend fun unselectPlaylist() = withContext(Dispatchers.IO) {
         playlistSelectedDao.deleteSelection()
     }
