@@ -34,4 +34,6 @@
     <string name="playlist_upsert_dialog_update_title">Rename playlist</string>
     <string name="playlist_desc_rename_playlist">Rename playlist</string>
     <string name="playlist_rename_playlist">Rename</string>
+    <string name="playlist_upsert_error_replicated_name">A playlist with this name already exists.</string>
+    <string name="playlist_upsert_name_placeholder">Playlist name</string>
 </resources>

@@ -26,4 +26,14 @@
     <string name="playlist_select_playlist_content">再生リストを選択してください。</string>
     <string name="voices_add_to_playlist">再生リストに追加する</string>
     <string name="playlist_no_playlists_content">＋ボタンを押して再生リストを作ってみましょう。</string>
+    <string name="playlist_upsert_dialog_update_title">再生リスト名前変更</string>
+    <string name="playlist_desc_rename_playlist">この再生リストの名前を変更します。</string>
+    <string name="playlist_rename_playlist">名前を変更</string>
+    <string name="playlist_upsert_dialog_insert_title">再生リスト追加</string>
+    <string name="playlist_upsert_error_blank_name">再生リストの名前は空白にしないでください。</string>
+    <string name="playlist_upsert_dialog_submit">確認</string>
+    <string name="error_illegal_state">不適切な状態である。</string>
+    <string name="playlist_upsert_dialog_cancel">取り消す</string>
+    <string name="playlist_upsert_error_replicated_name">この名前の再生リストが既に存在しています。</string>
+    <string name="playlist_upsert_name_placeholder">再生リストの名前</string>
 </resources>

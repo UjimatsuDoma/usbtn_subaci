@@ -26,4 +26,14 @@
     <string name="playlist_select_playlist_content">请选择播放列表。</string>
     <string name="voices_add_to_playlist">添加到当前播放列表</string>
     <string name="playlist_no_playlists_content">点击加号创建播放列表</string>
+    <string name="playlist_upsert_dialog_insert_title">添加播放列表</string>
+    <string name="playlist_upsert_error_blank_name">播放列表名称不应为空。</string>
+    <string name="playlist_upsert_dialog_submit">提交</string>
+    <string name="error_illegal_state">非法状态。</string>
+    <string name="playlist_upsert_dialog_cancel">取消</string>
+    <string name="playlist_upsert_dialog_update_title">重命名播放列表</string>
+    <string name="playlist_desc_rename_playlist">更改当前播放列表的名称。</string>
+    <string name="playlist_rename_playlist">重命名</string>
+    <string name="playlist_upsert_error_replicated_name">该名称已被占用。</string>
+    <string name="playlist_upsert_name_placeholder">播放列表名称</string>
 </resources>

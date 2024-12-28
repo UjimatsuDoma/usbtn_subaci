@@ -19,12 +19,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -47,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -55,9 +53,9 @@ import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelectionVO
 import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
-import prac.tanken.shigure.ui.subaci.ui.NotoSansJP
 import prac.tanken.shigure.ui.subaci.ui.NotoSerifJP
 import prac.tanken.shigure.ui.subaci.ui.NotoSerifMultiLang
+import prac.tanken.shigure.ui.subaci.ui.component.ErrorMessageStrip
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistPlaybackIntent
@@ -65,6 +63,7 @@ import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistPlaybackState
 import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistUpsertError
 import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistUpsertIntent
 import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistUpsertState
+import prac.tanken.shigure.ui.subaci.ui.theme.ShigureUiButtonAppComposeImplementationTheme
 import com.microsoft.fluent.mobile.icons.R as FluentR
 import prac.tanken.shigure.ui.subaci.R as TankenR
 
@@ -270,7 +269,7 @@ internal fun PlaylistTopBar(
                     Text(
                         text = selected?.playlistName
                             ?: stringResource(TankenR.string.playlist_select_playlist),
-                        fontFamily = NotoSerifJP,
+                        fontFamily = NotoSerifMultiLang,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.basicMarquee()
                     )
@@ -288,12 +287,7 @@ internal fun PlaylistTopBar(
                 ) {
                     playlistSelection.forEach { selection ->
                         DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = selection.playlistName,
-                                    fontFamily = NotoSansJP,
-                                )
-                            },
+                            text = { Text(selection.playlistName) },
                             onClick = {
                                 onPlaylistSelect(selection.id)
                                 expanded = false
@@ -330,7 +324,7 @@ internal fun PlaylistTopBar(
                     DropdownMenuItem(
                         leadingIcon = {
                             Icon(
-                                painter = painterResource(FluentR.drawable.ic_fluent_bin_full_24_filled),
+                                painter = painterResource(FluentR.drawable.ic_fluent_bin_recycle_24_filled),
                                 contentDescription = stringResource(TankenR.string.playlist_desc_delete_playlist)
                             )
                         },
@@ -459,9 +453,9 @@ internal fun PlaylistScreen(
 @Composable
 internal fun PlaylistUpsertDialog(
     state: PlaylistUpsertState.Draft,
-    onStateUpdate: suspend (PlaylistUpsertState) -> Unit,
-    onSubmit: CallbackInvokedAsIs,
-    onCancel: CallbackInvokedAsIs,
+    onStateUpdate: suspend (PlaylistUpsertState) -> Unit = {},
+    onSubmit: CallbackInvokedAsIs = {},
+    onCancel: CallbackInvokedAsIs = {},
     modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
@@ -473,7 +467,7 @@ internal fun PlaylistUpsertDialog(
                 .wrapContentHeight()
         ) {
             Column(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(16.dp),
             ) {
                 val title = when (state.action) {
                     PlaylistUpsertIntent.Insert -> TankenR.string.playlist_upsert_dialog_insert_title
@@ -483,27 +477,32 @@ internal fun PlaylistUpsertDialog(
                 Text(
                     text = stringResource(title),
                     style = MaterialTheme.typography.titleLarge,
-                    fontSize = 32.sp
+                    fontSize = 32.sp,
                 )
                 Spacer(Modifier.height(16.dp))
-                TextField(
-                    value = state.name,
-                    onValueChange = { scope.launch { onStateUpdate(state.copy(name = it)) } }
-                )
-                if (PlaylistUpsertError.BlankName in state.errors) {
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.error,
-                            contentColor = MaterialTheme.colorScheme.onError
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    TextField(
+                        value = state.name,
+                        onValueChange = { scope.launch { onStateUpdate(state.copy(name = it)) } },
+                        placeholder = {Text(stringResource(TankenR.string.playlist_upsert_name_placeholder))},
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    if (PlaylistUpsertError.BlankName in state.errors) {
+                        ErrorMessageStrip(
+                            message = stringResource(TankenR.string.playlist_upsert_error_blank_name),
+                            modifier = Modifier.fillMaxWidth()
                         )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Error,
-                            contentDescription = null
+                    }
+                    if (PlaylistUpsertError.ReplicatedName in state.errors) {
+                        ErrorMessageStrip(
+                            message = stringResource(TankenR.string.playlist_upsert_error_replicated_name),
+                            modifier = Modifier.fillMaxWidth()
                         )
-                        Text(text = stringResource(TankenR.string.playlist_upsert_error_blank_name))
                     }
                 }
+                Spacer(Modifier.height(16.dp))
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.align(Alignment.End)
@@ -529,5 +528,20 @@ internal fun PlaylistUpsertDialog(
                 }
             }
         }
+    }
+}
+
+@Preview(locale = "ja")
+@Composable
+internal fun PlaylistUpsertDialogPreview(modifier: Modifier = Modifier) {
+    ShigureUiButtonAppComposeImplementationTheme {
+        PlaylistUpsertDialog(
+            state = PlaylistUpsertState.Draft(
+                action = PlaylistUpsertIntent.Insert,
+                name = "新播放列表",
+                errors = listOf(PlaylistUpsertError.ReplicatedName)
+            ),
+            modifier = modifier
+        )
     }
 }
