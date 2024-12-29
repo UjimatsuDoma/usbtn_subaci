@@ -60,11 +60,12 @@ class MyPlayer @Inject constructor(
                 vr = list[index],
                 onStart = { onStart(index) },
                 onComplete = {
-                    onComplete()
+//                    onComplete()
                     if (index < list.lastIndex)
                         play(index + 1)
                     else if(isLooping)
                         play(0)
+                    else onComplete()
                 }
             )
         }

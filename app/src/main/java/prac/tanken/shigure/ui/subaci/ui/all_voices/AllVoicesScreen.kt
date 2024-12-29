@@ -55,7 +55,11 @@ fun AllVoicesScreen(
     Column(modifier) {
         if (isLoading) {
             LoadingTopBar()
-            LoadingScreenBody(modifier = modifier.weight(1f))
+            LoadingScreenBody(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
         } else {
             var test by remember { mutableStateOf(false) }
 
@@ -67,7 +71,7 @@ fun AllVoicesScreen(
                 voices = viewModel.voices,
                 onPlay = viewModel::onButtonClicked,
                 onAddToPlaylist = viewModel::addToPlaylist,
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .weight(1f),
             )
@@ -155,15 +159,15 @@ internal fun AllVoicesScreen(
 }
 
 @Composable
-fun TestDialog(
+private fun TestDialog(
     modifier: Modifier = Modifier,
     testDismiss: CallbackInvokedAsIs,
 ) {
     Dialog(
-        onDismissRequest = testDismiss
+        onDismissRequest = testDismiss,
     ) {
         Card(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxHeight(0.5f),
         ) {
             Box(
@@ -181,7 +185,7 @@ fun TestDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TestModal(
+private fun TestModal(
     modifier: Modifier = Modifier,
     testDismiss: CallbackInvokedAsIs,
 ) {
@@ -189,7 +193,7 @@ fun TestModal(
         onDismissRequest = testDismiss
     ) {
         Box(
-            modifier = Modifier.padding(16.dp),
+            modifier = modifier.padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(

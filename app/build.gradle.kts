@@ -24,8 +24,8 @@ android {
         applicationId = "prac.tanken.shigure.ui.subaci"
         minSdk = 21
         targetSdk = 35
-        versionCode = 4
-        versionName = "Milestone 2 Revision 2"
+        versionCode = 5
+        versionName = "Milestone 2 Revision 3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

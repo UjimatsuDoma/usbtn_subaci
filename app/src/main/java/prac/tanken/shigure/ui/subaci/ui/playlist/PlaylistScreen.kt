@@ -16,22 +16,24 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -96,15 +98,12 @@ fun PlaylistScreen(
                 )
             } else {
                 PlaylistTopBar(
+                    playbackState = playbackState,
                     playlistSelection = playlistsSelections,
                     selected = selectedPlaylist?.toSelectionVO(),
-                    onPlaylistSelect = viewModel::selectPlaylist,
                     onAddPlaylist = viewModel::showInsertDialog,
                     onDeletePlaylist = viewModel::deletePlaylist,
-                    playbackState = playbackState,
-                    onPlayOrStop = viewModel::dispatchPlaybackIntent,
-                    looping = looping,
-                    onToggleLooping = viewModel::toggleLooping,
+                    onPlaylistSelect = viewModel::selectPlaylist,
                     onShowUpdateDialog = viewModel::showUpdateDialog
                 )
                 Box(
@@ -123,6 +122,16 @@ fun PlaylistScreen(
                             onItemMove = viewModel::movePlaylistItem,
                             onItemDelete = viewModel::removePlaylistItem,
                             modifier = Modifier.fillMaxSize()
+                        )
+                        PlaylistFloatingActionButton(
+                            playbackState = playbackState,
+                            looping = looping,
+                            onToggleLooping = viewModel::toggleLooping,
+                            onPlayOrStop = viewModel::dispatchPlaybackIntent,
+                            modifier = Modifier
+                                .wrapContentSize()
+                                .padding(bottom = 16.dp, end = 16.dp)
+                                .align(Alignment.BottomEnd)
                         )
                     }
                 }
@@ -144,11 +153,11 @@ fun PlaylistScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun NoPlaylistsTopBar(
+private fun NoPlaylistsTopBar(
     onAddPlaylist: CallbackInvokedAsIs,
     modifier: Modifier = Modifier
 ) {
-    CenterAlignedTopAppBar(
+    TopAppBar(
         windowInsets = WindowInsets(0),
         title = {
             Text(
@@ -170,7 +179,7 @@ internal fun NoPlaylistsTopBar(
 }
 
 @Composable
-internal fun NoPlaylistsScreen(modifier: Modifier = Modifier) {
+private fun NoPlaylistsScreen(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center,
@@ -185,7 +194,7 @@ internal fun NoPlaylistsScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-internal fun PlaylistNoItemScreen(modifier: Modifier = Modifier) {
+private fun PlaylistNoItemScreen(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center,
@@ -201,54 +210,21 @@ internal fun PlaylistNoItemScreen(modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun PlaylistTopBar(
+private fun PlaylistTopBar(
     playlistSelection: List<PlaylistSelectionVO>,
     playbackState: PlaylistPlaybackState,
     selected: PlaylistSelectionVO?,
-    looping: Boolean,
-    onToggleLooping: () -> Unit,
-    onPlaylistSelect: (Long) -> Unit,
     onAddPlaylist: () -> Unit,
     onDeletePlaylist: suspend () -> Unit,
-    onPlayOrStop: (PlaylistPlaybackIntent) -> Unit,
+    onPlaylistSelect: (Long) -> Unit,
     onShowUpdateDialog: (PlaylistSelectionVO) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
     var expanded by rememberSaveable { mutableStateOf(false) }
 
-    CenterAlignedTopAppBar(
+    TopAppBar(
         windowInsets = WindowInsets(0),
-        navigationIcon = {
-            val playIcon = when (playbackState) {
-                is PlaylistPlaybackState.Playing -> FluentR.drawable.ic_fluent_stop_24_filled
-                PlaylistPlaybackState.Stopped -> FluentR.drawable.ic_fluent_play_24_filled
-            }
-            val loopingIcon = if (looping) {
-                FluentR.drawable.ic_fluent_arrow_clockwise_24_filled
-            } else {
-                FluentR.drawable.ic_fluent_arrow_clockwise_24_regular
-            }
-            val playbackAction = when (playbackState) {
-                is PlaylistPlaybackState.Playing -> PlaylistPlaybackIntent.Stop
-                PlaylistPlaybackState.Stopped -> PlaylistPlaybackIntent.Play
-            }
-
-            Row {
-                IconButton(onClick = { onPlayOrStop(playbackAction) }) {
-                    Icon(
-                        painter = painterResource(playIcon),
-                        contentDescription = stringResource(TankenR.string.playlist_desc_playback_control)
-                    )
-                }
-                IconButton(onClick = onToggleLooping) {
-                    Icon(
-                        painter = painterResource(loopingIcon),
-                        contentDescription = stringResource(TankenR.string.playlist_desc_toggle_looping)
-                    )
-                }
-            }
-        },
         title = {
             Column {
                 Row(
@@ -299,56 +275,30 @@ internal fun PlaylistTopBar(
         },
         actions = {
             if (playbackState !is PlaylistPlaybackState.Playing) {
-                var expanded by rememberSaveable { mutableStateOf(false) }
-
                 IconButton(
                     onClick = { scope.launch { onAddPlaylist() } }
                 ) {
                     Icon(
-                        painter = painterResource(FluentR.drawable.ic_fluent_add_24_regular),
+                        painter = painterResource(FluentR.drawable.ic_fluent_add_24_filled),
                         contentDescription = stringResource(TankenR.string.playlist_desc_add_playlist)
                     )
                 }
                 IconButton(
-                    onClick = { expanded = !expanded }
+                    onClick = { scope.launch { onDeletePlaylist() } }
                 ) {
                     Icon(
-                        painter = painterResource(FluentR.drawable.ic_fluent_more_vertical_24_filled),
-                        contentDescription = stringResource(TankenR.string.playlist_desc_overflow_menu)
+                        painter = painterResource(FluentR.drawable.ic_fluent_bin_recycle_24_filled),
+                        contentDescription = stringResource(TankenR.string.playlist_desc_delete_playlist)
                     )
                 }
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                IconButton(
+                    onClick = { selected?.let { onShowUpdateDialog(it) } }
                 ) {
-                    DropdownMenuItem(
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(FluentR.drawable.ic_fluent_bin_recycle_24_filled),
-                                contentDescription = stringResource(TankenR.string.playlist_desc_delete_playlist)
-                            )
-                        },
-                        text = { Text(stringResource(TankenR.string.playlist_delete_playlist)) },
-                        onClick = {
-                            scope.launch { onDeletePlaylist() }
-                            expanded = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(FluentR.drawable.ic_fluent_rename_24_filled),
-                                contentDescription = stringResource(TankenR.string.playlist_desc_rename_playlist)
-                            )
-                        },
-                        text = { Text(stringResource(TankenR.string.playlist_rename_playlist)) },
-                        onClick = {
-                            selected?.let { onShowUpdateDialog(it) }
-                            expanded = false
-                        }
+                    Icon(
+                        painter = painterResource(FluentR.drawable.ic_fluent_rename_24_filled),
+                        contentDescription = stringResource(TankenR.string.playlist_desc_rename_playlist)
                     )
                 }
-
             }
         },
         modifier = modifier
@@ -357,7 +307,7 @@ internal fun PlaylistTopBar(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun PlaylistScreen(
+private fun PlaylistScreen(
     playbackState: PlaylistPlaybackState,
     voices: List<Voice>?,
     onItemClicked: (Int) -> Unit,
@@ -451,7 +401,65 @@ internal fun PlaylistScreen(
 }
 
 @Composable
-internal fun PlaylistUpsertDialog(
+private fun PlaylistFloatingActionButton(
+    playbackState: PlaylistPlaybackState = PlaylistPlaybackState.Stopped,
+    looping: Boolean = false,
+    onToggleLooping: () -> Unit = {},
+    onPlayOrStop: (PlaylistPlaybackIntent) -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+    ) {
+        val playIcon = when (playbackState) {
+            is PlaylistPlaybackState.Playing -> FluentR.drawable.ic_fluent_stop_24_filled
+            PlaylistPlaybackState.Stopped -> FluentR.drawable.ic_fluent_play_24_filled
+        }
+        val loopingIcon = FluentR.drawable.ic_fluent_arrow_clockwise_24_filled
+        val loopingContainerColor =
+            if (looping) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+        val loopingContentColor =
+            if (looping) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
+        val playbackAction = when (playbackState) {
+            is PlaylistPlaybackState.Playing -> PlaylistPlaybackIntent.Stop
+            PlaylistPlaybackState.Stopped -> PlaylistPlaybackIntent.Play
+        }
+
+        FloatingActionButton(
+            onClick = onToggleLooping,
+            containerColor = loopingContainerColor,
+            contentColor = loopingContentColor,
+        ) {
+            Icon(
+                painter = painterResource(loopingIcon),
+                contentDescription = stringResource(TankenR.string.playlist_desc_toggle_looping)
+            )
+        }
+        FloatingActionButton(
+            onClick = { onPlayOrStop(playbackAction) },
+        ) {
+            Icon(
+                painter = painterResource(playIcon),
+                contentDescription = stringResource(TankenR.string.playlist_desc_playback_control)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PlaylistFloatingActionButtonPreview(modifier: Modifier = Modifier) {
+    ShigureUiButtonAppComposeImplementationTheme {
+        PlaylistFloatingActionButton(
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+private fun PlaylistUpsertDialog(
     state: PlaylistUpsertState.Draft,
     onStateUpdate: suspend (PlaylistUpsertState) -> Unit = {},
     onSubmit: CallbackInvokedAsIs = {},
@@ -486,7 +494,7 @@ internal fun PlaylistUpsertDialog(
                     TextField(
                         value = state.name,
                         onValueChange = { scope.launch { onStateUpdate(state.copy(name = it)) } },
-                        placeholder = {Text(stringResource(TankenR.string.playlist_upsert_name_placeholder))},
+                        placeholder = { Text(stringResource(TankenR.string.playlist_upsert_name_placeholder)) },
                         modifier = Modifier.fillMaxWidth()
                     )
                     if (PlaylistUpsertError.BlankName in state.errors) {
@@ -533,7 +541,7 @@ internal fun PlaylistUpsertDialog(
 
 @Preview(locale = "ja")
 @Composable
-internal fun PlaylistUpsertDialogPreview(modifier: Modifier = Modifier) {
+private fun PlaylistUpsertDialogPreview(modifier: Modifier = Modifier) {
     ShigureUiButtonAppComposeImplementationTheme {
         PlaylistUpsertDialog(
             state = PlaylistUpsertState.Draft(
