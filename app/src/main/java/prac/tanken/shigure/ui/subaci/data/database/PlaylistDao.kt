@@ -14,16 +14,16 @@ interface PlaylistDao {
     fun getAll(): Flow<List<PlaylistEntity>>
 
     @Query("SELECT * FROM playlists WHERE id=:id")
-    suspend fun getById(id: Int): PlaylistEntity
+    suspend fun getById(id: Long): PlaylistEntity
 
     @Query("SELECT * FROM playlists WHERE playlist_name=:name")
     suspend fun getByName(name: String): List<PlaylistEntity>
 
     @Query("SELECT MAX(id) FROM playlists")
-    suspend fun getMaxId(): Int?
+    suspend fun getMaxId(): Long?
 
     @Query("SELECT seq FROM sqlite_sequence WHERE name = 'playlists'")
-    suspend fun getAutoIncrement(): Int?
+    suspend fun getAutoIncrement(): Long?
 
     @Query("INSERT INTO playlists (playlist_name, playlist_items) VALUES (:name, '[]')")
     suspend fun createPlaylist(name: String): Long
@@ -35,5 +35,5 @@ interface PlaylistDao {
     suspend fun deletePlaylist(playlistEntity: PlaylistEntity)
 
     @Query("DELETE FROM playlists WHERE id=:id")
-    suspend fun deletePlaylistById(id: Int)
+    suspend fun deletePlaylistById(id: Long)
 }

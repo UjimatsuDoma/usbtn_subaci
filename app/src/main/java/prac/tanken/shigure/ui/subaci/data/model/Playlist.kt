@@ -12,7 +12,7 @@ import prac.tanken.shigure.ui.subaci.data.util.parseJsonString
     indices = [Index(value = ["playlist_name"], unique = true)]
 )
 data class PlaylistEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "playlist_name") val playlistName: String,
     @ColumnInfo(name = "playlist_items") val playlistItems: String,
 ) {
@@ -44,14 +44,14 @@ data class PlaylistEntity(
     )]
 )
 data class PlaylistSelected(
-    @ColumnInfo("selected_id") val selectedId: Int,
+    @ColumnInfo("selected_id") val selectedId: Long,
     @PrimaryKey val position: Int = 1,
 )
 
 val playlistNotSelected = PlaylistSelected(0)
 
 data class Playlist(
-    val id: Int,
+    val id: Long,
     val playlistName: String,
     val playlistItems: List<Voice>,
 ) {
@@ -62,6 +62,6 @@ data class Playlist(
 }
 
 data class PlaylistSelectionVO(
-    val id: Int,
+    val id: Long,
     val playlistName: String,
 )

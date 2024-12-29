@@ -44,7 +44,7 @@ class PlaylistRepository @Inject constructor(
     }
 
     @WorkerThread
-    suspend fun getById(id: Int) = withContext(Dispatchers.IO) {
+    suspend fun getById(id: Long) = withContext(Dispatchers.IO) {
         return@withContext playlistDao.getById(id)
     }
 
@@ -54,14 +54,14 @@ class PlaylistRepository @Inject constructor(
     }
 
     @WorkerThread
-    suspend fun testCreatePlaylist(): Int = withContext(Dispatchers.IO) {
+    suspend fun testCreatePlaylist(): Long = withContext(Dispatchers.IO) {
         val maxId = playlistDao.getAutoIncrement()?.let { it + 1 } ?: 1
         playlistDao.createPlaylist("Playlist $maxId")
         return@withContext maxId
     }
 
     @WorkerThread
-    suspend fun getAutoIncrement(): Int? = withContext(Dispatchers.IO) {
+    suspend fun getAutoIncrement(): Long? = withContext(Dispatchers.IO) {
         return@withContext playlistDao.getAutoIncrement()
     }
 

@@ -132,7 +132,7 @@ class PlaylistViewModel @Inject constructor(
         _playbackState.update { PlaylistPlaybackState.Stopped }
     }
 
-    fun selectPlaylist(id: Int) {
+    fun selectPlaylist(id: Long) {
         loading(Dispatchers.IO) {
             playlistRepository.selectPlaylist(PlaylistSelected(id))
         }
@@ -151,7 +151,7 @@ class PlaylistViewModel @Inject constructor(
 
     suspend fun createPlaylist(name: String) {
         val createdId = playlistRepository.createPlaylist(name)
-        selectPlaylist(createdId.toInt())
+        selectPlaylist(createdId)
     }
 
     suspend fun updateUpsertState(playlistUpsertState: PlaylistUpsertState) =

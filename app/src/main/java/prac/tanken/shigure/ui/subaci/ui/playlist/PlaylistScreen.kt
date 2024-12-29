@@ -207,7 +207,7 @@ internal fun PlaylistTopBar(
     selected: PlaylistSelectionVO?,
     looping: Boolean,
     onToggleLooping: () -> Unit,
-    onPlaylistSelect: (Int) -> Unit,
+    onPlaylistSelect: (Long) -> Unit,
     onAddPlaylist: () -> Unit,
     onDeletePlaylist: suspend () -> Unit,
     onPlayOrStop: (PlaylistPlaybackIntent) -> Unit,
