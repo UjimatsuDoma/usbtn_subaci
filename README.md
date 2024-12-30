@@ -1,10 +1,10 @@
 
-# 羽音按钮 SUBACI
+# SUBACI ういボタンC 羽音按钮
 
 Shigure Ui Button App Compose Implementation  
 inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.html)(credit: [LeirosSkyly](https://x.com/LSkyly))
 
-Development stage:
+# Development stage
 
 - Milestone: All functionalities of the original website, plus improved app architecture.  [Nov. 24, 2024 - TBA]
     - Milestone 0: things to comply with "copyright requirements".  [Nov. 24, 2024 - Nov. 27, 2024]
@@ -16,3 +16,17 @@ Development stage:
       - Revision 3: Complete implementation of Playlist screen core features [Dec. 28, 2024 ~ Dec. 30, 2024]
     - Milestone 3: Re-arrange pages - merge All Voices screen and Categories screen, and implement Settings screen [2025]
 - 1st Edition: TBA
+
+# Features
+All Voices: click to play, long press to add to playlist
+Category: voices grouped by categories, click to play (cannot add to playlist from here)
+Playlist: create/rename/delete playlists, move single item up and down, click to play, supports loop playing
+Daily Random Voice: self-check and update if needed, at launch time.
+
+# Notes
+
+Limited Voice will NOT be implemented.
+
+# Technologies
+
+Jetpack Compose, Jetpack Navigation, Hilt, Kotlin Serialization, Kotlin DateTime API, Preferences DataStore, Room
