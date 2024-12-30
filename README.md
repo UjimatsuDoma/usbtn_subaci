@@ -18,12 +18,9 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
 - 1st Edition: TBA
 
 # Features
-All Voices: click to play, long press to add to playlist
-
-Category: voices grouped by categories, click to play (cannot add to playlist from here)
-
-Playlist: create/rename/delete playlists, move single item up and down, click to play, supports loop playing
-
+All Voices: click to play, long press to add to playlist  
+Category: voices grouped by categories, click to play (cannot add to playlist from here)  
+Playlist: create/rename/delete playlists, move single item up and down, click to play, supports loop playing  
 Daily Random Voice: self-check and update if needed, at launch time.
 
 # Notes
