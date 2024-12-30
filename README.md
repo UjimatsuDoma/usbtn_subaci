@@ -13,6 +13,6 @@ Development stage:
     - Milestone 2: Complete rewrite of Milestone 1, migrate to MVVM [Dec. 3, 2024 - Dec. 22, 2024]
       - Revision 1: Bug fixes [Dec. 23, 2024 ~ Dec. 27, 2024]
       - Revision 2: Introduce landscape layout and optimize navigation logic [Dec. 27, 2024 ~ Dec. 28, 2024]
-      - Revision 3: Complete implementation of Playlist screen core features [Dec. 28, 2024 ~ TBA]
-    - Milestone 3: Re-arrange pages - merge All Voices screen and Categories screen, and implement Settings screen [TBA]
+      - Revision 3: Complete implementation of Playlist screen core features [Dec. 28, 2024 ~ Dec. 30, 2024]
+    - Milestone 3: Re-arrange pages - merge All Voices screen and Categories screen, and implement Settings screen [2025]
 - 1st Edition: TBA
