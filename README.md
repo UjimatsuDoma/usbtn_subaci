@@ -14,7 +14,7 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
       - Revision 1: Bug fixes [Dec. 23, 2024 ~ Dec. 27, 2024]
       - Revision 2: Introduce landscape layout and optimize navigation logic [Dec. 27, 2024 ~ Dec. 28, 2024]
       - Revision 3: Complete implementation of Playlist screen core features [Dec. 28, 2024 ~ Dec. 30, 2024]
-    - Milestone 3: Re-arrange pages - merge All Voices screen and Categories screen, and implement Settings screen [2025]
+    - Milestone 3: Re-arrange pages - merge All Voices screen and Categories screen, and implement Settings screen [Jan. 1, 2025 ~ TBA]
 - 1st Edition: TBA
 
 # Features
