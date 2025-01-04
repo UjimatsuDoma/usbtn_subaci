@@ -2,7 +2,7 @@ package prac.tanken.shigure.ui.subaci.data.player
 
 import android.content.res.AssetManager
 import android.media.MediaPlayer
-import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
+import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
 import javax.inject.Inject
 

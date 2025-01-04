@@ -10,9 +10,14 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 import prac.tanken.shigure.ui.subaci.data.database.PlaylistDatabase
+import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.data.preferences.dailyVoiceDataStore
 import prac.tanken.shigure.ui.subaci.data.preferences.settingsDataStore
+import prac.tanken.shigure.ui.subaci.data.preferences.voicesDataStore
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import javax.inject.Singleton
 
@@ -34,6 +39,25 @@ object DataModule {
         PlaylistDatabase::class.java,
         "playlists.db"
     ).build()
+
+    @VoicesGroupedByJson
+    @Singleton
+    @Provides
+    fun provideVoicesGroupedByJsonInstance() = Json {
+        serializersModule = SerializersModule {
+            polymorphic(VoicesGroupedBy::class) {
+                subclass(VoicesGroupedBy.Category::class, VoicesGroupedBy.Category.serializer())
+                subclass(VoicesGroupedBy.Kana::class, VoicesGroupedBy.Kana.serializer())
+            }
+        }
+    }
+
+    @VoicesDataStore
+    @Singleton
+    @Provides
+    fun provideVoicesDataStore(
+        @ApplicationContext appContext: Context
+    ): DataStore<Preferences> = appContext.voicesDataStore
 
     @DailyVoiceDataStore
     @Singleton

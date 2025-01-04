@@ -2,6 +2,7 @@ package prac.tanken.shigure.ui.subaci.data.model
 
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
+import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 
 @Serializable
 @Immutable

@@ -5,7 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import prac.tanken.shigure.ui.subaci.data.model.Voice
-import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
+import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
 import prac.tanken.shigure.ui.subaci.ui.NotoSansJP
 

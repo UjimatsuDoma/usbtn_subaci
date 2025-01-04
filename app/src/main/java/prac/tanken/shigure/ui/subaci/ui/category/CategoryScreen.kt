@@ -28,9 +28,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import prac.tanken.shigure.ui.subaci.data.model.CategoryVO
+import prac.tanken.shigure.ui.subaci.data.model.voices.CategoryVO
 import prac.tanken.shigure.ui.subaci.data.model.Voice
-import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
+import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.ui.NotoSansJP
 import prac.tanken.shigure.ui.subaci.ui.NotoSerifJP
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingScreenBody

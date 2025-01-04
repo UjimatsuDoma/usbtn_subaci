@@ -38,7 +38,7 @@ fun VoicesFlowRow(
             modifier = modifier
                 .padding(horizontal = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalArrangement = Arrangement.SpaceEvenly,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             voices.forEachIndexed { index, voice ->
                 elementContent(voice)

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">羽音按钮</string>
-    <string name="home_all_voices">全语音</string>
-    <string name="home_category">分类</string>
+    <string name="home_voices">语音列表</string>
+    <string name="home_category">分类语音</string>
     <string name="home_playlist">播放列表</string>
-    <string name="home_all_voices_desc">“全部语音”页面</string>
+    <string name="home_voices_desc">“语音列表”页面</string>
     <string name="home_category_desc">“分类语音”页面</string>
     <string name="home_playlist_desc">“播放列表”页面</string>
     <string name="loading">正在加载</string>
-    <string name="daily_random_voice">今日随机语音</string>
+    <string name="daily_random_voice">每日随机语音</string>
     <string name="error_illegal_index">下标不合法</string>
     <string name="error_playlist_move_item_oob">已在列表边界， 无法移动</string>
     <string name="playlist_no_playlists">无播放列表</string>
@@ -36,4 +36,6 @@
     <string name="playlist_rename_playlist">重命名</string>
     <string name="playlist_upsert_error_replicated_name">该名称已被占用。</string>
     <string name="playlist_upsert_name_placeholder">播放列表名称</string>
+    <string name="voices_grouped_by_category">分类</string>
+    <string name="voices_grouped_by_kana">五十音</string>
 </resources>

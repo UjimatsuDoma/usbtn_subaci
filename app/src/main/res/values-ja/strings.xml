@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ういボタンC</string>
-    <string name="home_all_voices">全一覧</string>
+    <string name="home_voices">ボイス</string>
     <string name="home_category">用途別</string>
     <string name="home_playlist">連続再生</string>
-    <string name="home_all_voices_desc">ボイスの全一覧ページです。</string>
+    <string name="home_voices_desc">ボイスの全一覧ページです。</string>
     <string name="home_category_desc">ボイスの用途別一覧ページです。</string>
     <string name="home_playlist_desc">再生リストのページです。</string>
     <string name="loading">読み込み中</string>
@@ -36,4 +36,6 @@
     <string name="playlist_upsert_dialog_cancel">取り消す</string>
     <string name="playlist_upsert_error_replicated_name">この名前の再生リストが既に存在しています。</string>
     <string name="playlist_upsert_name_placeholder">再生リストの名前</string>
+    <string name="voices_grouped_by_category">用途</string>
+    <string name="voices_grouped_by_kana">五十音</string>
 </resources>

@@ -1,4 +1,4 @@
-package prac.tanken.shigure.ui.subaci.data.model
+package prac.tanken.shigure.ui.subaci.data.model.voices
 
 import kotlinx.serialization.Serializable
 

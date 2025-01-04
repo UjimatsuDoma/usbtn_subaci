@@ -5,7 +5,7 @@ import androidx.annotation.StringRes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import prac.tanken.shigure.ui.subaci.R
-import prac.tanken.shigure.ui.subaci.data.model.Category
+import prac.tanken.shigure.ui.subaci.data.model.voices.Category
 import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.data.util.parseJsonString
 import prac.tanken.shigure.ui.subaci.data.util.readIS2Text

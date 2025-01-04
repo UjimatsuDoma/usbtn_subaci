@@ -25,8 +25,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.serialization.Serializable
-import prac.tanken.shigure.ui.subaci.ui.all_voices.AllVoicesScreen
-import prac.tanken.shigure.ui.subaci.ui.all_voices.AllVoicesViewModel
+import prac.tanken.shigure.ui.subaci.ui.voices.AllVoicesScreen
+import prac.tanken.shigure.ui.subaci.ui.voices.VoicesViewModel
 import prac.tanken.shigure.ui.subaci.ui.category.CategoryScreen
 import prac.tanken.shigure.ui.subaci.ui.category.CategoryViewModel
 import prac.tanken.shigure.ui.subaci.ui.playlist.PlaylistScreen
@@ -43,8 +43,8 @@ sealed class MainDestinations(
 ) {
     @Serializable
     data object AllVoices : MainDestinations(
-        displayName = TankenR.string.home_all_voices,
-        desc = TankenR.string.home_all_voices_desc,
+        displayName = TankenR.string.home_voices,
+        desc = TankenR.string.home_voices_desc,
         unselectedIcon = FluentR.drawable.ic_fluent_person_voice_24_regular,
         selectedIcon = FluentR.drawable.ic_fluent_person_voice_24_filled,
     )
@@ -76,7 +76,7 @@ fun MainNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val allVoicesViewModel = hiltViewModel<AllVoicesViewModel>()
+    val voicesViewModel = hiltViewModel<VoicesViewModel>()
     val categoryViewModel = hiltViewModel<CategoryViewModel>()
     val playlistViewModel = hiltViewModel<PlaylistViewModel>()
 
@@ -86,7 +86,7 @@ fun MainNavHost(
         modifier = modifier
     ) {
         composable<MainDestinations.AllVoices> {
-            AllVoicesScreen(viewModel = allVoicesViewModel)
+            AllVoicesScreen(viewModel = voicesViewModel)
         }
         composable<MainDestinations.CategoryVoices> {
             CategoryScreen(viewModel = categoryViewModel)

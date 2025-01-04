@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import prac.tanken.shigure.ui.subaci.data.model.Category
-import prac.tanken.shigure.ui.subaci.data.model.CategoryVO
+import prac.tanken.shigure.ui.subaci.data.model.voices.Category
+import prac.tanken.shigure.ui.subaci.data.model.voices.CategoryVO
 import prac.tanken.shigure.ui.subaci.data.model.Voice
-import prac.tanken.shigure.ui.subaci.data.model.VoiceReference
+import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.player.MyPlayer
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.ui.LoadingViewModel

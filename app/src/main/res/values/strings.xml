@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">SUBACI</string>
     <string name="title_activity_main" translatable="false">MainActivity</string>
-    <string name="home_all_voices">All</string>
+    <string name="home_voices">Voices</string>
     <string name="home_category">Category</string>
     <string name="home_playlist">Playlist</string>
-    <string name="home_all_voices_desc">All voices screen</string>
-    <string name="home_category_desc">Category voices screen</string>
+    <string name="home_voices_desc">Voices screen</string>
+    <string name="home_category_desc">Categorized voices screen</string>
     <string name="home_playlist_desc">Playlist screen</string>
     <string name="loading">Loading</string>
     <string name="daily_random_voice">Daily random voice</string>
@@ -36,4 +36,6 @@
     <string name="playlist_rename_playlist">Rename</string>
     <string name="playlist_upsert_error_replicated_name">A playlist with this name already exists.</string>
     <string name="playlist_upsert_name_placeholder">Playlist name</string>
+    <string name="voices_grouped_by_category">Category</string>
+    <string name="voices_grouped_by_kana">Kana</string>
 </resources>

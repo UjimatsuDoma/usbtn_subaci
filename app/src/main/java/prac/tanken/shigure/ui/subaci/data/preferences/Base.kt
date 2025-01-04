@@ -7,3 +7,4 @@ import androidx.datastore.preferences.preferencesDataStore
 
 val Context.dailyVoiceDataStore: DataStore<Preferences> by preferencesDataStore("subaci_daily_voice")
 val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore("subaci_settings")
+val Context.voicesDataStore: DataStore<Preferences> by preferencesDataStore("subaci_voices")
