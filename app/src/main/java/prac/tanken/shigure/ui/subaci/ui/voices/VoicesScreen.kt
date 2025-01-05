@@ -79,9 +79,11 @@ fun AllVoicesScreen(
             )
         } else {
             var test by remember { mutableStateOf(false) }
+            val dailyVoiceUiState by viewModel.dailyVoiceUiState
             val voicesGrouped by viewModel.voicesGrouped
 
             AllVoicesTopBar(
+                dailyVoiceUiState = dailyVoiceUiState,
                 onDailyVoice = viewModel::playDailyVoice,
                 test = { test = true },
                 voicesGroupedBy = voicesGrouped?.voicesGroupedBy,
@@ -106,6 +108,7 @@ fun AllVoicesScreen(
 @Composable
 private fun AllVoicesTopBar(
     modifier: Modifier = Modifier,
+    dailyVoiceUiState: DailyVoiceUiState,
     onDailyVoice: () -> Unit,
     test: CallbackInvokedAsIs = {},
     voicesGroupedBy: VoicesGroupedBy?,
@@ -122,7 +125,10 @@ private fun AllVoicesTopBar(
             )
         },
         actions = {
-            IconButton(onClick = onDailyVoice) {
+            IconButton(
+                onClick = onDailyVoice,
+                enabled = dailyVoiceUiState is DailyVoiceUiState.Loaded
+            ) {
                 Icon(
                     imageVector = Icons.Default.Casino,
                     contentDescription = stringResource(TankenR.string.daily_random_voice)

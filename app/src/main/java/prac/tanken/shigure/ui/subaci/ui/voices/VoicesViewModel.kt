@@ -1,22 +1,17 @@
 package prac.tanken.shigure.ui.subaci.ui.voices
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import prac.tanken.shigure.ui.subaci.data.helper.DailyVoiceHelper.todayStr
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistEntity
-import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
-import prac.tanken.shigure.ui.subaci.data.model.voices.DailyVoice
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGrouped
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.data.model.voices.mutableVoiceGroups
@@ -37,32 +32,23 @@ class VoicesViewModel @Inject constructor(
     val toastUtil: ToastUtil,
     val myPlayer: MyPlayer
 ) : LoadingViewModel() {
-    // 全部语音列表
-    private var _voices = mutableStateListOf<Voice>()
-    val voices get() = _voices
-
     // 每日随机语音
-    private var _dailyVoice = mutableStateOf<DailyVoice?>(null)
-    val dailyVoice get() = _dailyVoice
+    private var _dailyVoiceUiState = mutableStateOf<DailyVoiceUiState>(DailyVoiceUiState.Loading)
+    val dailyVoiceUiState get() = _dailyVoiceUiState
 
     // 当前选中的播放列表
     private var _selectedPlaylist = mutableStateOf<PlaylistEntity?>(null)
     private val selectedPlaylist get() = _selectedPlaylist
 
     // 当前选中的分组依据，以及分组的语音列表
-    private val voicesGroupedBy = voicesRepository.voicesGroupedByFlow
-        .stateIn(viewModelScope, SharingStarted.Eagerly, VoicesGroupedBy.Kana)
     private var _voicesGrouped = mutableStateOf<VoicesGrouped?>(null)
     val voicesGrouped get() = _voicesGrouped
 
     init {
-        loading(Dispatchers.IO) {
-            _voices.addAll(resRepository.loadVoices())
-            viewModelScope.launch {
-                launch { observeDailyVoice() }
-                launch { observePlaylist() }
-                launch { observeVoicesGroupedBy() }
-            }
+        viewModelScope.launch {
+            launch { observeDailyVoice() }
+            launch { observePlaylist() }
+            launch { observeVoicesGroupedBy() }
         }
     }
 
@@ -72,12 +58,13 @@ class VoicesViewModel @Inject constructor(
         }
 
     private fun observeDailyVoice() = viewModelScope.launch(Dispatchers.IO) {
-        voicesRepository.dailyVoiceFlow
+        voicesRepository.dailyVoiceEntityFlow
             .onEach { dailyVoice ->
                 // check if daily voice exists AND is not expired
                 val expired = dailyVoice?.addDate?.let { todayStr != it } == true
                 if (dailyVoice == null || expired) {
                     viewModelScope.launch {
+                        val voices = resRepository.loadVoices()
                         voicesRepository.updateDailyVoice(
                             voices[voices.indices.random()].id
                         )
@@ -85,7 +72,14 @@ class VoicesViewModel @Inject constructor(
                     }
                 }
             }
-            .collect { _dailyVoice.value = it }
+            .collect { dailyVoice ->
+                val voices = resRepository.loadVoices()
+                val dailyVoice = voices.filter { it.id == dailyVoice?.voiceId }
+                val newState = if (dailyVoice.isNotEmpty()) {
+                    DailyVoiceUiState.Loaded(dailyVoice[0])
+                } else DailyVoiceUiState.Error
+                _dailyVoiceUiState.value = newState
+            }
     }
 
     private fun observePlaylist() = viewModelScope.launch(Dispatchers.IO) {
@@ -95,16 +89,17 @@ class VoicesViewModel @Inject constructor(
     }
 
     private fun observeVoicesGroupedBy() = viewModelScope.launch {
-        voicesGroupedBy.collect { vgb ->
-            if (vgb != null) {
-                loading {
-                    _voicesGrouped.value = updateVoicesGroup(vgb)
+        voicesRepository.voicesGroupedByFlow
+            .collect { vgb ->
+                if (vgb != null) {
+                    loading {
+                        _voicesGrouped.value = updateVoicesGroup(vgb)
+                    }
+                } else {
+                    toastUtil.toast("Set to Kana.")
+                    updateVoicesGroupedBy(VoicesGroupedBy.Kana)
                 }
-            } else {
-                toastUtil.toast("Set to Kana.")
-                updateVoicesGroupedBy(VoicesGroupedBy.Kana)
             }
-        }
     }
 
     private suspend fun updateVoicesGroup(voicesGroupedBy: VoicesGroupedBy): VoicesGrouped =
@@ -145,12 +140,12 @@ class VoicesViewModel @Inject constructor(
                 }
             }
         }
-    
+
     fun playDailyVoice() {
-        dailyVoice.value?.let { dailyVoice ->
-            myPlayer.playByReference(VoiceReference(dailyVoice.voiceId))
-            val label = voices.filter { it.id == dailyVoice.voiceId }.toList()[0].label
-            toastUtil.toast("Voice today: $label")
+        if (dailyVoiceUiState.value is DailyVoiceUiState.Loaded) {
+            val dailyVoice = (dailyVoiceUiState.value as DailyVoiceUiState.Loaded).voice
+            myPlayer.playByReference(VoiceReference(dailyVoice.id))
+            toastUtil.toast("Voice today: ${dailyVoice.label}")
         }
     }
 

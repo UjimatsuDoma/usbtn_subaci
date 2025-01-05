@@ -24,7 +24,7 @@ android {
         applicationId = "prac.tanken.shigure.ui.subaci"
         minSdk = 21
         targetSdk = 35
-        versionCode = 7
+        versionCode = 6
         versionName = "Milestone 3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -128,19 +128,24 @@ tasks.register("downloadResource") {
         var tries = 0
         while (tries < 10) {
             try {
-                val htmlUrl = BASE_URL + "usbtn.html"
+                val htmlUrl = "$BASE_URL/usbtn.html"
                 val targetPath = "${projectDir}/build/downloadedResources/usbtn.txt"
                 FileUtils.copyURLToFile(URI(htmlUrl).toURL(), File(targetPath))
 
                 val voices = getVoices(targetPath, "${projectDir}/src/main/assets/subaciAudio/")
                 FileWriter("${projectDir}/src/main/res/raw/audio_list.json").use { it.write(voices) }
                 val categories = getCategories(targetPath)
-                FileWriter("${projectDir}/src/main/res/raw/class_list.json").use { it.write(categories) }
+                FileWriter("${projectDir}/src/main/res/raw/class_list.json").use {
+                    it.write(
+                        categories
+                    )
+                }
                 break
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("ERROR RETRY: $tries/10")
+                println("ERROR RETRY: ${tries + 1}/10")
                 tries++
+                Thread.sleep(2000)
                 continue
             }
         }

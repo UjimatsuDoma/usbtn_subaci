@@ -5,14 +5,15 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import prac.tanken.shigure.ui.subaci.data.di.DailyVoiceDataStore
 import prac.tanken.shigure.ui.subaci.data.di.VoicesDataStore
 import prac.tanken.shigure.ui.subaci.data.di.VoicesGroupedByJson
-import prac.tanken.shigure.ui.subaci.data.model.voices.DailyVoice
-import prac.tanken.shigure.ui.subaci.data.preferences.DailyVoiceKeys
 import prac.tanken.shigure.ui.subaci.data.helper.DailyVoiceHelper.todayStr
+import prac.tanken.shigure.ui.subaci.data.model.voices.DailyVoiceEntity
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGroupedBy
+import prac.tanken.shigure.ui.subaci.data.preferences.DailyVoiceKeys
 import prac.tanken.shigure.ui.subaci.data.preferences.VoicesKeys
 import javax.inject.Inject
 
@@ -21,15 +22,11 @@ class VoicesRepository @Inject constructor(
     @VoicesDataStore val voicesDataStore: DataStore<Preferences>,
     @DailyVoiceDataStore val dailyVoiceDataStore: DataStore<Preferences>
 ) {
-    val dailyVoiceFlow: Flow<DailyVoice?> = dailyVoiceDataStore.data.map { preference ->
-        val voiceId = preference[DailyVoiceKeys.VOICE_ID]
-        val addDateString = preference[DailyVoiceKeys.ADD_DATE]
-        if (voiceId != null && addDateString != null) {
-            DailyVoice(voiceId, addDateString)
-        } else {
-            null
+    val dailyVoiceEntityFlow: Flow<DailyVoiceEntity?> = dailyVoiceDataStore.data
+        .map { preference ->
+            val jsonString = preference[DailyVoiceKeys.DAILY_VOICE]
+            jsonString?.let { Json.decodeFromString(it) }
         }
-    }
 
     val voicesGroupedByFlow: Flow<VoicesGroupedBy?> = voicesDataStore.data.map { preference ->
         val jsonString = preference[VoicesKeys.VOICES_GROUPED_BY]
@@ -38,15 +35,14 @@ class VoicesRepository @Inject constructor(
 
     suspend fun updateDailyVoice(voiceId: String) {
         dailyVoiceDataStore.edit { preference ->
-            preference[DailyVoiceKeys.VOICE_ID] = voiceId
-            preference[DailyVoiceKeys.ADD_DATE] = todayStr
+            val dailyVoiceEntity = DailyVoiceEntity(voiceId, todayStr)
+            preference[DailyVoiceKeys.DAILY_VOICE] = Json.encodeToString(dailyVoiceEntity)
         }
     }
 
     suspend fun updateVoicesGroupedBy(voicesGroupedBy: VoicesGroupedBy) {
         voicesDataStore.edit { preference ->
-            val jsonString = Json.encodeToString(VoicesGroupedBy.serializer(), voicesGroupedBy)
-            preference[VoicesKeys.VOICES_GROUPED_BY] = jsonString
+            preference[VoicesKeys.VOICES_GROUPED_BY] = Json.encodeToString(voicesGroupedBy)
         }
     }
 }

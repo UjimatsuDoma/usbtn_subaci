@@ -11,7 +11,7 @@ import prac.tanken.shigure.ui.subaci.build_src.model.Category
 import java.io.File
 import java.net.URI
 
-const val BASE_URL = "https://leiros.cloudfree.jp/usbtn/"
+const val BASE_URL = "https://leiros.cloudfree.jp/usbtn"
 
 val voiceRegex = """
     \{
