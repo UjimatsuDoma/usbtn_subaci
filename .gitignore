@@ -36,4 +36,3 @@ google-services.json
 
 # Android Profiling
 *.hprof
-/app/src/main/res/raw/video_list.json

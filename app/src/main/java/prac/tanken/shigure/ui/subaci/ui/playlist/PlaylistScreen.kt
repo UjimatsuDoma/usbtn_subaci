@@ -55,6 +55,7 @@ import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelectionVO
 import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
+import prac.tanken.shigure.ui.subaci.data.util.combineKey
 import prac.tanken.shigure.ui.subaci.ui.NotoSerifJP
 import prac.tanken.shigure.ui.subaci.ui.NotoSerifMultiLang
 import prac.tanken.shigure.ui.subaci.ui.component.ErrorMessageStrip
@@ -246,7 +247,7 @@ private fun PlaylistTopBar(
                         text = selected?.playlistName
                             ?: stringResource(TankenR.string.playlist_select_playlist),
                         fontFamily = NotoSerifMultiLang,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Black,
                         modifier = Modifier.basicMarquee()
                     )
                     Spacer(Modifier.width(8.dp))
@@ -325,7 +326,7 @@ private fun PlaylistScreen(
         ) {
             itemsIndexed(
                 items = voices,
-                key = { index, voice -> Pair(index, voice) }
+                key = { index, voice -> index combineKey voice }
             ) { index, voice ->
 
                 Column {
@@ -337,7 +338,7 @@ private fun PlaylistScreen(
                         fontSize = 24.sp,
                         fontWeight = when (playbackState) {
                             is PlaylistPlaybackState.Playing -> {
-                                if (playbackState.index == index) FontWeight.Bold
+                                if (playbackState.index == index) FontWeight.ExtraBold
                                 else FontWeight.Normal
                             }
 

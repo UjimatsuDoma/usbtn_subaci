@@ -3,6 +3,7 @@ package prac.tanken.shigure.ui.subaci.data.repository
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
@@ -35,6 +36,7 @@ class VoicesRepository @Inject constructor(
 
     suspend fun updateDailyVoice(voiceId: String) {
         dailyVoiceDataStore.edit { preference ->
+            wipeM2R3DailyVoicePreferences()
             val dailyVoiceEntity = DailyVoiceEntity(voiceId, todayStr)
             preference[DailyVoiceKeys.DAILY_VOICE] = Json.encodeToString(dailyVoiceEntity)
         }
@@ -43,6 +45,13 @@ class VoicesRepository @Inject constructor(
     suspend fun updateVoicesGroupedBy(voicesGroupedBy: VoicesGroupedBy) {
         voicesDataStore.edit { preference ->
             preference[VoicesKeys.VOICES_GROUPED_BY] = Json.encodeToString(voicesGroupedBy)
+        }
+    }
+
+    suspend fun wipeM2R3DailyVoicePreferences() {
+        voicesDataStore.edit { preference ->
+            preference.remove(stringPreferencesKey("voice_id"))
+            preference.remove(stringPreferencesKey("add_date"))
         }
     }
 }

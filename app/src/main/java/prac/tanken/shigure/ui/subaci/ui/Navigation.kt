@@ -2,11 +2,7 @@ package prac.tanken.shigure.ui.subaci.ui
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -25,12 +21,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.serialization.Serializable
-import prac.tanken.shigure.ui.subaci.ui.voices.AllVoicesScreen
-import prac.tanken.shigure.ui.subaci.ui.voices.VoicesViewModel
-import prac.tanken.shigure.ui.subaci.ui.category.CategoryScreen
-import prac.tanken.shigure.ui.subaci.ui.category.CategoryViewModel
 import prac.tanken.shigure.ui.subaci.ui.playlist.PlaylistScreen
 import prac.tanken.shigure.ui.subaci.ui.playlist.PlaylistViewModel
+import prac.tanken.shigure.ui.subaci.ui.sources.SourcesScreen
+import prac.tanken.shigure.ui.subaci.ui.sources.SourcesViewModel
+import prac.tanken.shigure.ui.subaci.ui.voices.VoicesScreen
+import prac.tanken.shigure.ui.subaci.ui.voices.VoicesViewModel
 import com.microsoft.fluent.mobile.icons.R as FluentR
 import prac.tanken.shigure.ui.subaci.R as TankenR
 
@@ -42,7 +38,7 @@ sealed class MainDestinations(
     @DrawableRes val selectedIcon: Int,
 ) {
     @Serializable
-    data object AllVoices : MainDestinations(
+    data object Voices : MainDestinations(
         displayName = TankenR.string.home_voices,
         desc = TankenR.string.home_voices_desc,
         unselectedIcon = FluentR.drawable.ic_fluent_person_voice_24_regular,
@@ -50,11 +46,11 @@ sealed class MainDestinations(
     )
 
     @Serializable
-    data object CategoryVoices : MainDestinations(
-        displayName = TankenR.string.home_category,
-        desc = TankenR.string.home_category_desc,
-        unselectedIcon = FluentR.drawable.ic_fluent_class_24_regular,
-        selectedIcon = FluentR.drawable.ic_fluent_class_24_filled,
+    data object Sources : MainDestinations(
+        displayName = TankenR.string.home_sources,
+        desc = TankenR.string.home_sources_desc,
+        unselectedIcon = FluentR.drawable.ic_fluent_video_clip_24_regular,
+        selectedIcon = FluentR.drawable.ic_fluent_video_clip_24_filled,
     )
 
     @Serializable
@@ -66,10 +62,11 @@ sealed class MainDestinations(
     )
 }
 
-val destinationClasses =
-    MainDestinations::class.sealedSubclasses
-val destinations =
-    destinationClasses.map { it.objectInstance as MainDestinations }
+val destinations = listOf(
+    MainDestinations.Voices,
+    MainDestinations.Sources,
+    MainDestinations.Playlist,
+)
 
 @Composable
 fun MainNavHost(
@@ -77,19 +74,19 @@ fun MainNavHost(
     modifier: Modifier = Modifier
 ) {
     val voicesViewModel = hiltViewModel<VoicesViewModel>()
-    val categoryViewModel = hiltViewModel<CategoryViewModel>()
+    val sourcesViewModel = hiltViewModel<SourcesViewModel>()
     val playlistViewModel = hiltViewModel<PlaylistViewModel>()
 
     NavHost(
         navController = navController,
-        startDestination = MainDestinations.AllVoices,
+        startDestination = MainDestinations.Voices,
         modifier = modifier
     ) {
-        composable<MainDestinations.AllVoices> {
-            AllVoicesScreen(viewModel = voicesViewModel)
+        composable<MainDestinations.Voices> {
+            VoicesScreen(viewModel = voicesViewModel)
         }
-        composable<MainDestinations.CategoryVoices> {
-            CategoryScreen(viewModel = categoryViewModel)
+        composable<MainDestinations.Sources> {
+            SourcesScreen(viewModel = sourcesViewModel)
         }
         composable<MainDestinations.Playlist> {
             PlaylistScreen(viewModel = playlistViewModel)
@@ -101,36 +98,32 @@ fun MainNavHost(
 fun MainNavigationBar(
     navController: NavController,
     modifier: Modifier = Modifier
-) {
-    NavigationBar(
-        modifier = modifier
-    ) {
-        val navBackStackEntry = navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry.value?.destination
+) = NavigationBar(modifier) {
+    val navBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry.value?.destination
 
-        destinations.forEachIndexed { index, dest ->
-            val selected = currentDestination?.route == dest.javaClass.canonicalName
-            val icon = if (selected) {
-                painterResource(dest.selectedIcon)
-            } else {
-                painterResource(dest.unselectedIcon)
-            }
-
-            NavigationBarItem(
-                icon = { Icon(icon, stringResource(dest.desc)) },
-                label = {
-                    Text(
-                        text = stringResource(dest.displayName),
-                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
-                    )
-                },
-                selected = selected,
-                onClick = {
-                    navController.popBackStack()
-                    navController.navigate(route = dest)
-                }
-            )
+    destinations.forEachIndexed { index, dest ->
+        val selected = currentDestination?.route == dest.javaClass.canonicalName
+        val icon = if (selected) {
+            painterResource(dest.selectedIcon)
+        } else {
+            painterResource(dest.unselectedIcon)
         }
+
+        NavigationBarItem(
+            icon = { Icon(icon, stringResource(dest.desc)) },
+            label = {
+                Text(
+                    text = stringResource(dest.displayName),
+                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+                )
+            },
+            selected = selected,
+            onClick = {
+                navController.popBackStack()
+                navController.navigate(route = dest)
+            }
+        )
     }
 }
 
@@ -138,50 +131,40 @@ fun MainNavigationBar(
 fun MainNavigationRail(
     navController: NavController,
     modifier: Modifier = Modifier
+) = NavigationRail(
+    modifier = modifier,
+    windowInsets = WindowInsets(0)
 ) {
-    NavigationRail(
-        modifier = modifier,
-        windowInsets = WindowInsets(0)
-    ) {
-        val navBackStackEntry = navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry.value?.destination
+    val navBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry.value?.destination
 
-        Column(
-            verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier
-                .fillMaxHeight()
-                .wrapContentWidth()
-        ) {
-            destinations.forEachIndexed { index, dest ->
-                val selected = currentDestination?.route == dest.javaClass.canonicalName
-                val icon = if (selected) {
-                    painterResource(dest.selectedIcon)
-                } else {
-                    painterResource(dest.unselectedIcon)
-                }
-
-                NavigationRailItem(
-                    icon = { Icon(icon, stringResource(dest.desc)) },
-                    label = {
-                        Text(
-                            text = stringResource(dest.displayName),
-                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
-                        )
-                    },
-                    selected = selected,
-                    onClick = {
-                        navController.popBackStack()
-                        navController.navigate(route = dest) {
-                            popUpTo(route = dest) {
-                                inclusive = false
-                                saveState = true
-                            }
-                            restoreState = true
-                        }
-                    },
-                )
-            }
-
+    destinations.forEachIndexed { index, dest ->
+        val selected = currentDestination?.route == dest.javaClass.canonicalName
+        val icon = if (selected) {
+            painterResource(dest.selectedIcon)
+        } else {
+            painterResource(dest.unselectedIcon)
         }
+
+        NavigationRailItem(
+            icon = { Icon(icon, stringResource(dest.desc)) },
+            label = {
+                Text(
+                    text = stringResource(dest.displayName),
+                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+                )
+            },
+            selected = selected,
+            onClick = {
+                navController.popBackStack()
+                navController.navigate(route = dest) {
+                    popUpTo(route = dest) {
+                        inclusive = false
+                        saveState = true
+                    }
+                    restoreState = true
+                }
+            },
+        )
     }
 }

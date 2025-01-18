@@ -38,6 +38,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -59,11 +60,12 @@ import prac.tanken.shigure.ui.subaci.ui.component.VoicesFlowRow
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGrouped
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.data.model.voices.voicesGroupedByItems
+import prac.tanken.shigure.ui.subaci.data.util.combineKey
 import prac.tanken.shigure.ui.subaci.R as TankenR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AllVoicesScreen(
+fun VoicesScreen(
     modifier: Modifier = Modifier,
     viewModel: VoicesViewModel,
 ) {
@@ -82,14 +84,14 @@ fun AllVoicesScreen(
             val dailyVoiceUiState by viewModel.dailyVoiceUiState
             val voicesGrouped by viewModel.voicesGrouped
 
-            AllVoicesTopBar(
+            VoicesTopBar(
                 dailyVoiceUiState = dailyVoiceUiState,
                 onDailyVoice = viewModel::playDailyVoice,
                 test = { test = true },
                 voicesGroupedBy = voicesGrouped?.voicesGroupedBy,
                 onChangeVoicesGroupedBy = viewModel::updateVoicesGroupedBy,
             )
-            AllVoicesScreen(
+            VoicesScreen(
                 voicesGrouped = voicesGrouped,
                 onPlay = viewModel::onButtonClicked,
                 onAddToPlaylist = viewModel::addToPlaylist,
@@ -106,7 +108,7 @@ fun AllVoicesScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AllVoicesTopBar(
+private fun VoicesTopBar(
     modifier: Modifier = Modifier,
     dailyVoiceUiState: DailyVoiceUiState,
     onDailyVoice: () -> Unit,
@@ -120,7 +122,7 @@ private fun AllVoicesTopBar(
         title = {
             Text(
                 text = stringResource(TankenR.string.app_name),
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Black,
                 fontFamily = NotoSerifMultiLang
             )
         },
@@ -165,7 +167,6 @@ private fun AllVoicesTopBar(
                             Text(
                                 text = stringResource(it.displayName),
                                 style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(start = 16.dp)
                             )
                         },
                         leadingIcon = {
@@ -189,7 +190,7 @@ private fun AllVoicesTopBar(
 }
 
 @Composable
-private fun AllVoicesScreen(
+private fun VoicesScreen(
     voicesGrouped: VoicesGrouped?,
     onPlay: (VoiceReference) -> Unit,
     onAddToPlaylist: (VoiceReference) -> Unit,
@@ -212,7 +213,7 @@ private fun AllVoicesScreen(
                     text = name,
                     fontFamily = NotoSerifJP,
                     fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.ExtraBold,
                     modifier = Modifier
                         .clickable { showVoiceGroupDialog = true }
                         .fillMaxWidth()
@@ -280,7 +281,7 @@ fun VoiceGroupDialog(
                 LazyColumn(Modifier.weight(1f)) {
                     itemsIndexed(
                         items = items,
-                        key = { index, item -> Pair(index, item) }
+                        key = { index, item -> index combineKey item }
                     ) { index, item ->
                         Text(
                             text = item,

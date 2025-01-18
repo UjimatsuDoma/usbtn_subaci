@@ -1,6 +1,7 @@
 package prac.tanken.shigure.ui.subaci.data.di
 
 import android.content.Context
+import android.content.res.AssetManager
 import android.content.res.Resources
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -28,7 +29,8 @@ object DataModule {
     @Provides
     fun provideResRepository(
         res: Resources,
-    ) = ResRepository(res)
+        am: AssetManager,
+    ) = ResRepository(res, am)
 
     @Singleton
     @Provides

@@ -21,7 +21,7 @@ fun LoadingTopBar(modifier: Modifier = Modifier) {
         title = {
             Text(
                 text = stringResource(TankenR.string.loading),
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Black,
                 fontFamily = NotoSerifMultiLang
             )
         },

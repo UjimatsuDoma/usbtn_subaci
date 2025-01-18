@@ -3,12 +3,13 @@ package prac.tanken.shigure.ui.subaci.data.player
 import android.content.res.AssetManager
 import android.media.MediaPlayer
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
+import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
 import javax.inject.Inject
 
 class MyPlayer @Inject constructor(
     val player: MediaPlayer,
-    val am: AssetManager
+    val resRepository: ResRepository,
 ) {
     var isLooping = false
         private set
@@ -30,7 +31,7 @@ class MyPlayer @Inject constructor(
         onComplete: CallbackInvokedAsIs = {},
     ) {
         stopIfPlaying()
-        val afd = am.openFd("subaciAudio/${vr.id}.mp3")
+        val afd = resRepository.getVoiceAFD(vr)
         with(player) {
             setDataSource(
                 afd.fileDescriptor,

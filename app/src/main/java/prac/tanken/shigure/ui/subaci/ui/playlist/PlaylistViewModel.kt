@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import prac.tanken.shigure.ui.subaci.data.model.Playlist
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistEntity
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelected
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelectionVO

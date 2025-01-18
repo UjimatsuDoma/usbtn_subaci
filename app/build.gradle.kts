@@ -1,7 +1,10 @@
 import org.apache.commons.io.FileUtils
 import prac.tanken.shigure.ui.subaci.build_src.BASE_URL
+import prac.tanken.shigure.ui.subaci.build_src.encodeJsonString
 import prac.tanken.shigure.ui.subaci.build_src.getCategories
+import prac.tanken.shigure.ui.subaci.build_src.getSources
 import prac.tanken.shigure.ui.subaci.build_src.getVoices
+import prac.tanken.shigure.ui.subaci.build_src.url
 import java.io.File
 import java.io.FileWriter
 import java.net.URI
@@ -14,6 +17,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     kotlin("plugin.serialization") version "2.1.0"
     id("androidx.room")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -74,7 +78,7 @@ android {
 }
 
 dependencies {
-
+    // Basic dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -85,6 +89,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.exifinterface)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -97,7 +102,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     // Kotlin Reflect
     implementation(libs.kotlin.reflect)
-    // KotlinX DateTime
+    // Kotlin DateTime
     implementation(libs.kotlinx.datetime)
 
     // DI stuff
@@ -121,6 +126,12 @@ dependencies {
     // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)
 
+    // Coil Image Loader
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+    // Metadata Extractor by Drew Noakes
+    implementation(libs.metadata.extractor)
+
 }
 
 tasks.register("downloadResource") {
@@ -132,13 +143,39 @@ tasks.register("downloadResource") {
                 val targetPath = "${projectDir}/build/downloadedResources/usbtn.txt"
                 FileUtils.copyURLToFile(URI(htmlUrl).toURL(), File(targetPath))
 
-                val voices = getVoices(targetPath, "${projectDir}/src/main/assets/subaciAudio/")
-                FileWriter("${projectDir}/src/main/res/raw/audio_list.json").use { it.write(voices) }
+                val voices = getVoices(targetPath)
+                FileWriter("${projectDir}/src/main/res/raw/audio_list.json").use {
+                    it.write(encodeJsonString(voices))
+                }
+                val voicePath = "${projectDir}/src/main/assets/subaciAudio/"
+                voices.forEach { voice ->
+                    voice.src.apply {
+                        val relPath = substring(indexOfFirst { it == '/' })
+                        val fileName = substring(indexOfLast { it == '/' })
+                        val downloadUrl = BASE_URL + relPath
+                        val downloadFile = File(voicePath + fileName)
+                        if (!downloadFile.exists()) {
+                            FileUtils.copyURLToFile(url(downloadUrl), downloadFile)
+                        }
+                    }
+                }
+
                 val categories = getCategories(targetPath)
                 FileWriter("${projectDir}/src/main/res/raw/class_list.json").use {
-                    it.write(
-                        categories
-                    )
+                    it.write(encodeJsonString(categories))
+                }
+
+                val sources = getSources(targetPath)
+                FileWriter("${projectDir}/src/main/res/raw/video_list.json").use {
+                    it.write(encodeJsonString(sources))
+                }
+                val sourcesThumbnailPath = "${projectDir}/src/main/assets/subaciThumbs/"
+                sources.forEach { source ->
+                    val url = "https://i3.ytimg.com/vi/${source.videoId}/0.jpg"
+                    val fileName = sourcesThumbnailPath + "${source.videoId}.jpg"
+                    val downloadFile = File(fileName)
+                    if (!downloadFile.exists())
+                        FileUtils.copyURLToFile(url(url), downloadFile)
                 }
                 break
             } catch (e: Exception) {

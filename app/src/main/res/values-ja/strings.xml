@@ -2,10 +2,10 @@
 <resources>
     <string name="app_name">ういボタンC</string>
     <string name="home_voices">ボイス</string>
-    <string name="home_category">用途別</string>
+    <string name="home_sources">元動画</string>
     <string name="home_playlist">連続再生</string>
     <string name="home_voices_desc">ボイスの全一覧ページです。</string>
-    <string name="home_category_desc">ボイスの用途別一覧ページです。</string>
+    <string name="home_sources_desc">一部のボイスの切り抜き元動画一覧ページです。</string>
     <string name="home_playlist_desc">再生リストのページです。</string>
     <string name="loading">読み込み中</string>
     <string name="daily_random_voice">今日のランダムボイス</string>
