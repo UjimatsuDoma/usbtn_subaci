@@ -19,18 +19,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import prac.tanken.shigure.ui.subaci.AppViewModel
 import prac.tanken.shigure.ui.subaci.ui.theme.ShigureUiButtonAppComposeImplementationTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
+
         setContent {
-            ShigureUiButtonAppComposeImplementationTheme {
+            val appViewModel: AppViewModel = viewModel()
+
+            val appSettingsState by appViewModel.appSettings
+
+            ShigureUiButtonAppComposeImplementationTheme(
+                appSettingsState.appColor, appSettingsState.appDarkMode
+            ) {
                 val navController = rememberNavController()
                 var orientation by remember { mutableIntStateOf(Configuration.ORIENTATION_PORTRAIT) }
 
@@ -45,7 +55,12 @@ class MainActivity : ComponentActivity() {
                     Configuration.ORIENTATION_PORTRAIT -> {
                         Scaffold(
                             modifier = Modifier.fillMaxSize(),
-                            bottomBar = { MainNavigationBar(navController) }
+                            bottomBar = {
+                                MainNavigationBar(
+                                    navController = navController,
+                                    bottomBarLabelBehaviour = appSettingsState.bottomBarLabelBehaviour
+                                )
+                            }
                         ) { innerPadding ->
                             MainNavHost(
                                 navController,
@@ -65,13 +80,15 @@ class MainActivity : ComponentActivity() {
                                         .fillMaxHeight()
                                         .weight(1f)
                                 )
-                                MainNavigationRail(navController)
+                                MainNavigationRail(
+                                    navController = navController,
+                                    bottomBarLabelBehaviour = appSettingsState.bottomBarLabelBehaviour
+                                )
                             }
                         }
                     }
 
-                    Configuration.ORIENTATION_SQUARE -> {}
-                    Configuration.ORIENTATION_UNDEFINED -> {}
+                    else -> {}
                 }
             }
         }

@@ -4,10 +4,12 @@ import prac.tanken.shigure.ui.subaci.build_src.encodeJsonString
 import prac.tanken.shigure.ui.subaci.build_src.getCategories
 import prac.tanken.shigure.ui.subaci.build_src.getSources
 import prac.tanken.shigure.ui.subaci.build_src.getVoices
+import prac.tanken.shigure.ui.subaci.build_src.now
 import prac.tanken.shigure.ui.subaci.build_src.url
 import java.io.File
 import java.io.FileWriter
 import java.net.URI
+import java.lang.System
 
 plugins {
     alias(libs.plugins.android.application)
@@ -18,6 +20,12 @@ plugins {
     kotlin("plugin.serialization") version "2.1.0"
     id("androidx.room")
     id("kotlin-parcelize")
+}
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xwhen-guards")
+    }
 }
 
 android {
@@ -36,15 +44,22 @@ android {
 
     buildTypes {
         debug {
+            isMinifyEnabled = false
             isDebuggable = true
+
+            buildConfigField("String", "BUILT_IN_COLOR_SOURCE", "\"22523677\"")
+            buildConfigField("String", "BUILD_TIME", "\"$now\"")
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            buildConfigField("String", "BUILT_IN_COLOR_SOURCE", "\"22523677\"")
+            buildConfigField("String", "BUILD_TIME", "\"$now\"")
         }
     }
     flavorDimensions += "api"
@@ -118,6 +133,8 @@ dependencies {
     // Google Material Icons
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
+    // Compose ConstraintLayout
+    implementation(libs.androidx.constraintlayout.compose)
 
     // Room Database
     implementation(libs.androidx.room.runtime)

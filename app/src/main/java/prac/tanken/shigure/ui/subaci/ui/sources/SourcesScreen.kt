@@ -132,12 +132,12 @@ private fun SourcesListItem(
                 loading = {
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = modifier(item.thumbAspectRatio()),
+                        modifier = modifier(item.thumbAspectRatio),
                         content = { CircularProgressIndicator() }
                     )
                 },
                 contentDescription = null,
-                modifier = modifier(item.thumbAspectRatio())
+                modifier = modifier(item.thumbAspectRatio)
             )
         }
         Row(

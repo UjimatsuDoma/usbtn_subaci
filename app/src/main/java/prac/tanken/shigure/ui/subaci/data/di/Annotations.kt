@@ -19,3 +19,7 @@ annotation class SettingsDataStore
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class VoicesGroupedByJson
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AppThemeJson

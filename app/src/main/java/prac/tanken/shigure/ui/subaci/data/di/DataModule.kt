@@ -54,6 +54,14 @@ object DataModule {
         }
     }
 
+    @AppThemeJson
+    @Singleton
+    @Provides
+    // 思考：为什么这里不用SerializerModule？
+    fun provideAppThemeJsonInstance() = Json {
+        ignoreUnknownKeys = true
+    }
+
     @VoicesDataStore
     @Singleton
     @Provides

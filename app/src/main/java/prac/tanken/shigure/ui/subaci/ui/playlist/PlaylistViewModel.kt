@@ -190,7 +190,7 @@ class PlaylistViewModel @Inject constructor(
         updateUpsertState(
             PlaylistUpsertState.Draft(
                 action = PlaylistUpsertIntent.Insert,
-                name = "New Playlist"
+                name = resRepository.stringRes(TankenR.string.playlist_new_name_default)
             )
         )
     }

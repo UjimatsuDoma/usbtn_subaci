@@ -21,8 +21,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.serialization.Serializable
+import prac.tanken.shigure.ui.subaci.ui.app.BottomBarLabelBehaviour
 import prac.tanken.shigure.ui.subaci.ui.playlist.PlaylistScreen
 import prac.tanken.shigure.ui.subaci.ui.playlist.PlaylistViewModel
+import prac.tanken.shigure.ui.subaci.ui.settings.SettingsScreen
+import prac.tanken.shigure.ui.subaci.ui.settings.SettingsViewModel
 import prac.tanken.shigure.ui.subaci.ui.sources.SourcesScreen
 import prac.tanken.shigure.ui.subaci.ui.sources.SourcesViewModel
 import prac.tanken.shigure.ui.subaci.ui.voices.VoicesScreen
@@ -60,12 +63,21 @@ sealed class MainDestinations(
         unselectedIcon = FluentR.drawable.ic_fluent_receipt_play_24_regular,
         selectedIcon = FluentR.drawable.ic_fluent_receipt_play_24_filled,
     )
+
+    @Serializable
+    data object Settings : MainDestinations(
+        displayName = TankenR.string.home_settings,
+        desc = TankenR.string.home_settings_desc,
+        unselectedIcon = FluentR.drawable.ic_fluent_settings_24_regular,
+        selectedIcon = FluentR.drawable.ic_fluent_settings_24_filled,
+    )
 }
 
 val destinations = listOf(
     MainDestinations.Voices,
     MainDestinations.Sources,
     MainDestinations.Playlist,
+    MainDestinations.Settings,
 )
 
 @Composable
@@ -76,6 +88,7 @@ fun MainNavHost(
     val voicesViewModel = hiltViewModel<VoicesViewModel>()
     val sourcesViewModel = hiltViewModel<SourcesViewModel>()
     val playlistViewModel = hiltViewModel<PlaylistViewModel>()
+    val settingsViewModel = hiltViewModel<SettingsViewModel>()
 
     NavHost(
         navController = navController,
@@ -91,12 +104,16 @@ fun MainNavHost(
         composable<MainDestinations.Playlist> {
             PlaylistScreen(viewModel = playlistViewModel)
         }
+        composable<MainDestinations.Settings> {
+            SettingsScreen(viewModel = settingsViewModel)
+        }
     }
 }
 
 @Composable
 fun MainNavigationBar(
     navController: NavController,
+    bottomBarLabelBehaviour: BottomBarLabelBehaviour,
     modifier: Modifier = Modifier
 ) = NavigationBar(modifier) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
@@ -113,10 +130,12 @@ fun MainNavigationBar(
         NavigationBarItem(
             icon = { Icon(icon, stringResource(dest.desc)) },
             label = {
-                Text(
-                    text = stringResource(dest.displayName),
-                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
-                )
+                if (bottomBarLabelBehaviour.showLabel(selected)) {
+                    Text(
+                        text = stringResource(dest.displayName),
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+                    )
+                }
             },
             selected = selected,
             onClick = {
@@ -130,6 +149,7 @@ fun MainNavigationBar(
 @Composable
 fun MainNavigationRail(
     navController: NavController,
+    bottomBarLabelBehaviour: BottomBarLabelBehaviour,
     modifier: Modifier = Modifier
 ) = NavigationRail(
     modifier = modifier,
@@ -149,10 +169,12 @@ fun MainNavigationRail(
         NavigationRailItem(
             icon = { Icon(icon, stringResource(dest.desc)) },
             label = {
-                Text(
-                    text = stringResource(dest.displayName),
-                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
-                )
+                if (bottomBarLabelBehaviour.showLabel(selected)) {
+                    Text(
+                        text = stringResource(dest.displayName),
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+                    )
+                }
             },
             selected = selected,
             onClick = {

@@ -18,11 +18,8 @@ data class SourcesListItem(
         @Composable get() = LocalContext.current
             .assets.openFd("subaciThumbs/$videoId.jpg")
             .createInputStream()
-
-    @Composable
-    fun thumbAspectRatio(): Float =
-        ImageMetadataReader.readMetadata(imageIs)
+    val thumbAspectRatio: Float
+        @Composable get() = ImageMetadataReader.readMetadata(imageIs)
             .getFirstDirectoryOfType(JpegDirectory::class.java)
             .run { imageWidth.toFloat() / imageHeight.toFloat() }
-
 }

@@ -2,7 +2,6 @@ package prac.tanken.shigure.ui.subaci.ui.voices
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,7 +16,6 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Casino
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -25,7 +23,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -38,7 +35,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -47,20 +43,19 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
-import prac.tanken.shigure.ui.subaci.BuildConfig
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceGroup
+import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
+import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGrouped
+import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGroupedBy
+import prac.tanken.shigure.ui.subaci.data.model.voices.voicesGroupedByItems
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
+import prac.tanken.shigure.ui.subaci.data.util.combineKey
 import prac.tanken.shigure.ui.subaci.ui.NotoSerifJP
 import prac.tanken.shigure.ui.subaci.ui.NotoSerifMultiLang
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.ui.component.VoiceButton
 import prac.tanken.shigure.ui.subaci.ui.component.VoicesFlowRow
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGrouped
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGroupedBy
-import prac.tanken.shigure.ui.subaci.data.model.voices.voicesGroupedByItems
-import prac.tanken.shigure.ui.subaci.data.util.combineKey
 import prac.tanken.shigure.ui.subaci.R as TankenR
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,14 +75,12 @@ fun VoicesScreen(
                     .weight(1f)
             )
         } else {
-            var test by remember { mutableStateOf(false) }
             val dailyVoiceUiState by viewModel.dailyVoiceUiState
             val voicesGrouped by viewModel.voicesGrouped
 
             VoicesTopBar(
                 dailyVoiceUiState = dailyVoiceUiState,
                 onDailyVoice = viewModel::playDailyVoice,
-                test = { test = true },
                 voicesGroupedBy = voicesGrouped?.voicesGroupedBy,
                 onChangeVoicesGroupedBy = viewModel::updateVoicesGroupedBy,
             )
@@ -99,9 +92,6 @@ fun VoicesScreen(
                     .fillMaxWidth()
                     .weight(1f),
             )
-            if (test) {
-                TestModal(testDismiss = { test = false })
-            }
         }
     }
 }
@@ -112,7 +102,6 @@ private fun VoicesTopBar(
     modifier: Modifier = Modifier,
     dailyVoiceUiState: DailyVoiceUiState,
     onDailyVoice: () -> Unit,
-    test: CallbackInvokedAsIs = {},
     voicesGroupedBy: VoicesGroupedBy?,
     onChangeVoicesGroupedBy: (VoicesGroupedBy) -> Unit,
 ) {
@@ -134,12 +123,6 @@ private fun VoicesTopBar(
                 Icon(
                     imageVector = Icons.Default.Casino,
                     contentDescription = stringResource(TankenR.string.daily_random_voice)
-                )
-            }
-            IconButton(onClick = test) {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = null
                 )
             }
             var showGroupedByMenu by rememberSaveable { mutableStateOf(false) }
@@ -303,51 +286,5 @@ fun VoiceGroupDialog(
                 }
             }
         )
-    }
-}
-
-@Composable
-private fun TestDialog(
-    modifier: Modifier = Modifier,
-    testDismiss: CallbackInvokedAsIs,
-) {
-    Dialog(
-        onDismissRequest = testDismiss,
-    ) {
-        Card(
-            modifier = modifier
-                .fillMaxHeight(0.5f),
-        ) {
-            Box(
-                modifier = Modifier.padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = BuildConfig.VERSION_NAME,
-                    style = MaterialTheme.typography.titleLarge
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TestModal(
-    modifier: Modifier = Modifier,
-    testDismiss: CallbackInvokedAsIs,
-) {
-    ModalBottomSheet(
-        onDismissRequest = testDismiss
-    ) {
-        Box(
-            modifier = modifier.padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = BuildConfig.VERSION_NAME,
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
     }
 }

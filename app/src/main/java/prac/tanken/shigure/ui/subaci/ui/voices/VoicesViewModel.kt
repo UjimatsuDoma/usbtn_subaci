@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import prac.tanken.shigure.ui.subaci.R
 import prac.tanken.shigure.ui.subaci.data.helper.DailyVoiceHelper.todayStr
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistEntity
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
@@ -68,7 +69,7 @@ class VoicesViewModel @Inject constructor(
                         voicesRepository.updateDailyVoice(
                             voices[voices.indices.random()].id
                         )
-                        toastUtil.toast("Rolled the dice...")
+                        toastUtil.toast(resRepository.stringRes(R.string.daily_random_voice_refreshed))
                     }
                 }
             }
@@ -96,7 +97,10 @@ class VoicesViewModel @Inject constructor(
                         _voicesGrouped.value = updateVoicesGroup(vgb)
                     }
                 } else {
-                    toastUtil.toast("Set to Kana.")
+                    toastUtil.toast(buildString {
+                        append(resRepository.stringRes(R.string.voices_grouped_by_reset_prefix))
+                        append(resRepository.stringRes(R.string.voices_grouped_by_kana))
+                    })
                     updateVoicesGroupedBy(VoicesGroupedBy.Kana)
                 }
             }
@@ -145,7 +149,10 @@ class VoicesViewModel @Inject constructor(
         if (dailyVoiceUiState.value is DailyVoiceUiState.Loaded) {
             val dailyVoice = (dailyVoiceUiState.value as DailyVoiceUiState.Loaded).voice
             myPlayer.playByReference(VoiceReference(dailyVoice.id))
-            toastUtil.toast("Voice today: ${dailyVoice.label}")
+            toastUtil.toast(buildString {
+                append(resRepository.stringRes(R.string.daily_random_voice_play_prefix))
+                append(dailyVoice.label)
+            })
         }
     }
 

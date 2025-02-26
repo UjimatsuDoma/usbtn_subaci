@@ -38,4 +38,29 @@
     <string name="playlist_upsert_name_placeholder">Playlist name</string>
     <string name="voices_grouped_by_category">Category</string>
     <string name="voices_grouped_by_kana">Kana</string>
+    <string name="settings_about_title">About</string>
+    <string name="settings_ui_app_color">App color</string>
+    <string name="error_android_version_prefix">Available on Android </string>
+    <string name="error_android_version_suffix">" and above"</string>
+    <string name="app_color_dynamic">Follow system</string>
+    <string name="app_color_built_in">Built-in color</string>
+    <string name="app_dark_mode_dynamic">Follow system</string>
+    <string name="app_dark_mode_dark">Dark</string>
+    <string name="app_dark_mode_light">Light</string>
+    <string name="settings_ui_app_dark_mode">Dark mode</string>
+    <string name="settings_ui">User Interface</string>
+    <string name="settings_ui_bottom_bar_label_behaviour">Bottom bar label</string>
+    <string name="app_bottom_bar_label_always_show">Always show</string>
+    <string name="app_bottom_bar_label_always_hide">Always hide</string>
+    <string name="app_bottom_bar_label_show_when_selected">Show when selected</string>
+    <string name="daily_random_voice_refreshed">Rolled the dice…</string>
+    <string name="voices_grouped_by_reset_prefix">"Set voices grouped by "</string>
+    <string name="daily_random_voice_play_prefix">"Voice today: "</string>
+    <string name="playlist_new_name_default">New Playlist</string>
+    <string name="settings_initialized_message">Initialized settings.</string>
+    <string name="app_built_in_color_source">Built-in color generated from</string>
+    <string name="app_built_in_color_source_message_prefix" translatable="false">"Pixiv ID: "</string>
+    <string name="app_build_time">Build time</string>
+    <string name="home_settings_desc">The screen where you can manage the app\'s settings.</string>
+    <string name="home_settings">Settings</string>
 </resources>
