@@ -62,4 +62,7 @@
     <string name="playlist_new_name_default">新播放列表</string>
     <string name="settings_initialized_message">进行初次设置。</string>
     <string name="app_built_in_color_source">内置配色来源图片</string>
+    <string name="playlist_upsert_name_label">名称</string>
+    <string name="voices_group_dialog_title">分组</string>
+    <string name="app_badge_new">新增</string>
 </resources>

@@ -62,4 +62,7 @@
     <string name="playlist_new_name_default">新しいプレイリスト</string>
     <string name="settings_initialized_message">設定を初期化しました。</string>
     <string name="app_built_in_color_source">アプリカラーの元イラスト</string>
+    <string name="playlist_upsert_name_label">名前</string>
+    <string name="voices_group_dialog_title">グループ</string>
+    <string name="app_badge_new">追加</string>
 </resources>
