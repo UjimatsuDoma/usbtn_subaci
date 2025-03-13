@@ -4,6 +4,9 @@ import android.content.res.AssetManager
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import prac.tanken.shigure.ui.subaci.R
 import prac.tanken.shigure.ui.subaci.data.model.voices.Category
@@ -18,21 +21,31 @@ class ResRepository @Inject constructor(
     val res: Resources,
     val am: AssetManager,
 ) {
+    private var _voicesFlow = MutableStateFlow<List<Voice>>(emptyList())
+    val voicesFlow = _voicesFlow.asStateFlow()
+    private var _categoriesFlow = MutableStateFlow<List<Category>>(emptyList())
+    val categoriesFlow = _categoriesFlow.asStateFlow()
+    private var _sourcesFlow = MutableStateFlow<List<SourceEntity>>(emptyList())
+    val sourcesFlow = _sourcesFlow.asStateFlow()
+
     suspend fun loadVoices(): List<Voice> = withContext(Dispatchers.IO) {
         val voicesJson = readIS2Text(res.openRawResource(R.raw.audio_list))
         val voices: List<Voice> = parseJsonString(voicesJson)
+        _voicesFlow.value = voices
         return@withContext voices
     }
 
     suspend fun loadCategories(): List<Category> = withContext(Dispatchers.IO) {
         val categoriesJson = readIS2Text(res.openRawResource(R.raw.class_list))
         val categories: List<Category> = parseJsonString(categoriesJson)
+        _categoriesFlow.value = categories
         return@withContext categories
     }
 
     suspend fun loadSources(): List<SourceEntity> = withContext(Dispatchers.IO) {
         val sourcesJson = readIS2Text(res.openRawResource(R.raw.video_list))
         val sources: List<SourceEntity> = parseJsonString(sourcesJson)
+        _sourcesFlow.value = sources
         return@withContext sources
     }
 
@@ -40,5 +53,6 @@ class ResRepository @Inject constructor(
 
     fun getVoiceAFD(vr: VoiceReference) = am.openFd("subaciAudio/${vr.id}.mp3")
 
-    fun getThumbAFD(sourceEntity: SourceEntity) = am.openFd("subaciThumbs/${sourceEntity.videoId}.jpg")
+    fun getThumbAFD(sourceEntity: SourceEntity) =
+        am.openFd("subaciThumbs/${sourceEntity.videoId}.jpg")
 }

@@ -63,4 +63,7 @@
     <string name="app_build_time">Build time</string>
     <string name="home_settings_desc">The screen where you can manage the app\'s settings.</string>
     <string name="home_settings">Settings</string>
+    <string name="playlist_upsert_name_label">Name</string>
+    <string name="voices_group_dialog_title">Select group</string>
+    <string name="app_badge_new">NEW</string>
 </resources>

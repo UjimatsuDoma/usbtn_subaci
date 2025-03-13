@@ -13,11 +13,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShigureUiButtonAppComposeImplementation"
-        tools:targetApi="31">
+        tools:targetApi="tiramisu">
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.ShigureUiButtonAppComposeImplementation">
+            android:theme="@style/Theme.SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

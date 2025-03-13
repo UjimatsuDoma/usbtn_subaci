@@ -4,7 +4,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.R
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
@@ -29,8 +33,22 @@ class AppViewModel @Inject constructor(
     private var _appSettings = mutableStateOf<AppSettings>(AppSettings())
     val appSettings = _appSettings
 
+    val resourcesLoaded = resRepository.run {
+        val voicesLoaded = voicesFlow.map { it.isNotEmpty() }
+        val categoriesLoaded = categoriesFlow.map { it.isNotEmpty() }
+        val sourcesLoaded = sourcesFlow.map { it.isNotEmpty() }
+        voicesLoaded
+            .combine(categoriesLoaded) { f1, f2 -> f1 && f2 }
+            .combine(sourcesLoaded) { f1, f2 -> f1 && f2 }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     init {
         viewModelScope.launch {
+            resRepository.apply {
+                loadVoices()
+                loadCategories()
+                loadSources()
+            }
             appSettingsFlow.collect { appSettings -> appSettings?.let { _appSettings.value = it } }
         }
     }

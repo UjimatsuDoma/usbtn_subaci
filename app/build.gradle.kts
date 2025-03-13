@@ -36,8 +36,8 @@ android {
         applicationId = "prac.tanken.shigure.ui.subaci"
         minSdk = 21
         targetSdk = 35
-        versionCode = 6
-        versionName = "Milestone 3"
+        versionCode = 7
+        versionName = "Milestone 3 Revision 1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -135,6 +135,8 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     // Compose ConstraintLayout
     implementation(libs.androidx.constraintlayout.compose)
+    // SplashScreen API
+    implementation(libs.androidx.core.splashscreen)
 
     // Room Database
     implementation(libs.androidx.room.runtime)
@@ -157,10 +159,8 @@ tasks.register("downloadResource") {
         while (tries < 10) {
             try {
                 val htmlUrl = "$BASE_URL/usbtn.html"
-                val targetPath = "${projectDir}/build/downloadedResources/usbtn.txt"
-                FileUtils.copyURLToFile(URI(htmlUrl).toURL(), File(targetPath))
 
-                val voices = getVoices(targetPath)
+                val voices = getVoices(htmlUrl)
                 FileWriter("${projectDir}/src/main/res/raw/audio_list.json").use {
                     it.write(encodeJsonString(voices))
                 }
@@ -177,12 +177,12 @@ tasks.register("downloadResource") {
                     }
                 }
 
-                val categories = getCategories(targetPath)
+                val categories = getCategories(htmlUrl)
                 FileWriter("${projectDir}/src/main/res/raw/class_list.json").use {
                     it.write(encodeJsonString(categories))
                 }
 
-                val sources = getSources(targetPath)
+                val sources = getSources(htmlUrl)
                 FileWriter("${projectDir}/src/main/res/raw/video_list.json").use {
                     it.write(encodeJsonString(sources))
                 }

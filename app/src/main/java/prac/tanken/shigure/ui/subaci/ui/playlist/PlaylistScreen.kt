@@ -31,6 +31,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -486,13 +487,15 @@ private fun PlaylistUpsertDialog(
                 Text(
                     text = stringResource(title),
                     style = MaterialTheme.typography.titleLarge,
-                    fontSize = 32.sp,
                 )
                 Spacer(Modifier.height(16.dp))
                 Column(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    TextField(
+                    OutlinedTextField(
+                        label = {
+                            Text(stringResource(TankenR.string.playlist_upsert_name_label))
+                        },
                         value = state.name,
                         onValueChange = { scope.launch { onStateUpdate(state.copy(name = it)) } },
                         placeholder = { Text(stringResource(TankenR.string.playlist_upsert_name_placeholder)) },

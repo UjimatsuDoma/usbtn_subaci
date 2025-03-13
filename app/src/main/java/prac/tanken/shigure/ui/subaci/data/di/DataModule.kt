@@ -19,19 +19,14 @@ import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.data.preferences.dailyVoiceDataStore
 import prac.tanken.shigure.ui.subaci.data.preferences.settingsDataStore
 import prac.tanken.shigure.ui.subaci.data.preferences.voicesDataStore
+import prac.tanken.shigure.ui.subaci.data.repository.PlaylistRepository
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
+import prac.tanken.shigure.ui.subaci.data.repository.SettingsRepository
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DataModule {
-    @Singleton
-    @Provides
-    fun provideResRepository(
-        res: Resources,
-        am: AssetManager,
-    ) = ResRepository(res, am)
-
     @Singleton
     @Provides
     fun providePlaylistDatabase(
@@ -41,6 +36,25 @@ object DataModule {
         PlaylistDatabase::class.java,
         "playlists.db"
     ).build()
+
+    @Singleton
+    @Provides
+    fun providePlaylistRepository(
+        playlistDatabase: PlaylistDatabase,
+    ) = PlaylistRepository(playlistDatabase)
+
+    @Singleton
+    @Provides
+    fun provideResRepository(
+        res: Resources,
+        am: AssetManager,
+    ) = ResRepository(res, am)
+
+    @Singleton
+    @Provides
+    fun provideSettingsRepository(
+        @SettingsDataStore dataStore: DataStore<Preferences>
+    ) = SettingsRepository(dataStore)
 
     @VoicesGroupedByJson
     @Singleton
@@ -52,14 +66,6 @@ object DataModule {
                 subclass(VoicesGroupedBy.Kana::class, VoicesGroupedBy.Kana.serializer())
             }
         }
-    }
-
-    @AppThemeJson
-    @Singleton
-    @Provides
-    // 思考：为什么这里不用SerializerModule？
-    fun provideAppThemeJsonInstance() = Json {
-        ignoreUnknownKeys = true
     }
 
     @VoicesDataStore

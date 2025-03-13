@@ -5,6 +5,8 @@ import androidx.compose.material.icons.filled.Preview
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +21,7 @@ fun BasicListItem(
     overLine: String? = null,
     headline: String,
     underline: String? = null,
+    colors: ListItemColors = ListItemDefaults.colors(),
 ) = ListItem(
     leadingContent = {
         icon?.let {
@@ -32,24 +35,26 @@ fun BasicListItem(
         overLine?.let {
             Text(
                 text = it,
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.titleMedium
             )
         }
     },
     headlineContent = {
         Text(
             text = headline,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyLarge
         )
     },
     supportingContent = {
         underline?.let {
             Text(
                 text = it,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodyMedium
             )
         }
-    }
+    },
+    colors = colors,
+    modifier = modifier
 )
 
 @Preview

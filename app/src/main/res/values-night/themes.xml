@@ -13,4 +13,10 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Theme.SplashTheme" parent="Theme.SplashScreen">
+        <item name="tint">#ffffff</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_loading_res</item>
+        <item name="postSplashScreenTheme">@style/Theme.ShigureUiButtonAppComposeImplementation</item>
+    </style>
 </resources>

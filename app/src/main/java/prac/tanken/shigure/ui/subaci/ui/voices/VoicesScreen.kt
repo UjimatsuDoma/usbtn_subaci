@@ -35,11 +35,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
@@ -180,11 +181,12 @@ private fun VoicesScreen(
     modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
-    val scrollState = rememberLazyListState()
+    val lazyListState = rememberLazyListState()
 
     LazyColumn(
-        modifier = modifier,
-        state = scrollState
+        state = lazyListState,
+        modifier = modifier
+            .nestedScroll(rememberNestedScrollInteropConnection()),
     ) {
         val list = voicesGrouped?.voiceGroups?.entries?.toList() ?: emptyList()
 
@@ -195,8 +197,8 @@ private fun VoicesScreen(
                 Text(
                     text = name,
                     fontFamily = NotoSerifJP,
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.ExtraBold,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .clickable { showVoiceGroupDialog = true }
                         .fillMaxWidth()
@@ -228,9 +230,8 @@ private fun VoicesScreen(
 
                 if (showVoiceGroupDialog) {
                     VoiceGroupDialog(
-                        title = "Select",
                         items = list.map { it.key },
-                        onItemClicked = { scope.launch { scrollState.scrollToItem(index = it) } },
+                        onItemClicked = { scope.launch { lazyListState.scrollToItem(index = it) } },
                         onDismiss = { showVoiceGroupDialog = false },
                         modifier = Modifier
                             .fillMaxWidth(0.75f)
@@ -244,11 +245,10 @@ private fun VoicesScreen(
 
 @Composable
 fun VoiceGroupDialog(
-    title: String,
+    modifier: Modifier = Modifier,
     items: List<String>,
     onItemClicked: (Int) -> Unit = {},
     onDismiss: CallbackInvokedAsIs = {},
-    modifier: Modifier = Modifier
 ) = Dialog(onDismiss) {
     Card(modifier) {
         Column(
@@ -257,9 +257,8 @@ fun VoiceGroupDialog(
             modifier = Modifier.padding(16.dp),
             content = {
                 Text(
-                    text = title,
-                    fontSize = 32.sp,
-                    style = MaterialTheme.typography.titleLarge
+                    text = stringResource(TankenR.string.voices_group_dialog_title),
+                    style = MaterialTheme.typography.headlineMedium
                 )
                 LazyColumn(Modifier.weight(1f)) {
                     itemsIndexed(
@@ -268,9 +267,8 @@ fun VoiceGroupDialog(
                     ) { index, item ->
                         Text(
                             text = item,
+                            style = MaterialTheme.typography.titleMedium,
                             fontFamily = NotoSerifJP,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp,
                             modifier = Modifier
                                 .clickable {
                                     onDismiss()

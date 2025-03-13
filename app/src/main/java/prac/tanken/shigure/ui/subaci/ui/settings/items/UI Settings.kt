@@ -8,19 +8,21 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Brightness4
-import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -110,7 +113,7 @@ private fun ColumnScope.AppColorSetting(
             headlineContent = {
                 Text(
                     text = stringResource(R.string.settings_ui_app_color),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyLarge
                 )
             },
             trailingContent = {
@@ -121,7 +124,7 @@ private fun ColumnScope.AppColorSetting(
                 ) {
                     Text(
                         text = stringResource(appColor.displayName),
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyLarge
                     )
                     Icon(
                         imageVector = dropdownIcon,
@@ -136,13 +139,17 @@ private fun ColumnScope.AppColorSetting(
         if (expanded) {
             Row(
                 modifier = Modifier
-                    .selectableGroup()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    .height(intrinsicSize = IntrinsicSize.Max)
+                    .padding(horizontal = 16.dp)
+                    .clip(CardDefaults.shape),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.Top
             ) {
                 RadioButtonCard(
-                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(size = 4.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize(),
                     selected = appColor == AppColor.Dynamic,
                     enabled = DYNAMIC_COLOR_SUPPORTED,
                     onSelected = { if (DYNAMIC_COLOR_SUPPORTED) onUpdateAppColor(AppColor.Dynamic) },
@@ -150,7 +157,10 @@ private fun ColumnScope.AppColorSetting(
                     disabledMessage = androidVersionErrorMessage(Build.VERSION_CODES.S)
                 )
                 RadioButtonCard(
-                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(size = 4.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize(),
                     selected = appColor == AppColor.Static,
                     onSelected = { onUpdateAppColor(AppColor.Static) },
                     title = stringResource(AppColor.Static.displayName),
@@ -198,7 +208,7 @@ private fun ColumnScope.AppDarkModeSetting(
             headlineContent = {
                 Text(
                     text = stringResource(R.string.settings_ui_app_dark_mode),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyLarge
                 )
             },
             trailingContent = {
@@ -209,7 +219,7 @@ private fun ColumnScope.AppDarkModeSetting(
                 ) {
                     Text(
                         text = stringResource(appDarkMode.displayName),
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyLarge
                     )
                     Icon(
                         imageVector = dropdownIcon,
@@ -223,10 +233,13 @@ private fun ColumnScope.AppDarkModeSetting(
 
         if (expanded) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(horizontal = 16.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .clip(CardDefaults.shape)
             ) {
                 RadioButtonCard(
+                    shape = RoundedCornerShape(size = 4.dp),
                     selected = appDarkMode == AppDarkMode.Dynamic,
                     enabled = AUTO_DARK_MODE_SUPPORTED,
                     onSelected = { if (AUTO_DARK_MODE_SUPPORTED) onUpdateAppDarkMode(AppDarkMode.Dynamic) },
@@ -234,17 +247,23 @@ private fun ColumnScope.AppDarkModeSetting(
                     disabledMessage = androidVersionErrorMessage(Build.VERSION_CODES.Q)
                 )
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier.height(IntrinsicSize.Max)
                 ) {
                     RadioButtonCard(
-                        modifier = Modifier.weight(1f).fillMaxHeight(),
+                        shape = RoundedCornerShape(size = 4.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
                         selected = appDarkMode == AppDarkMode.Static(true),
                         onSelected = { onUpdateAppDarkMode(AppDarkMode.Static(true)) },
                         title = stringResource(AppDarkMode.Static(true).displayName),
                     )
                     RadioButtonCard(
-                        modifier = Modifier.weight(1f).fillMaxHeight(),
+                        shape = RoundedCornerShape(size = 4.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
                         selected = appDarkMode == AppDarkMode.Static(false),
                         onSelected = { onUpdateAppDarkMode(AppDarkMode.Static(false)) },
                         title = stringResource(AppDarkMode.Static(false).displayName),
@@ -293,7 +312,7 @@ private fun ColumnScope.BottomBarLabelBehaviourSetting(
             headlineContent = {
                 Text(
                     text = stringResource(R.string.settings_ui_bottom_bar_label_behaviour),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyLarge
                 )
             },
             trailingContent = {
@@ -304,7 +323,7 @@ private fun ColumnScope.BottomBarLabelBehaviourSetting(
                 ) {
                     Text(
                         text = stringResource(bottomBarLabelBehaviour.displayName),
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyLarge
                     )
                     Icon(
                         imageVector = dropdownIcon,
@@ -318,23 +337,44 @@ private fun ColumnScope.BottomBarLabelBehaviourSetting(
 
         if (expanded) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(horizontal = 16.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .height(IntrinsicSize.Max)
+                    .clip(CardDefaults.shape)
             ) {
                 RadioButtonCard(
+                    shape = RoundedCornerShape(size = 4.dp),
                     selected = bottomBarLabelBehaviour == BottomBarLabelBehaviour.ShowAlways,
-                    onSelected = { onUpdateBottomBarLabelBehaviour(BottomBarLabelBehaviour.ShowAlways) },
+                    onSelected = {
+                        onUpdateBottomBarLabelBehaviour(BottomBarLabelBehaviour.ShowAlways)
+                    },
                     title = stringResource(BottomBarLabelBehaviour.ShowAlways.displayName),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                 )
                 RadioButtonCard(
+                    shape = RoundedCornerShape(size = 4.dp),
                     selected = bottomBarLabelBehaviour == BottomBarLabelBehaviour.ShowWhenSelected,
-                    onSelected = { onUpdateBottomBarLabelBehaviour(BottomBarLabelBehaviour.ShowWhenSelected) },
+                    onSelected = {
+                        onUpdateBottomBarLabelBehaviour(BottomBarLabelBehaviour.ShowWhenSelected)
+                    },
                     title = stringResource(BottomBarLabelBehaviour.ShowWhenSelected.displayName),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                 )
                 RadioButtonCard(
+                    shape = RoundedCornerShape(size = 4.dp),
                     selected = bottomBarLabelBehaviour == BottomBarLabelBehaviour.Hide,
-                    onSelected = { onUpdateBottomBarLabelBehaviour(BottomBarLabelBehaviour.Hide) },
+                    onSelected = {
+                        onUpdateBottomBarLabelBehaviour(BottomBarLabelBehaviour.Hide)
+                    },
                     title = stringResource(BottomBarLabelBehaviour.Hide.displayName),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                 )
             }
         }
