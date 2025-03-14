@@ -1,15 +1,12 @@
-import org.apache.commons.io.FileUtils
 import prac.tanken.shigure.ui.subaci.build_src.BASE_URL
+import prac.tanken.shigure.ui.subaci.build_src.downloadFileFromUrl
 import prac.tanken.shigure.ui.subaci.build_src.encodeJsonString
 import prac.tanken.shigure.ui.subaci.build_src.getCategories
+import prac.tanken.shigure.ui.subaci.build_src.getMaxResolutionThumbUrl
 import prac.tanken.shigure.ui.subaci.build_src.getSources
 import prac.tanken.shigure.ui.subaci.build_src.getVoices
 import prac.tanken.shigure.ui.subaci.build_src.now
-import prac.tanken.shigure.ui.subaci.build_src.url
-import java.io.File
 import java.io.FileWriter
-import java.net.URI
-import java.lang.System
 
 plugins {
     alias(libs.plugins.android.application)
@@ -167,12 +164,19 @@ tasks.register("downloadResource") {
                 val voicePath = "${projectDir}/src/main/assets/subaciAudio/"
                 voices.forEach { voice ->
                     voice.src.apply {
-                        val relPath = substring(indexOfFirst { it == '/' })
-                        val fileName = substring(indexOfLast { it == '/' })
-                        val downloadUrl = BASE_URL + relPath
-                        val downloadFile = File(voicePath + fileName)
+                        val relPath = substringAfter("/")
+                        val fileName = substringAfterLast("/")
+                        val downloadUrl = "$BASE_URL/$relPath"
+                        val downloadDest = voicePath + fileName
+                        val downloadFile = File(voicePath, fileName)
                         if (!downloadFile.exists()) {
-                            FileUtils.copyURLToFile(url(downloadUrl), downloadFile)
+                            downloadFileFromUrl(
+                                downloadUrl,
+                                downloadDest,
+                                mapOf(
+                                    "Referer" to "https://leiros.cloudfree.jp/usbtn/usbtn.html"
+                                )
+                            )
                         }
                     }
                 }
@@ -188,11 +192,17 @@ tasks.register("downloadResource") {
                 }
                 val sourcesThumbnailPath = "${projectDir}/src/main/assets/subaciThumbs/"
                 sources.forEach { source ->
-                    val url = "https://i3.ytimg.com/vi/${source.videoId}/0.jpg"
-                    val fileName = sourcesThumbnailPath + "${source.videoId}.jpg"
-                    val downloadFile = File(fileName)
-                    if (!downloadFile.exists())
-                        FileUtils.copyURLToFile(url(url), downloadFile)
+                    val id = source.videoId
+                    val downloadUrl = getMaxResolutionThumbUrl(id)
+                    val fileName = "$id.jpg"
+                    val downloadFile = File(sourcesThumbnailPath, fileName)
+                    if (!downloadFile.exists()) {
+                        downloadFileFromUrl(
+                            downloadUrl,
+                            sourcesThumbnailPath + fileName,
+                            mapOf()
+                        )
+                    }
                 }
                 break
             } catch (e: Exception) {

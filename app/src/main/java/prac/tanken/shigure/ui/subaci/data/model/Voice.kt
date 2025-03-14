@@ -25,6 +25,4 @@ data class Voice(
     val videoId: String? = null,
     // 语音在来源YouTube直播的时间坐标，可选值
     val time: String? = null,
-) {
-    fun toReference() = VoiceReference(id)
-}
+)

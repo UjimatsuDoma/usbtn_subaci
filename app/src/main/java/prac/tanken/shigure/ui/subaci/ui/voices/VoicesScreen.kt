@@ -2,9 +2,11 @@ package prac.tanken.shigure.ui.subaci.ui.voices
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -48,6 +50,7 @@ import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceGroup
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGrouped
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGroupedBy
+import prac.tanken.shigure.ui.subaci.data.model.voices.toReference
 import prac.tanken.shigure.ui.subaci.data.model.voices.voicesGroupedByItems
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
 import prac.tanken.shigure.ui.subaci.data.util.combineKey
@@ -57,6 +60,8 @@ import prac.tanken.shigure.ui.subaci.ui.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.ui.component.VoiceButton
 import prac.tanken.shigure.ui.subaci.ui.component.VoicesFlowRow
+import prac.tanken.shigure.ui.subaci.ui.voices.model.DailyVoiceUiState
+import prac.tanken.shigure.ui.subaci.ui.voices.model.VoicesGroupedUiState
 import prac.tanken.shigure.ui.subaci.R as TankenR
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,34 +70,56 @@ fun VoicesScreen(
     modifier: Modifier = Modifier,
     viewModel: VoicesViewModel,
 ) {
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState
 
     Column(modifier) {
-        if (isLoading) {
-            LoadingTopBar()
-            LoadingScreenBody(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
-        } else {
-            val dailyVoiceUiState by viewModel.dailyVoiceUiState
-            val voicesGrouped by viewModel.voicesGrouped
+        when (uiState.voicesGroupedUiState) {
+            VoicesGroupedUiState.Error -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text("Something went wrong.")
+                }
+            }
 
-            VoicesTopBar(
-                dailyVoiceUiState = dailyVoiceUiState,
-                onDailyVoice = viewModel::playDailyVoice,
-                voicesGroupedBy = voicesGrouped?.voicesGroupedBy,
-                onChangeVoicesGroupedBy = viewModel::updateVoicesGroupedBy,
-            )
-            VoicesScreen(
-                voicesGrouped = voicesGrouped,
-                onPlay = viewModel::onButtonClicked,
-                onAddToPlaylist = viewModel::addToPlaylist,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-            )
+            VoicesGroupedUiState.Loading -> {
+                LoadingTopBar()
+                LoadingScreenBody(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+            }
+
+            VoicesGroupedUiState.StandBy -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text("Please wait...")
+                }
+            }
+
+            is VoicesGroupedUiState.Success -> {
+                val dailyVoiceUiState = uiState.dailyVoiceUiState
+                val voicesGrouped = (uiState.voicesGroupedUiState as VoicesGroupedUiState.Success).voicesGrouped
+
+                VoicesTopBar(
+                    dailyVoiceUiState = dailyVoiceUiState,
+                    onDailyVoice = viewModel::playDailyVoice,
+                    voicesGroupedBy = voicesGrouped.voicesGroupedBy,
+                    onChangeVoicesGroupedBy = viewModel::updateVoicesGroupedBy,
+                )
+                VoicesScreen(
+                    voicesGrouped = voicesGrouped,
+                    onPlay = viewModel::onButtonClicked,
+                    onAddToPlaylist = viewModel::addToPlaylist,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                )
+            }
         }
     }
 }

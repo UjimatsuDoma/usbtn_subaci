@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import prac.tanken.shigure.ui.subaci.R as TankenR
 import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
+import prac.tanken.shigure.ui.subaci.data.model.voices.toReference
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
 import prac.tanken.shigure.ui.subaci.ui.NotoSansJP
 

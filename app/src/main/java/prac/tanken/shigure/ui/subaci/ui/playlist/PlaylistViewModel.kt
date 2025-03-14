@@ -17,6 +17,7 @@ import prac.tanken.shigure.ui.subaci.data.model.PlaylistEntity
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelected
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelectionVO
 import prac.tanken.shigure.ui.subaci.data.model.Voice
+import prac.tanken.shigure.ui.subaci.data.model.voices.toReference
 import prac.tanken.shigure.ui.subaci.data.player.MyPlayer
 import prac.tanken.shigure.ui.subaci.data.repository.PlaylistRepository
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
