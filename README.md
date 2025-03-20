@@ -22,10 +22,10 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
 - 2nd Edition "SuiCYAN": TBA
 
 # Features
-Voices: click to play, long press to add to playlist
-Sources: list of YouTube live streams where the voices are clipped from
+Voices: click to play, long press to add to playlist  
+Sources: list of YouTube live streams where the voices are clipped from  
 Playlist: create/rename/delete playlists, move single item up and down, click to play, supports loop playing  
-Daily Random Voice: self-check and update if needed, at launch time.
+Daily Random Voice: self-check and update if needed, at launch time.  
 
 # Notes
 
