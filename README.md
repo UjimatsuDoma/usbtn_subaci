@@ -15,21 +15,22 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
       - Revision 2: Introduce landscape layout and optimize navigation logic [Dec. 27, 2024 ~ Dec. 28, 2024]
       - Revision 3: Complete implementation of Playlist screen core features [Dec. 28, 2024 ~ Dec. 30, 2024]
     - Milestone 3: Re-arrange pages - merge All Voices screen and Categories screen, and implement Settings screen [Jan. 1, 2025 ~ Feb. 26, 2025]
-      - Revision 1: Introduce splash screen and optimize UI state save & load [TBA]
+      - Revision 1: Introduce splash screen and optimize UI state save & load [Feb. 27?, 2025 ~ TBA]
       - Revision 2: migrate to multi-module development [TBA]
     - Milestone 4: Introduce animation [TBA]
-- 1st Edition: TBA
+- 1st Edition "Master Up": TBA
+- 2nd Edition "SuiCYAN": TBA
 
 # Features
-All Voices: click to play, long press to add to playlist  
-Category: voices grouped by categories, click to play (cannot add to playlist from here)  
+Voices: click to play, long press to add to playlist
+Sources: list of YouTube live streams where the voices are clipped from
 Playlist: create/rename/delete playlists, move single item up and down, click to play, supports loop playing  
 Daily Random Voice: self-check and update if needed, at launch time.
 
 # Notes
 
-Limited Voice will NOT be implemented.
+Limited Voice will NOT be implemented, due to request from author of original website.
 
 # Technologies
 
-Jetpack Compose, Jetpack Navigation, Hilt, Kotlin Serialization, Kotlin DateTime API, Preferences DataStore, Room
+Jetpack Compose, Jetpack Navigation, Hilt, Kotlin Serialization, Kotlin DateTime API, Preferences DataStore, Room, etc.
