@@ -65,4 +65,8 @@
     <string name="playlist_upsert_name_label">名前</string>
     <string name="voices_group_dialog_title">グループ</string>
     <string name="app_badge_new">追加</string>
+    <string name="sources_tab_with_voices">ボイスあり</string>
+    <string name="sources_tab_without_voices">ボイスなし</string>
+    <string name="error_playlist_duplicate_item">このアイテムは既に存在しています。</string>
+    <string name="playlist_upsert_info_name_not_changed">名前は変更されていません。</string>
 </resources>

@@ -50,6 +50,8 @@ android {
         release {
             isMinifyEnabled = true
             isDebuggable = false
+            isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -193,14 +195,13 @@ tasks.register("downloadResource") {
                 val sourcesThumbnailPath = "${projectDir}/src/main/assets/subaciThumbs/"
                 sources.forEach { source ->
                     val id = source.videoId
-                    val downloadUrl = getMaxResolutionThumbUrl(id)
                     val fileName = "$id.jpg"
                     val downloadFile = File(sourcesThumbnailPath, fileName)
                     if (!downloadFile.exists()) {
+                        val downloadUrl = getMaxResolutionThumbUrl(id)
                         downloadFileFromUrl(
                             downloadUrl,
                             sourcesThumbnailPath + fileName,
-                            mapOf()
                         )
                     }
                 }

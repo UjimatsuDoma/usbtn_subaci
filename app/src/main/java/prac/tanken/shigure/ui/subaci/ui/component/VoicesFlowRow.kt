@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalLayoutApi::class)
+
 package prac.tanken.shigure.ui.subaci.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
@@ -25,9 +27,9 @@ import prac.tanken.shigure.ui.subaci.data.mock.voicesPreviewData
 import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.data.util.randomList
 import prac.tanken.shigure.ui.subaci.ui.theme.ShigureUiButtonAppComposeImplementationTheme
+import prac.tanken.shigure.ui.subaci.ui.voices.model.VoicesVO
 import com.microsoft.fluent.mobile.icons.R as FluentR
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun VoicesFlowRow(
     voices: List<Voice>,
@@ -133,5 +135,93 @@ private fun VoicesFlowRowPreview() = ShigureUiButtonAppComposeImplementationThem
 
     VoicesFlowRow(voices){
         VoiceButton(it)
+    }
+}
+
+@Composable
+fun TestVoicesFlowRow(
+    voices: List<VoicesVO>,
+    modifier: Modifier = Modifier,
+    initialMaxLines: Int = 10,
+    linesDeltaStep: Int = 5,
+    elementContent: @Composable (VoicesVO) -> Unit = {}
+) {
+    val totalItems = voices.size
+    val lazyThreshold = 20
+    if (totalItems <= lazyThreshold) {
+        FlowRow(
+            modifier = modifier
+                .padding(horizontal = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            content = {
+                voices.forEachIndexed { index, voice ->
+                    elementContent(voice)
+                }
+            }
+        )
+    } else {
+        var linesShown by rememberSaveable(voices) { mutableIntStateOf(initialMaxLines) }
+
+        val moreOrLessIndicator = @Composable { scope: ContextualFlowRowOverflowScope ->
+            val remainingItems = totalItems - scope.shownItemCount
+
+            SingleChoiceSegmentedButtonRow {
+                val showPlus = (remainingItems > 0)
+                val showMinus = (linesShown > initialMaxLines)
+                val minusIndex = if (showPlus) 1 else 0
+                val count = if (showPlus && showMinus) 2 else 1
+
+                if (showPlus) {
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = count),
+                        selected = false,
+                        onClick = { linesShown += linesDeltaStep },
+                        label = {
+                            Icon(
+                                painter = painterResource(FluentR.drawable.ic_fluent_add_24_regular),
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
+                if (showMinus) {
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = minusIndex,
+                            count = count
+                        ),
+                        selected = false,
+                        enabled = (linesShown > initialMaxLines),
+                        onClick = { linesShown -= linesDeltaStep },
+                        label = {
+                            Icon(
+                                painter = painterResource(FluentR.drawable.ic_fluent_subtract_24_regular),
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
+            }
+        }
+
+        ContextualFlowRow(
+            modifier = modifier
+                .padding(horizontal = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            maxLines = linesShown,
+            overflow = ContextualFlowRowOverflow.expandOrCollapseIndicator(
+                minRowsToShowCollapse = initialMaxLines,
+                expandIndicator = moreOrLessIndicator,
+                collapseIndicator = moreOrLessIndicator,
+            ),
+            itemCount = totalItems,
+            content = {
+                voices.forEachIndexed { index, voice ->
+                    elementContent(voice)
+                }
+            }
+        )
     }
 }

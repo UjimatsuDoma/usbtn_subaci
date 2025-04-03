@@ -4,13 +4,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import prac.tanken.shigure.ui.subaci.R
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.data.repository.SettingsRepository
 import prac.tanken.shigure.ui.subaci.data.util.ToastUtil
@@ -37,10 +38,12 @@ class AppViewModel @Inject constructor(
         val voicesLoaded = voicesFlow.map { it.isNotEmpty() }
         val categoriesLoaded = categoriesFlow.map { it.isNotEmpty() }
         val sourcesLoaded = sourcesFlow.map { it.isNotEmpty() }
-        voicesLoaded
-            .combine(categoriesLoaded) { f1, f2 -> f1 && f2 }
-            .combine(sourcesLoaded) { f1, f2 -> f1 && f2 }
+        combineTransform(voicesLoaded, categoriesLoaded, sourcesLoaded) { f1, f2, f3 ->
+            emit(f1 && f2 && f3)
+        }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    private var _settingsLoaded = MutableStateFlow(false)
+    val settingsLoaded = _settingsLoaded.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -49,7 +52,14 @@ class AppViewModel @Inject constructor(
                 loadCategories()
                 loadSources()
             }
-            appSettingsFlow.collect { appSettings -> appSettings?.let { _appSettings.value = it } }
+        }
+        viewModelScope.launch {
+            appSettingsFlow.collect { appSettings ->
+                appSettings?.let {
+                    _appSettings.value = it
+                    _settingsLoaded.value = true
+                }
+            }
         }
     }
 }

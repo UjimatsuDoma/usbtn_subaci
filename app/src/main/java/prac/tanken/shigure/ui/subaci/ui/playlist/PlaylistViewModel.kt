@@ -1,105 +1,133 @@
 package prac.tanken.shigure.ui.subaci.ui.playlist
 
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import prac.tanken.shigure.ui.subaci.data.model.PlaylistEntity
-import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelected
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelectionVO
-import prac.tanken.shigure.ui.subaci.data.model.Voice
-import prac.tanken.shigure.ui.subaci.data.model.voices.toReference
+import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.player.MyPlayer
 import prac.tanken.shigure.ui.subaci.data.repository.PlaylistRepository
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.data.util.ToastUtil
-import prac.tanken.shigure.ui.subaci.data.util.parseJsonString
-import prac.tanken.shigure.ui.subaci.ui.LoadingViewModel
+import prac.tanken.shigure.ui.subaci.domain.PlaylistUseCase
+import prac.tanken.shigure.ui.subaci.domain.UseCaseEvent
 import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistPlaybackIntent
+import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistPlaybackSettings
 import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistPlaybackState
 import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistUpsertError
 import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistUpsertIntent
 import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistUpsertState
-import prac.tanken.shigure.ui.subaci.R as TankenR
+import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistVO
+import prac.tanken.shigure.ui.subaci.ui.playlist.model.playlistNotSelectedVO
 import javax.inject.Inject
+import prac.tanken.shigure.ui.subaci.R as TankenR
 
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(
     val resRepository: ResRepository,
-    val playlistRepository: PlaylistRepository,
+    val playlistUseCase: PlaylistUseCase,
+    val myPlayer: MyPlayer,
     val toastUtil: ToastUtil,
-    val myPlayer: MyPlayer
-) : LoadingViewModel() {
-    // 全部语音数据。一次加载，永不更改。
-    private val _voices = mutableStateListOf<Voice>()
-    private val voices get() = _voices
-
-    // 全部播放列表数据。CRUD完备。
-    private var _playlists = mutableStateOf<List<PlaylistEntity>>(emptyList())
-    private val playlists get() = _playlists
-    val playlistsSelections = derivedStateOf { playlists.value.map { it.toSelectionVO() }.toList() }
-
-    // 选中的播放列表。
-    private var _selectedPlaylistEntity = mutableStateOf<PlaylistEntity?>(null)
-    private val selectedPlaylistEntity get() = _selectedPlaylistEntity
-    val selectedPlaylist = derivedStateOf { selectedPlaylistEntity.value?.toPlaylist(voices) }
-
-    // 播放状态
-    private var _playbackState =
-        MutableStateFlow<PlaylistPlaybackState>(PlaylistPlaybackState.Stopped)
-    val playbackState = _playbackState.asStateFlow()
-    private var _isLooping = MutableStateFlow(false)
-    val isLooping = _isLooping.asStateFlow()
-
-    // 创建/修改播放列表相关状态
-    private var _upsertState = MutableStateFlow<PlaylistUpsertState>(PlaylistUpsertState.Closed)
-    val upsertState = _upsertState.asStateFlow()
-
-    init {
-        loading(Dispatchers.IO) {
-            _voices.addAll(resRepository.loadVoices())
+) : ViewModel() {
+    // 协程相关
+    private fun playlistCoroutine(
+        dispatcher: CoroutineDispatcher = Dispatchers.Default,
+        block: suspend CoroutineScope.() -> Unit
+    ) {
+        val playlistViewModelScopeExceptionHandler = CoroutineExceptionHandler { _, _ ->
+            playbackState.value = PlaylistPlaybackState.Error
         }
-        observePlaylists()
-        observePlaylistSelection()
-        observeIsLooping()
+        val context =
+            viewModelScope.coroutineContext + dispatcher + playlistViewModelScopeExceptionHandler
+
+        viewModelScope.launch(context) {
+            block()
+        }
     }
 
+    // 所有播放列表选项
+    var playlistSelections = mutableStateOf<List<PlaylistSelectionVO>>(emptyList())
+        private set
+
+    // 播放状态
+    var playbackState = mutableStateOf<PlaylistPlaybackState>(PlaylistPlaybackState.StandBy)
+        private set
+    private val _playbackSettings = MutableStateFlow(PlaylistPlaybackSettings())
+    val playbackSettings = _playbackSettings.asStateFlow()
+
+    // 创建/修改播放列表相关状态
+    private var _upsertState = mutableStateOf<PlaylistUpsertState>(PlaylistUpsertState.Closed)
+    val upsertState get() = _upsertState
+
+    init {
+        observePlaylists()
+        observePlaylistSelection()
+        observePlaybackSettings()
+    }
+
+    // 启动数据流
     private fun observePlaylists() =
-        viewModelScope.launch(Dispatchers.Default) {
-            playlistRepository.getAllPlaylists()
-                .collect {
-                    _playlists.value = it
+        playlistCoroutine(Dispatchers.Default) {
+            playlistUseCase.playlistsFlow
+                .collect { playlists ->
+                    playlistSelections.value = playlists.map { it.toSelectionVO() }.toList()
                 }
         }
 
     private fun observePlaylistSelection() =
-        viewModelScope.launch(Dispatchers.Default) {
-            playlistRepository.selectedPlaylist
-                .collect { _selectedPlaylistEntity.value = it }
-        }
+        playlistCoroutine(Dispatchers.Default) {
+            playlistUseCase.selectedPlaylist
+                .collect { event ->
+                    when (event) {
+                        is UseCaseEvent.Error -> {
+                            toastUtil.toast(event.message)
+                            playbackState.value = PlaylistPlaybackState.Error
+                        }
 
-    private fun observeIsLooping() =
-        viewModelScope.launch(Dispatchers.Default) {
-            isLooping.collect { looping ->
-                _playbackState.update { state ->
-                    when (state) {
-                        is PlaylistPlaybackState.Playing -> state.copy(looping = looping)
-                        PlaylistPlaybackState.Stopped -> state
+                        is UseCaseEvent.Info -> {
+                            toastUtil.toast(event.message)
+                        }
+
+                        UseCaseEvent.Loading -> {
+                            playbackState.value = PlaylistPlaybackState.Loading
+                        }
+
+                        is UseCaseEvent.Success<*> -> {
+                            playbackState.value =
+                                if (event.data is PlaylistVO) {
+                                    val selected = event.data
+                                    if (selected == playlistNotSelectedVO)
+                                        PlaylistPlaybackState.StandBy
+                                    else
+                                        PlaylistPlaybackState.Loaded.Stopped(selected)
+                                } else PlaylistPlaybackState.Error
+                        }
                     }
                 }
-                myPlayer.toggleLooping(looping)
+        }
+
+    private fun observePlaybackSettings() =
+        playlistCoroutine(Dispatchers.Default) {
+            playbackSettings.collect { settings ->
+                with(settings) {
+                    myPlayer.toggleLooping(looping)
+                }
             }
         }
 
+    // 播放状态相关
+    /**
+     * 点击播放按钮的行为。
+     */
     fun dispatchPlaybackIntent(intent: PlaylistPlaybackIntent) {
         when (intent) {
             PlaylistPlaybackIntent.Play -> playList()
@@ -107,71 +135,138 @@ class PlaylistViewModel @Inject constructor(
         }
     }
 
-    fun playItem(index: Int) =
+    /**
+     * 播放单个项目。
+     *
+     * @param index 该项目在播放列表中的序号
+     */
+    fun playItem(index: Int) {
+        require(playbackState.value is PlaylistPlaybackState.Loaded.Stopped) {
+            "Illegal state: ${playbackState.javaClass.simpleName}"
+        }
+
+        val currentState = playbackState.value as PlaylistPlaybackState.Loaded.Stopped
         myPlayer.playByReference(
-            voices.filter { it.id == selectedPlaylist.value?.playlistItems[index]?.id }[0].toReference(),
-            onStart = { _playbackState.update { PlaylistPlaybackState.Playing(index) } },
-            onComplete = { _playbackState.update { PlaylistPlaybackState.Stopped } }
+            VoiceReference(currentState.playlist.voices[index].id),
+            onStart = { playbackState.value = currentState.play(index) },
+            onComplete = { playbackState.value = currentState }
         )
+    }
 
-    fun playList() =
-        selectedPlaylist.value?.let { playlist ->
-            myPlayer.playByList(
-                playlist.playlistItems.map { it.toReference() },
-                onStart = { index -> _playbackState.update { PlaylistPlaybackState.Playing(index) } },
-                onComplete = { _playbackState.update { PlaylistPlaybackState.Stopped } },
-            )
+    /**
+     * 播放整个列表。
+     */
+    fun playList() {
+        require(playbackState.value is PlaylistPlaybackState.Loaded.Stopped) {
+            "Illegal state: ${playbackState.javaClass.simpleName}"
         }
 
+        val currentState = playbackState.value as PlaylistPlaybackState.Loaded.Stopped
+        myPlayer.playByList(
+            currentState.playlist.voices.map { VoiceReference(it.id) },
+            onStart = { index -> playbackState.value = currentState.play(index) },
+            onComplete = { playbackState.value = currentState }
+        )
+    }
+
+    /**
+     * 调整是否循环播放。
+     */
     fun toggleLooping() = viewModelScope.launch {
-        _isLooping.update { !it }
+        _playbackSettings.update {
+            val oldValue = it.looping
+            it.copy(looping = !oldValue)
+        }
     }
 
+    /**
+     * 停止播放。
+     */
     fun stop() {
+        require(playbackState.value is PlaylistPlaybackState.Loaded.Playing) {
+            "Illegal state: ${playbackState.javaClass.simpleName}"
+        }
+
+        val currentState = playbackState.value as PlaylistPlaybackState.Loaded.Playing
         myPlayer.stopIfPlaying()
-        _playbackState.update { PlaylistPlaybackState.Stopped }
+        playbackState.value = currentState.stop()
     }
 
+    // 播放列表作为整体的操作
+    /**
+     * 选择数据库中存储的单个播放列表。
+     *
+     * @param id 播放列表实体在数据库中的主键ID
+     */
     fun selectPlaylist(id: Long) {
-        loading(Dispatchers.IO) {
-            playlistRepository.selectPlaylist(PlaylistSelected(id))
+        require(playbackState.value is PlaylistPlaybackState.Loaded) {
+            "Illegal state: ${playbackState.javaClass.simpleName}"
+        }
+
+        playlistCoroutine(Dispatchers.IO) {
+            playlistUseCase.selectPlaylist(id)
         }
     }
 
-    fun unselectPlaylist() {
-        loading(Dispatchers.IO) {
-            playlistRepository.unselectPlaylist()
+    /**
+     * 删除当前选中的播放列表。
+     */
+    fun deletePlaylist() {
+        require(playbackState.value is PlaylistPlaybackState.Loaded) {
+            "Illegal state: ${playbackState.value.javaClass.simpleName}"
         }
-    }
 
-    suspend fun createPlaylist() {
-        val createdId = playlistRepository.testCreatePlaylist()
-        selectPlaylist(createdId)
-    }
-
-    suspend fun createPlaylist(name: String) {
-        val createdId = playlistRepository.createPlaylist(name)
-        selectPlaylist(createdId)
-    }
-
-    suspend fun updateUpsertState(playlistUpsertState: PlaylistUpsertState) =
-        when (playlistUpsertState) {
-            PlaylistUpsertState.Closed -> _upsertState.update { playlistUpsertState }
-            is PlaylistUpsertState.Draft -> {
-                val draft = playlistUpsertState
-                var errors: List<PlaylistUpsertError> = emptyList()
-                if (draft.name.isEmpty()) {
-                    errors = errors.toMutableList().apply {
-                        add(PlaylistUpsertError.BlankName)
-                    }.toList()
-                } else if (playlistRepository.playlistExists(draft.name)) {
-                    errors = errors.toMutableList().apply {
-                        add(PlaylistUpsertError.ReplicatedName)
-                    }.toList()
-                }
-                _upsertState.update { draft.copy(errors = errors) }
+        playlistCoroutine {
+            val actualState = playbackState.value as PlaylistPlaybackState.Loaded
+            val event = playlistUseCase.deletePlaylist(actualState.playlist.id)
+            if (event is UseCaseEvent.Error) {
+                toastUtil.toast(event.message)
             }
         }
+    }
+
+    /**
+     * 更改添加或重命名播放列表对话框的界面状态。
+     * 目前的缺陷是：仅能根据打开、关闭管理，不能区分是添加还是重命名。
+     *
+     * @param playlistUpsertState 前述对话框的界面状态的目标值
+     */
+    fun updateUpsertState(
+        playlistUpsertState: PlaylistUpsertState
+    ) {
+        when (playlistUpsertState) {
+            PlaylistUpsertState.Closed -> _upsertState.value = playlistUpsertState
+            is PlaylistUpsertState.Draft -> {
+                // 重点：文本框的值更新必须同步，否则会导致输入文本错乱。
+                _upsertState.value = playlistUpsertState
+                // 检查错误
+                viewModelScope.launch {
+                    val validatedDraft = validateUpsertDraft(playlistUpsertState)
+                    _upsertState.value = validatedDraft
+                }
+            }
+        }
+    }
+
+    private suspend fun validateUpsertDraft(
+        draft: PlaylistUpsertState.Draft
+    ): PlaylistUpsertState.Draft {
+        var errors = mutableListOf<PlaylistUpsertError>()
+        if (draft.name.isEmpty()) {
+            errors += PlaylistUpsertError.BlankName
+        } else if (playlistUseCase.selectPlaylistByName(draft.name) != null) {
+            if (draft.action is PlaylistUpsertIntent.Insert)
+                errors += PlaylistUpsertError.ReplicatedName
+            else {
+                val action = draft.action as PlaylistUpsertIntent.Update
+                val playlist = playlistUseCase.selectPlaylistById(action.originalId)
+                errors += if (draft.name == playlist.playlistName)
+                    PlaylistUpsertError.NameNotChanged
+                else PlaylistUpsertError.ReplicatedName
+            }
+        }
+        return draft.copy(errors = errors.toList())
+    }
 
     private suspend fun upsertPlaylist() {
         require(upsertState.value is PlaylistUpsertState.Draft) {
@@ -180,14 +275,20 @@ class PlaylistViewModel @Inject constructor(
 
         val draft = upsertState.value as PlaylistUpsertState.Draft
         when (draft.action) {
-            PlaylistUpsertIntent.Insert -> createPlaylist(draft.name)
-            is PlaylistUpsertIntent.Update -> selectedPlaylistEntity.value?.let { playlist ->
-                playlistRepository.updatePlaylist(playlist.copy(playlistName = draft.name))
+            PlaylistUpsertIntent.Insert -> playlistUseCase.createPlaylist(draft.name)
+
+            is PlaylistUpsertIntent.Update -> {
+                require(playbackState.value is PlaylistPlaybackState.Loaded.Stopped) {
+                    resRepository.stringRes(TankenR.string.error_illegal_state)
+                }
+
+                val actualState = playbackState.value as PlaylistPlaybackState.Loaded.Stopped
+                playlistUseCase.renamePlaylist(actualState.playlist.id, draft.name)
             }
         }
     }
 
-    fun showInsertDialog() = viewModelScope.launch() {
+    fun showInsertDialog() = viewModelScope.launch {
         updateUpsertState(
             PlaylistUpsertState.Draft(
                 action = PlaylistUpsertIntent.Insert,
@@ -196,18 +297,19 @@ class PlaylistViewModel @Inject constructor(
         )
     }
 
-    fun showUpdateDialog(vo: PlaylistSelectionVO) = viewModelScope.launch() {
+    fun showUpdateDialog(playbackState: PlaylistPlaybackState.Loaded) = viewModelScope.launch {
+        val selectedPlaylist = playbackState.playlist
         updateUpsertState(
             PlaylistUpsertState.Draft(
                 action = PlaylistUpsertIntent.Update(
-                    originalId = vo.id
+                    originalId = selectedPlaylist.id
                 ),
-                name = vo.playlistName
+                name = selectedPlaylist.playlistName
             )
         )
     }
 
-    fun submitUpsert() = viewModelScope.launch(Dispatchers.Default) {
+    fun submitUpsert() = viewModelScope.launch {
         upsertPlaylist()
         updateUpsertState(PlaylistUpsertState.Closed)
     }
@@ -216,51 +318,42 @@ class PlaylistViewModel @Inject constructor(
         updateUpsertState(PlaylistUpsertState.Closed)
     }
 
-    suspend fun deletePlaylist() = selectedPlaylistEntity.value?.let {
-        withContext(Dispatchers.IO) {
-            unselectPlaylist()
-            playlistRepository.deletePlaylist(it)
-            playlistRepository.getMaxId()?.let { selectPlaylist(it) }
+    // 播放列表内部项目的操作
+    /**
+     * 移动播放列表内的单个项目。
+     * 目前仅支持跟前面或后面一个项目交换位置。
+     *
+     * @param index 要移动的项目在播放列表内部的序号
+     * @param moveUp 指定是向上还是向下移动，为true表示向上。
+     */
+    fun movePlaylistItem(index: Int, moveUp: Boolean) {
+        if (playbackState.value !is PlaylistPlaybackState.Loaded.Stopped) {
+            val message = "Illegal state: ${playbackState.javaClass.simpleName}"
+            throw IllegalStateException(message)
+        }
+
+        val actualState = playbackState.value as PlaylistPlaybackState.Loaded.Stopped
+        playlistCoroutine {
+            playlistUseCase.movePlaylistItem(
+                plistId = actualState.playlist.id,
+                index = index,
+                moveUp = moveUp
+            )
         }
     }
 
-    fun movePlaylistItem(index: Int, moveUp: Boolean) =
-        selectedPlaylistEntity.value?.let { playlist ->
-            val items = parseJsonString<List<String>>(playlist.playlistItems)
-
-            require(index in items.indices) {
-                resRepository.stringRes(TankenR.string.error_illegal_index)
-            }
-            val moveUpValid = moveUp && index in 1..items.lastIndex
-            val moveDownValid = !moveUp && index in 0 until items.lastIndex
-            require(moveUpValid || moveDownValid) {
-                resRepository.stringRes(TankenR.string.error_playlist_move_item_oob)
-            }
-
-            val targetIndex = if (moveUp) index - 1 else index + 1
-            val newArr = items.toMutableList().also { arr ->
-                arr[index] = arr[targetIndex].apply {
-                    arr[targetIndex] = arr[index]
-                }
-            }.toList()
-            val newArrStr = Json.encodeToString(newArr)
-            viewModelScope.launch(Dispatchers.Default) {
-                playlistRepository.updatePlaylist(playlist.copy(playlistItems = newArrStr))
-            }
+    fun removePlaylistItem(index: Int) {
+        if (playbackState.value !is PlaylistPlaybackState.Loaded.Stopped) {
+            val message = "Illegal state: ${playbackState.javaClass.simpleName}"
+            throw IllegalStateException(message)
         }
 
-    fun removePlaylistItem(index: Int) =
-        selectedPlaylistEntity.value?.let { playlist ->
-            val items = parseJsonString<List<String>>(playlist.playlistItems)
-
-            require(index in items.indices) {
-                resRepository.stringRes(TankenR.string.error_illegal_index)
-            }
-
-            val newArr = items.toMutableList().apply { removeAt(index) }.toList()
-            val newArrStr = Json.encodeToString(newArr)
-            viewModelScope.launch(Dispatchers.Default) {
-                playlistRepository.updatePlaylist(playlist.copy(playlistItems = newArrStr))
-            }
+        val actualState = playbackState.value as PlaylistPlaybackState.Loaded.Stopped
+        playlistCoroutine {
+            playlistUseCase.removePlaylistItem(
+                plistId = actualState.playlist.id,
+                index = index,
+            )
         }
+    }
 }

@@ -1,6 +1,5 @@
 package prac.tanken.shigure.ui.subaci.data.player
 
-import android.content.res.AssetManager
 import android.media.MediaPlayer
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
@@ -61,7 +60,6 @@ class MyPlayer @Inject constructor(
                 vr = list[index],
                 onStart = { onStart(index) },
                 onComplete = {
-//                    onComplete()
                     if (index < list.lastIndex)
                         play(index + 1)
                     else if(isLooping)

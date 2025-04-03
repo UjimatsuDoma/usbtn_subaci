@@ -8,7 +8,9 @@ import javax.inject.Inject
 class ToastUtil @Inject constructor(
     @ApplicationContext val appContext: Context
 ) {
-    fun toast(message: String) = Toast.makeText(
-        appContext, message, Toast.LENGTH_SHORT
-    ).show()
+    fun toast(message: String) = {
+        Toast.makeText(
+            appContext, message, Toast.LENGTH_SHORT
+        ).show()
+    }.invoke()
 }

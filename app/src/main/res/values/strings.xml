@@ -66,4 +66,8 @@
     <string name="playlist_upsert_name_label">Name</string>
     <string name="voices_group_dialog_title">Select group</string>
     <string name="app_badge_new">NEW</string>
+    <string name="sources_tab_with_voices">w/ voices</string>
+    <string name="sources_tab_without_voices">w/o voices</string>
+    <string name="error_playlist_duplicate_item">Item already exists in playlist.</string>
+    <string name="playlist_upsert_info_name_not_changed">Enter a different name.</string>
 </resources>

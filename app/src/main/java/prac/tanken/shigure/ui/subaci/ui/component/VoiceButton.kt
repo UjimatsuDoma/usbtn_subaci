@@ -16,6 +16,7 @@ import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.model.voices.toReference
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
 import prac.tanken.shigure.ui.subaci.ui.NotoSansJP
+import prac.tanken.shigure.ui.subaci.ui.voices.model.VoicesVO
 
 @Composable
 fun VoiceButton(
@@ -34,6 +35,28 @@ fun VoiceButton(
         modifier = Modifier.weight(1f)
     )
     if (voice.new == true) {
+        Spacer(Modifier.size(4.dp))
+        Badge { Text(stringResource(TankenR.string.app_badge_new)) }
+    }
+}
+
+@Composable
+fun TestVoiceButton(
+    vo: VoicesVO,
+    modifier: Modifier = Modifier,
+    onPlay: (VoiceReference) -> Unit = {},
+    onLongPress: CallbackInvokedAsIs = {},
+) = AdvancedButton(
+    onClick = { onPlay(vo.toReference()) },
+    onLongPress = onLongPress,
+    contentFontFamily = NotoSansJP,
+    modifier = modifier.width(IntrinsicSize.Max)
+) {
+    Text(
+        text = vo.label,
+        modifier = Modifier.weight(1f)
+    )
+    if (vo.new == true) {
         Spacer(Modifier.size(4.dp))
         Badge { Text(stringResource(TankenR.string.app_badge_new)) }
     }

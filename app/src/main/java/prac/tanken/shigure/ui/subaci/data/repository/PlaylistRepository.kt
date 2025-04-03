@@ -10,8 +10,6 @@ import prac.tanken.shigure.ui.subaci.data.model.PlaylistEntity
 import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelected
 import prac.tanken.shigure.ui.subaci.data.model.playlistNotSelected
 import javax.inject.Inject
-import kotlin.collections.filter
-import kotlin.collections.isNotEmpty
 
 class PlaylistRepository @Inject constructor(
     playlistDatabase: PlaylistDatabase,
@@ -19,23 +17,13 @@ class PlaylistRepository @Inject constructor(
     val playlistDao = playlistDatabase.playlistDao()
     val playlistSelectedDao = playlistDatabase.playlistSelectedDao()
 
-    fun getAllPlaylists() = playlistDao.getAll()
-    fun getSelected() = playlistSelectedDao.getSelected()
+    // 所有播放列表数据的流
+    val playlistsFlow = playlistDao.getAll()
+    // 播放列表选择项数据的流
+    val playlistSelectedFlow = playlistSelectedDao.getSelected()
         .map {
-            it.filter { it.position == 1 }.toList().let {
-                if (it.isNotEmpty()) it[0] else playlistNotSelected
-            }
-        }
-
-    val selectedPlaylist = getAllPlaylists()
-        .combineTransform(getSelected()) { playlists, selected ->
-            if (playlists.isNotEmpty()) {
-                val playlistsFiltered = playlists.filter { it.id == selected.selectedId }
-                if (playlistsFiltered.isNotEmpty()) {
-                    val selectedPlaylist = playlistsFiltered[0]
-                    emit(selectedPlaylist)
-                }
-            }
+            if(it.isNotEmpty()) it.first()
+            else playlistNotSelected
         }
 
     @WorkerThread
@@ -49,15 +37,13 @@ class PlaylistRepository @Inject constructor(
     }
 
     @WorkerThread
-    suspend fun createPlaylist(name: String) = withContext(Dispatchers.IO) {
-        playlistDao.createPlaylist(name)
+    suspend fun getByName(name: String) = withContext(Dispatchers.IO) {
+        return@withContext playlistDao.getByName(name)
     }
 
     @WorkerThread
-    suspend fun testCreatePlaylist(): Long = withContext(Dispatchers.IO) {
-        val maxId = playlistDao.getAutoIncrement()?.let { it + 1 } ?: 1
-        playlistDao.createPlaylist("Playlist $maxId")
-        return@withContext maxId
+    suspend fun createPlaylist(name: String) = withContext(Dispatchers.IO) {
+        playlistDao.createPlaylist(name)
     }
 
     @WorkerThread
@@ -66,8 +52,8 @@ class PlaylistRepository @Inject constructor(
     }
 
     @WorkerThread
-    suspend fun selectPlaylist(playlistSelected: PlaylistSelected) = withContext(Dispatchers.IO) {
-        playlistSelectedDao.selectPlaylist(playlistSelected)
+    suspend fun selectPlaylist(id: Long) = withContext(Dispatchers.IO) {
+        playlistSelectedDao.selectPlaylist(PlaylistSelected(id))
     }
 
     @WorkerThread

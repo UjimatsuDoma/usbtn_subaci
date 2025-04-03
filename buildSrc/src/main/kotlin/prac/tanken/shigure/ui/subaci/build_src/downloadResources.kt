@@ -115,19 +115,17 @@ fun getMaxResolutionThumbUrl(videoId: String): String {
     val resolutions = listOf(
         "maxresdefault",
         "hq720",
-        "sddefault",
-        "hqdefault", "0",
         "mqdefault",
-        "default", "1", "2", "3"
     )
     var result = ""
     for (resolution in resolutions) {
-        val url = "http://img.youtube.com/vi/$videoId/$resolution.jpg"
+        val url = "http://i3.ytimg.com/vi/$videoId/$resolution.jpg"
         val con = url(url).openConnection() as HttpURLConnection
         con.requestMethod = "GET"
         con.connect()
         if (con.responseCode == 200) {
             result = url
+            con.disconnect()
             break
         }
     }
@@ -137,7 +135,7 @@ fun getMaxResolutionThumbUrl(videoId: String): String {
 fun downloadFileFromUrl(
     url: String,
     dest: String,
-    headerOptions: Map<String, String>
+    headerOptions: Map<String, String> = mapOf(),
 ) = try {
     // 创建HTTP连接
     val con = (URL(url).openConnection() as HttpURLConnection).apply {

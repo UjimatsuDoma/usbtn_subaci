@@ -22,6 +22,12 @@ import prac.tanken.shigure.ui.subaci.data.preferences.voicesDataStore
 import prac.tanken.shigure.ui.subaci.data.repository.PlaylistRepository
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.data.repository.SettingsRepository
+import prac.tanken.shigure.ui.subaci.data.repository.VoicesRepository
+import prac.tanken.shigure.ui.subaci.data.util.ToastUtil
+import prac.tanken.shigure.ui.subaci.domain.PlaylistUseCase
+import prac.tanken.shigure.ui.subaci.domain.DailyVoiceUseCase
+import prac.tanken.shigure.ui.subaci.domain.SourcesUseCase
+import prac.tanken.shigure.ui.subaci.domain.VoicesUseCase
 import javax.inject.Singleton
 
 @Module
@@ -42,6 +48,33 @@ object DataModule {
     fun providePlaylistRepository(
         playlistDatabase: PlaylistDatabase,
     ) = PlaylistRepository(playlistDatabase)
+
+    @Singleton
+    @Provides
+    fun provideDailyVoiceUseCase(
+        resRepository: ResRepository,
+        voicesRepository: VoicesRepository,
+    ) = DailyVoiceUseCase(resRepository, voicesRepository)
+
+    @Singleton
+    @Provides
+    fun provideVoicesUseCase(
+        resRepository: ResRepository,
+        voicesRepository: VoicesRepository,
+    ) = VoicesUseCase(resRepository, voicesRepository)
+
+    @Singleton
+    @Provides
+    fun provideSourcesUseCase(
+        resRepository: ResRepository,
+    ) = SourcesUseCase(resRepository)
+
+    @Singleton
+    @Provides
+    fun providePlaylistUseCase(
+        playlistRepository: PlaylistRepository,
+        resRepository: ResRepository,
+    ) = PlaylistUseCase(playlistRepository, resRepository)
 
     @Singleton
     @Provides

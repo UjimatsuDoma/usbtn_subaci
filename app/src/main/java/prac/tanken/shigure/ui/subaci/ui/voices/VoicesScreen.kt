@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -44,13 +45,11 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceGroup
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGrouped
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGroupedBy
-import prac.tanken.shigure.ui.subaci.data.model.voices.toReference
 import prac.tanken.shigure.ui.subaci.data.model.voices.voicesGroupedByItems
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
 import prac.tanken.shigure.ui.subaci.data.util.combineKey
@@ -58,8 +57,8 @@ import prac.tanken.shigure.ui.subaci.ui.NotoSerifJP
 import prac.tanken.shigure.ui.subaci.ui.NotoSerifMultiLang
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingTopBar
-import prac.tanken.shigure.ui.subaci.ui.component.VoiceButton
-import prac.tanken.shigure.ui.subaci.ui.component.VoicesFlowRow
+import prac.tanken.shigure.ui.subaci.ui.component.TestVoiceButton
+import prac.tanken.shigure.ui.subaci.ui.component.TestVoicesFlowRow
 import prac.tanken.shigure.ui.subaci.ui.voices.model.DailyVoiceUiState
 import prac.tanken.shigure.ui.subaci.ui.voices.model.VoicesGroupedUiState
 import prac.tanken.shigure.ui.subaci.R as TankenR
@@ -74,12 +73,14 @@ fun VoicesScreen(
 
     Column(modifier) {
         when (uiState.voicesGroupedUiState) {
-            VoicesGroupedUiState.Error -> {
+            is VoicesGroupedUiState.Error -> {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    Text("Something went wrong.")
+                    val actualState = uiState.voicesGroupedUiState as VoicesGroupedUiState.Error
+
+                    Text("Something went wrong.\n${actualState.message}")
                 }
             }
 
@@ -103,7 +104,8 @@ fun VoicesScreen(
 
             is VoicesGroupedUiState.Success -> {
                 val dailyVoiceUiState = uiState.dailyVoiceUiState
-                val voicesGrouped = (uiState.voicesGroupedUiState as VoicesGroupedUiState.Success).voicesGrouped
+                val voicesGrouped =
+                    (uiState.voicesGroupedUiState as VoicesGroupedUiState.Success).voicesGrouped
 
                 VoicesTopBar(
                     dailyVoiceUiState = dailyVoiceUiState,
@@ -202,13 +204,13 @@ private fun VoicesTopBar(
 
 @Composable
 private fun VoicesScreen(
+    modifier: Modifier = Modifier,
     voicesGrouped: VoicesGrouped?,
     onPlay: (VoiceReference) -> Unit,
     onAddToPlaylist: (VoiceReference) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
+    val lazyListState: LazyListState = rememberLazyListState()
 
     LazyColumn(
         state = lazyListState,
@@ -231,12 +233,12 @@ private fun VoicesScreen(
                         .fillMaxWidth()
                         .padding(16.dp)
                 )
-                VoicesFlowRow(voices) { voice ->
+                TestVoicesFlowRow(voices) { voice ->
                     var expanded by remember { mutableStateOf(false) }
 
                     Column {
-                        VoiceButton(
-                            voice = voice,
+                        TestVoiceButton(
+                            vo = voice,
                             onPlay = onPlay,
                             onLongPress = { expanded = true },
                         )

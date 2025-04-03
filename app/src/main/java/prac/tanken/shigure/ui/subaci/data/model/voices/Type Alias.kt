@@ -1,7 +1,7 @@
 package prac.tanken.shigure.ui.subaci.data.model.voices
 
-import prac.tanken.shigure.ui.subaci.data.model.Voice
+import prac.tanken.shigure.ui.subaci.ui.voices.model.VoicesVO
 
-typealias VoiceGroups = Map<String, List<Voice>>
-typealias VoiceGroup = Map.Entry<String, List<Voice>>
-fun mutableVoiceGroups() = mutableMapOf<String, List<Voice>>()
+typealias VoiceGroups = Map<String, List<VoicesVO>>
+typealias VoiceGroup = Map.Entry<String, List<VoicesVO>>
+fun mutableVoiceGroups() = mutableMapOf<String, List<VoicesVO>>()

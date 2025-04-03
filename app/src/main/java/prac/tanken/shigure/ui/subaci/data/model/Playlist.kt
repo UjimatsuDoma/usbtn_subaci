@@ -45,6 +45,7 @@ data class PlaylistEntity(
 )
 data class PlaylistSelected(
     @ColumnInfo("selected_id") val selectedId: Long,
+    // 这个主键存在的意义：用于一个逻辑，该逻辑保证表里面只有一个数据
     @PrimaryKey val position: Int = 1,
 )
 
@@ -54,14 +55,14 @@ data class Playlist(
     val id: Long,
     val playlistName: String,
     val playlistItems: List<Voice>,
-) {
-    fun toSelectionVO() = PlaylistSelectionVO(
-        id = id,
-        playlistName = playlistName
-    )
-}
+)
 
 data class PlaylistSelectionVO(
     val id: Long,
     val playlistName: String,
+)
+
+fun Playlist.toSelectionVO() = PlaylistSelectionVO(
+    id = id,
+    playlistName = playlistName
 )

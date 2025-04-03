@@ -10,6 +10,7 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -21,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import prac.tanken.shigure.ui.subaci.ui.app.BottomBarLabelBehaviour
 import prac.tanken.shigure.ui.subaci.ui.playlist.PlaylistScreen
 import prac.tanken.shigure.ui.subaci.ui.playlist.PlaylistViewModel
@@ -90,24 +92,34 @@ fun MainNavHost(
     val playlistViewModel = hiltViewModel<PlaylistViewModel>()
     val settingsViewModel = hiltViewModel<SettingsViewModel>()
 
-    NavHost(
-        navController = navController,
-        startDestination = MainDestinations.Voices,
-        modifier = modifier
+    val saveableStateHolder = rememberSaveableStateHolder()
+    val backStackEntry = navController.currentBackStackEntryAsState().value
+    val currentRoute = backStackEntry?.destination?.route
+
+    saveableStateHolder.SaveableStateProvider(
+        key = currentRoute ?: ""
     ) {
-        composable<MainDestinations.Voices> {
-            VoicesScreen(viewModel = voicesViewModel)
-        }
-        composable<MainDestinations.Sources> {
-            SourcesScreen(viewModel = sourcesViewModel)
-        }
-        composable<MainDestinations.Playlist> {
-            PlaylistScreen(viewModel = playlistViewModel)
-        }
-        composable<MainDestinations.Settings> {
-            SettingsScreen(viewModel = settingsViewModel)
+        NavHost(
+            navController = navController,
+            startDestination = MainDestinations.Voices,
+            modifier = modifier
+        ) {
+            composable<MainDestinations.Voices> {
+                VoicesScreen(viewModel = voicesViewModel)
+            }
+            composable<MainDestinations.Sources> {
+                SourcesScreen(viewModel = sourcesViewModel)
+            }
+            composable<MainDestinations.Playlist> {
+                PlaylistScreen(viewModel = playlistViewModel)
+            }
+            composable<MainDestinations.Settings> {
+                SettingsScreen(viewModel = settingsViewModel)
+            }
         }
     }
+
+
 }
 
 @Composable
@@ -139,8 +151,14 @@ fun MainNavigationBar(
             },
             selected = selected,
             onClick = {
-                navController.popBackStack()
-                navController.navigate(route = dest)
+                navController.navigate(route = dest) {
+                    popUpTo(route = currentDestination?.route!!) {
+                        inclusive = true
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
             }
         )
     }

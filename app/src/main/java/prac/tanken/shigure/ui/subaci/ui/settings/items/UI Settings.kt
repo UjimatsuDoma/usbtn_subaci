@@ -1,6 +1,7 @@
 package prac.tanken.shigure.ui.subaci.ui.settings.items
 
 import android.os.Build
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -136,7 +137,7 @@ private fun ColumnScope.AppColorSetting(
                 .clickable { expanded = !expanded }
         )
 
-        if (expanded) {
+        AnimatedVisibility (expanded) {
             Row(
                 modifier = Modifier
                     .height(intrinsicSize = IntrinsicSize.Max)
@@ -231,7 +232,7 @@ private fun ColumnScope.AppDarkModeSetting(
                 .clickable { expanded = !expanded }
         )
 
-        if (expanded) {
+        AnimatedVisibility (expanded) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
@@ -335,7 +336,7 @@ private fun ColumnScope.BottomBarLabelBehaviourSetting(
                 .clickable { expanded = !expanded }
         )
 
-        if (expanded) {
+        AnimatedVisibility (expanded) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier

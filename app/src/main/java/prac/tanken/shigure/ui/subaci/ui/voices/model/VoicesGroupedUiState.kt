@@ -17,5 +17,10 @@ sealed interface VoicesGroupedUiState {
     ) : VoicesGroupedUiState
 
     @Serializable
-    data object Error : VoicesGroupedUiState
+    data class Error(val message: String) : VoicesGroupedUiState {
+        companion object {
+            fun fromThrowable(throwable: Throwable) =
+                Error(throwable.message ?: throwable.javaClass.simpleName)
+        }
+    }
 }

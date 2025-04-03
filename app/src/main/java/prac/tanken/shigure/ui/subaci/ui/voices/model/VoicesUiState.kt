@@ -8,4 +8,4 @@ data class VoicesUiState(
     val voicesGroupedUiState: VoicesGroupedUiState,
 )
 
-val initialVoicesUiState = VoicesUiState(DailyVoiceUiState.Loading, VoicesGroupedUiState.StandBy)
+val initialVoicesUiState = VoicesUiState(DailyVoiceUiState.StandBy, VoicesGroupedUiState.StandBy)

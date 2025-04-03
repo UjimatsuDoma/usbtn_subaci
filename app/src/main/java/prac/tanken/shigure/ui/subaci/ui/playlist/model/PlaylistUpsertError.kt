@@ -3,10 +3,13 @@ package prac.tanken.shigure.ui.subaci.ui.playlist.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class PlaylistUpsertError {
+sealed interface PlaylistUpsertError {
     @Serializable
-    data object BlankName : PlaylistUpsertError()
+    data object BlankName : PlaylistUpsertError
 
     @Serializable
-    data object ReplicatedName : PlaylistUpsertError()
+    data object ReplicatedName : PlaylistUpsertError
+
+    @Serializable
+    data object NameNotChanged : PlaylistUpsertError
 }

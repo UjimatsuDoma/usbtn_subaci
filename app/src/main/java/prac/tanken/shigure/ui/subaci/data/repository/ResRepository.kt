@@ -28,25 +28,22 @@ class ResRepository @Inject constructor(
     private var _sourcesFlow = MutableStateFlow<List<SourceEntity>>(emptyList())
     val sourcesFlow = _sourcesFlow.asStateFlow()
 
-    suspend fun loadVoices(): List<Voice> = withContext(Dispatchers.IO) {
+    suspend fun loadVoices() = withContext(Dispatchers.IO) {
         val voicesJson = readIS2Text(res.openRawResource(R.raw.audio_list))
         val voices: List<Voice> = parseJsonString(voicesJson)
         _voicesFlow.value = voices
-        return@withContext voices
     }
 
-    suspend fun loadCategories(): List<Category> = withContext(Dispatchers.IO) {
+    suspend fun loadCategories() = withContext(Dispatchers.IO) {
         val categoriesJson = readIS2Text(res.openRawResource(R.raw.class_list))
         val categories: List<Category> = parseJsonString(categoriesJson)
         _categoriesFlow.value = categories
-        return@withContext categories
     }
 
-    suspend fun loadSources(): List<SourceEntity> = withContext(Dispatchers.IO) {
+    suspend fun loadSources() = withContext(Dispatchers.IO) {
         val sourcesJson = readIS2Text(res.openRawResource(R.raw.video_list))
         val sources: List<SourceEntity> = parseJsonString(sourcesJson)
         _sourcesFlow.value = sources
-        return@withContext sources
     }
 
     fun stringRes(@StringRes stringRes: Int) = res.getString(stringRes)
