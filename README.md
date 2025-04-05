@@ -15,7 +15,8 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
       - Revision 2: Introduce landscape layout and optimize navigation logic [Dec. 27, 2024 ~ Dec. 28, 2024]
       - Revision 3: Complete implementation of Playlist screen core features [Dec. 28, 2024 ~ Dec. 30, 2024]
     - Milestone 3: Re-arrange pages - merge All Voices screen and Categories screen, and implement Settings screen [Jan. 1, 2025 ~ Feb. 26, 2025]
-      - Revision 1: Introduce splash screen and optimize UI state save & load [Feb. 27?, 2025 ~ Apr. 4, 2025]
+      - Revision 1: Introduce splash screen and optimize UI state save & load [Feb. 27?, 2025 ~ Apr. 5, 2025]
+        NOTE: merge to `master` branch
       - Revision 2: migrate to multi-module development [TBA]
     - Milestone 4: Introduce animation [TBA]
 - 1st Edition "Master Up": TBA
