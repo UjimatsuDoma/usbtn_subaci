@@ -70,4 +70,8 @@
     <string name="sources_tab_without_voices">w/o voices</string>
     <string name="error_playlist_duplicate_item">Item already exists in playlist.</string>
     <string name="playlist_upsert_info_name_not_changed">Enter a different name.</string>
+    <string name="playlist_delete_dialog_title">Delete playlist</string>
+    <string name="playlist_delete_dialog_message">This playlist will be deleted, and it cannot be undone. Proceed?</string>
+    <string name="playlist_delete_dialog_proceed">Proceed</string>
+    <string name="playlist_delete_dialog_cancel">Cancel</string>
 </resources>

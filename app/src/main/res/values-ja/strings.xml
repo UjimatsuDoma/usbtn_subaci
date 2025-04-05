@@ -69,4 +69,8 @@
     <string name="sources_tab_without_voices">ボイスなし</string>
     <string name="error_playlist_duplicate_item">このアイテムは既に存在しています。</string>
     <string name="playlist_upsert_info_name_not_changed">名前は変更されていません。</string>
+    <string name="playlist_delete_dialog_title">プレイリスト削除</string>
+    <string name="playlist_delete_dialog_message">このプレイリストは削除されます。アンドゥーは出来ません。続けますか？</string>
+    <string name="playlist_delete_dialog_proceed">はい</string>
+    <string name="playlist_delete_dialog_cancel">いいえ</string>
 </resources>

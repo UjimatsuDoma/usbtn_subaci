@@ -69,4 +69,8 @@
     <string name="sources_tab_without_voices">仅标注来源</string>
     <string name="error_playlist_duplicate_item">选中的播放列表已存在该语音。</string>
     <string name="playlist_upsert_info_name_not_changed">新名称与原名称相同。</string>
+    <string name="playlist_delete_dialog_title">删除播放列表</string>
+    <string name="playlist_delete_dialog_message">当前播放列表将被删除，该操作无法撤销！是否继续？</string>
+    <string name="playlist_delete_dialog_proceed">继续</string>
+    <string name="playlist_delete_dialog_cancel">取消</string>
 </resources>

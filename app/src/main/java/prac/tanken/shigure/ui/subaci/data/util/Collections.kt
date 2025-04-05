@@ -10,14 +10,3 @@ fun <T> List<T>.randomList(size: Int) = mutableListOf<T>().also { list ->
         if (randomItem !in list) list.add(randomItem)
     }
 }
-
-inline infix fun <reified T> List<*>.isListOf(contract: T): Boolean {
-    var result = true
-    for (element in this) {
-        if (element !is T) {
-            result = false
-            break
-        }
-    }
-    return result
-}

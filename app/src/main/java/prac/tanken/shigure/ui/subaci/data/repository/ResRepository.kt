@@ -30,7 +30,11 @@ class ResRepository @Inject constructor(
 
     suspend fun loadVoices() = withContext(Dispatchers.IO) {
         val voicesJson = readIS2Text(res.openRawResource(R.raw.audio_list))
-        val voices: List<Voice> = parseJsonString(voicesJson)
+        val voices: List<Voice> = parseJsonString<MutableList<Voice>>(voicesJson).also {
+            it.forEachIndexed { index, voice ->
+                if (voice.a == "AS" || voice.a == "ZA") it[index] = voice.copy(a = "SA")
+            }
+        }
         _voicesFlow.value = voices
     }
 
@@ -49,7 +53,4 @@ class ResRepository @Inject constructor(
     fun stringRes(@StringRes stringRes: Int) = res.getString(stringRes)
 
     fun getVoiceAFD(vr: VoiceReference) = am.openFd("subaciAudio/${vr.id}.mp3")
-
-    fun getThumbAFD(sourceEntity: SourceEntity) =
-        am.openFd("subaciThumbs/${sourceEntity.videoId}.jpg")
 }

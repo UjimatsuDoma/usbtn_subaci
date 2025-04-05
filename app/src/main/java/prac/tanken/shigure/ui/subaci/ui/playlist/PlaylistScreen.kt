@@ -80,16 +80,16 @@ fun PlaylistScreen(
 ) {
     val playbackState by viewModel.playbackState
     val upsertState by viewModel.upsertState
+    val playlistsSelections = viewModel.playlistSelections.value
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
     Column(modifier.fillMaxWidth()) {
-        val playlistsSelections = viewModel.playlistSelections.value
-
         // 顶栏
         PlaylistTopBar(
             playbackState = playbackState,
             playlistSelection = playlistsSelections,
             onAddPlaylist = viewModel::showInsertDialog,
-            onDeletePlaylist = viewModel::deletePlaylist,
+            onDeletePlaylist = { showDeleteDialog = true },
             onPlaylistSelect = viewModel::selectPlaylist,
             onShowUpdateDialog = viewModel::showUpdateDialog
         )
@@ -123,7 +123,9 @@ fun PlaylistScreen(
 
             PlaylistPlaybackState.Loading -> {
                 Box(
-                    modifier = modifier,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                     contentAlignment = Alignment.Center,
                     content = {
                         CircularProgressIndicator()
@@ -159,6 +161,16 @@ fun PlaylistScreen(
                 onStateUpdate = viewModel::updateUpsertState,
                 onSubmit = viewModel::submitUpsert,
                 onCancel = viewModel::cancelUpsert
+            )
+        }
+
+        if (showDeleteDialog) {
+            PlaylistDeleteDialog(
+                onSubmit = {
+                    showDeleteDialog = false
+                    viewModel::deletePlaylist
+                },
+                onCancel = { showDeleteDialog = false }
             )
         }
     }
@@ -276,7 +288,7 @@ private fun PlaylistTopBar(
                         contentDescription = stringResource(TankenR.string.playlist_desc_rename_playlist)
                     )
                 }
-            } else if(playbackState is PlaylistPlaybackState.StandBy && !hasPlaylist) {
+            } else if (playbackState is PlaylistPlaybackState.StandBy && !hasPlaylist) {
                 IconButton(
                     onClick = { onAddPlaylist() }
                 ) {
@@ -499,7 +511,7 @@ private fun PlaylistUpsertDialog(
     onStateUpdate: (PlaylistUpsertState) -> Unit = {},
     onSubmit: CallbackInvokedAsIs = {},
     onCancel: CallbackInvokedAsIs = {},
-) = Dialog(onDismissRequest = onSubmit) {
+) = Dialog(onDismissRequest = onCancel) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -507,6 +519,7 @@ private fun PlaylistUpsertDialog(
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             val title = when (state.action) {
                 PlaylistUpsertIntent.Insert -> TankenR.string.playlist_upsert_dialog_insert_title
@@ -517,7 +530,6 @@ private fun PlaylistUpsertDialog(
                 text = stringResource(title),
                 style = MaterialTheme.typography.titleLarge,
             )
-            Spacer(Modifier.height(16.dp))
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
@@ -549,7 +561,6 @@ private fun PlaylistUpsertDialog(
                     )
                 }
             }
-            Spacer(Modifier.height(16.dp))
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.align(Alignment.End)
@@ -590,5 +601,56 @@ private fun PlaylistUpsertDialogPreview(modifier: Modifier = Modifier) {
             ),
             modifier = modifier
         )
+    }
+}
+
+@Composable
+private fun PlaylistDeleteDialog(
+    modifier: Modifier = Modifier,
+    onSubmit: CallbackInvokedAsIs = {},
+    onCancel: CallbackInvokedAsIs = {},
+) = Dialog(onDismissRequest = onCancel) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Text(
+                text = stringResource(TankenR.string.playlist_delete_dialog_title),
+                style = MaterialTheme.typography.titleLarge,
+            )
+            Spacer(Modifier.height(16.dp))
+            Text(
+                text = stringResource(TankenR.string.playlist_delete_dialog_message),
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Button(
+                    onClick = onSubmit,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                ) {
+                    Text(stringResource(TankenR.string.playlist_delete_dialog_proceed))
+                }
+                Button(
+                    onClick = onCancel,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
+                    )
+                ) {
+                    Text(stringResource(TankenR.string.playlist_delete_dialog_cancel))
+                }
+            }
+        }
     }
 }

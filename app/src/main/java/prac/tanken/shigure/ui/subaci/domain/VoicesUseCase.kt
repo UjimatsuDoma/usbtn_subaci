@@ -25,16 +25,18 @@ class VoicesUseCase(
             categoriesFlow
         ) { voicesGroupedBy, voices, categories ->
             emit(UseCaseEvent.Loading)
+            val voicesSorted = voices.sortedBy { it.k }
+            println(voicesSorted)
             voicesGroupedBy?.let {
                 when (it) {
                     VoicesGroupedBy.Category -> {
                         val voicesGrouped = mutableVoiceGroups().apply {
                             categories.forEach { category ->
-                                val categoryVoices = category.idList.map { voiceRef ->
-                                    voices
-                                        .map { it.toVoicesVO() }
-                                        .first { it.id == voiceRef.id }
-                                }.toList()
+                                val idList = category.idList
+                                val categoryVoices = voicesSorted
+                                    .filter { it.id in idList.map { it.id } }
+                                    .map { it.toVoicesVO() }
+                                    .toList()
                                 this.put(category.className, categoryVoices)
                             }
                         }
@@ -42,7 +44,7 @@ class VoicesUseCase(
                     }
 
                     VoicesGroupedBy.Kana -> {
-                        val voicesGrouped = voices
+                        val voicesGrouped = voicesSorted
                             .map { it.toVoicesVO() }
                             .groupBy { it.a }
                             .mapKeys { entry ->
