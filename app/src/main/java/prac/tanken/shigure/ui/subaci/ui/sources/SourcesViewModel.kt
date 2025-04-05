@@ -13,7 +13,6 @@ import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.player.MyPlayer
 import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.data.util.ToastUtil
-import prac.tanken.shigure.ui.subaci.data.util.isListOf
 import prac.tanken.shigure.ui.subaci.domain.SourcesUseCase
 import prac.tanken.shigure.ui.subaci.domain.UseCaseEvent
 import prac.tanken.shigure.ui.subaci.ui.sources.model.SourcesListItem

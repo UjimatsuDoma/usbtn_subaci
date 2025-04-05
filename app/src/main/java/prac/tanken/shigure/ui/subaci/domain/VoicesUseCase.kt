@@ -26,7 +26,6 @@ class VoicesUseCase(
         ) { voicesGroupedBy, voices, categories ->
             emit(UseCaseEvent.Loading)
             val voicesSorted = voices.sortedBy { it.k }
-            println(voicesSorted)
             voicesGroupedBy?.let {
                 when (it) {
                     VoicesGroupedBy.Category -> {

@@ -18,9 +18,7 @@ class DailyVoiceUseCase(
         combineTransform(dailyVoiceEntityFlow, voicesFlow) { dailyVoiceEntity, voices ->
             val expired = dailyVoiceEntity?.addDate?.let { todayStr != it } == true
             if (dailyVoiceEntity == null || expired) {
-                voicesRepository.updateDailyVoice(
-                    voices[voices.indices.random()].id
-                )
+                voicesRepository.updateDailyVoice(voices.random().id)
                 emit(UseCaseEvent.Info(resRepository.stringRes(R.string.daily_random_voice_refreshed)))
             } else {
                 val voice = voices.first { it.id == dailyVoiceEntity.voiceId }
