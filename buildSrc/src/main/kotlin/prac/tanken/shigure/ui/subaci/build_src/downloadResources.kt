@@ -1,32 +1,37 @@
 package prac.tanken.shigure.ui.subaci.build_src
 
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
-import prac.tanken.shigure.ui.subaci.build_src.model.Voice
-import java.io.FileReader
-import java.util.Scanner
-import java.util.regex.Pattern
-import org.apache.commons.io.FileUtils
+import kotlinx.serialization.json.Json
 import prac.tanken.shigure.ui.subaci.build_src.model.Category
-import prac.tanken.shigure.ui.subaci.build_src.model.SourceVideo
+import prac.tanken.shigure.ui.subaci.build_src.model.SourceEntity
+import prac.tanken.shigure.ui.subaci.build_src.model.Voice
+import java.io.BufferedReader
 import java.io.File
+import java.io.FileOutputStream
+import java.io.FileReader
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.lang.RuntimeException
+import java.net.HttpURLConnection
 import java.net.URI
+import java.net.URL
+import java.util.Scanner
 
-const val BASE_URL = "https://leiros.cloudfree.jp/usbtn/"
+const val BASE_URL = "https://leiros.cloudfree.jp/usbtn"
 
-val voiceRegex = """
-    \{
-    "id":".+",
-    \s*"src":".+",
-    \s*"volume":\d+\.\d+,
-    \s*"a":".+",
-    \s*"k":".+",
-    \s*"label":".+"
-    (,\s*"new":((true)|(false)))?
-    (,\s*"videoId":".+")?
-    (,\s*"time":".+")?
-    }
-""".trimIndent().replace(Regex("(\n*)\n"), "$1")
+val voiceRegex = buildString {
+    append("\\{")
+    append("\"id\":\".+\",")
+    append("\\s*\"src\":\".+\",")
+    append("\\s*\"volume\":\\d+\\.\\d+,")
+    append("\\s*\"a\":\".+\",")
+    append("\\s*\"k\":\".+\",")
+    append("\\s*\"label\":\".+\"")
+    append("(,\\s*\"new\":((true)|(false)))?")
+    append("(,\\s*\"videoId\":\".+\")?")
+    append("(,\\s*\"time\":\".+\")?")
+    append("}")
+}.toRegex()
 val categoryRegex = buildString {
     append("\\{\\n")
     append("\\t*className:\".+\",\\n")
@@ -35,9 +40,25 @@ val categoryRegex = buildString {
     append("(\\s*,?\\{\"id\":\".+\",?\\s*}.*?\\n)+")
     append("\\t*\\]\\n")
     append("\\t*\\}")
+}.toRegex()
+val sourceRegex = buildString {
+    append("\\s+")
+    append("<div>")
+    append("<a href=\"https://www.youtube.com/watch\\?v=(.*)\" target=\"_blank\" class=\"ellipsis\">")
+    append("(.*)")
+    append("</a>")
+    append("</div>")
+    append("\\R")
+}.toRegex()
+
+fun url(url: String): URL = URI(url).toURL()
+fun url2IS(url: String): InputStream = url(url).openStream()
+
+fun readTextFromUrl(url: String) = buildString {
+    BufferedReader(InputStreamReader(url2IS(url))).use {
+        it.lineSequence().forEach { appendLine(it) }
+    }
 }
-val sourceRegex =
-    "\\t*<div><a href=\"https://www.youtube.com/watch\\?v=(.*)\" target=\"_blank\" class=\"ellipsis\">(.*)</a></div>\n"
 
 fun readTextFile(path: String) = buildString {
     Scanner(FileReader(path)).useDelimiter("\\A").use { scanner ->
@@ -52,72 +73,99 @@ inline fun <reified T> parseJsonString(jsonString: String): T {
     return json.decodeFromString<T>(jsonString)
 }
 
-fun getVoices(htmlPath: String, voiceDownloadDestination: String): String {
-    val html = readTextFile(htmlPath)
-    val matcher = Pattern.compile(voiceRegex).matcher(html)
+inline fun <reified T> encodeJsonString(entity: T): String {
+    val json = Json { ignoreUnknownKeys = true }
+    return json.encodeToString(entity)
+}
 
-    val voices = mutableListOf<Voice>()
-    var downloadCount = 0
+fun getVoices(url: String): List<Voice> {
+    val html = readTextFromUrl(url)
+    val matches = voiceRegex.findAll(html)
+    val voices = matches.map { parseJsonString<Voice>(it.groupValues[0]) }.toList()
+    return voices.toList()
+}
 
-    while (matcher.find()) {
-        val voiceJson = matcher.group()
-        val voice: Voice = parseJsonString(voiceJson)
+fun getCategories(url: String): List<Category> {
+    val html = readTextFromUrl(url)
+    val matches = categoryRegex.findAll(html)
+    val categories = matches.map {
+        var categoryJson = it.groupValues[0]
+            // add quotation mark
+            .replace("className", "\"className\"")
+            .replace("sectionId", "\"sectionId\"")
+            .replace("idList", "\"idList\"")
+            // remove comments
+            .replace("//.*\\n".toRegex(), "\n")
+            // remove trailing commas
+            .replace(",\\s*}".toRegex(), "}")
+        parseJsonString<Category>(categoryJson)
+    }.toList()
+    return categories
+}
 
-        val relPath = voice.src.let { src -> src.substring(src.indexOfFirst { it == '/' }) }
-        val fileName = voice.src.let { src -> src.substring(src.indexOfLast { it == '/' }) }
-        val downloadUrl = BASE_URL + relPath
-        val downloadFile = File(voiceDownloadDestination + fileName)
-        if (!downloadFile.exists()) {
-            FileUtils.copyURLToFile(URI(downloadUrl).toURL(), downloadFile)
-            downloadCount++
-            print("\rDownloaded: $downloadCount")
-            if (downloadCount % 100 == 0) println()
+fun getSources(url: String): List<SourceEntity> {
+    val html = readTextFromUrl(url)
+    val matches = sourceRegex.findAll(html)
+    val sources = matches.map { SourceEntity(it.groupValues[1], it.groupValues[2]) }.toList()
+    return sources
+}
+
+fun getMaxResolutionThumbUrl(videoId: String): String {
+    // high to low
+    val resolutions = listOf(
+        "maxresdefault",
+        "hq720",
+        "mqdefault",
+    )
+    var result = ""
+    for (resolution in resolutions) {
+        val url = "http://i3.ytimg.com/vi/$videoId/$resolution.jpg"
+        val con = url(url).openConnection() as HttpURLConnection
+        con.requestMethod = "GET"
+        con.connect()
+        if (con.responseCode == 200) {
+            result = url
+            con.disconnect()
+            break
         }
-
-        voices.add(voice)
     }
-    println()
-
-    val voicesJson = Json.encodeToString<List<Voice>>(voices as List<Voice>)
-    return voicesJson
+    return result
 }
 
-fun getCategories(htmlPath: String): String {
-    val html = readTextFile(htmlPath)
-    val matcher = Pattern.compile(categoryRegex).matcher(html)
-
-    val categories = mutableListOf<Category>()
-
-    while (matcher.find()) {
-        var categoryJson = matcher.group()
-        categoryJson = categoryJson.replace("className", "\"className\"")
-        categoryJson = categoryJson.replace("sectionId", "\"sectionId\"")
-        categoryJson = categoryJson.replace("idList", "\"idList\"")
-        categoryJson = categoryJson.replace("//.*\\n".toRegex(), "\n")
-        categoryJson = categoryJson.replace(",\\s*}".toRegex(), "}")
-        val category: Category = parseJsonString(categoryJson)
-        categories.add(category)
+fun downloadFileFromUrl(
+    url: String,
+    dest: String,
+    headerOptions: Map<String, String> = mapOf(),
+) = try {
+    // 创建HTTP连接
+    val con = (URL(url).openConnection() as HttpURLConnection).apply {
+        requestMethod = "GET"
+        headerOptions.forEach { option ->
+            setRequestProperty(option.key, option.value)
+        }
     }
-
-    val categoriesJson = Json.encodeToString<List<Category>>(categories as List<Category>)
-    return categoriesJson
-}
-
-fun getSourceVideos(htmlPath: String): String {
-    val html = readTextFile(htmlPath)
-    val matcher = Pattern.compile(sourceRegex).matcher(html)
-
-    val sourceVideos = mutableListOf<SourceVideo>()
-
-    while (matcher.find()) {
-        sourceVideos.add(
-            SourceVideo(
-                id = matcher.group(1),
-                videoName = matcher.group(2)
-            )
-        )
-    }
-
-    val sourceVideosJson = Json.encodeToString(sourceVideos)
-    return sourceVideosJson
+    con.connect()
+    // 拿到文件输入流和文件大小，确保文件可下载
+    val inputStream = con.inputStream
+    val fileSize = con.contentLength
+    if (fileSize <= 0) throw RuntimeException("Cannot get size")
+    if (inputStream == null) throw RuntimeException("Stream is null")
+    // 目的路径不存在则创建
+    val path = dest.substringBeforeLast("/")
+    val fileName = dest.substringAfterLast("/")
+    val dir = File(path)
+    if (!dir.exists()) dir.mkdir()
+    // 文件输出流
+    val fos = FileOutputStream(dest)
+    val buffer = ByteArray(1024)
+    var downloadFileSize = 0
+    do {
+        val numRead = inputStream.read(buffer)
+        if (numRead == -1) break
+        fos.write(buffer, 0, numRead)
+        downloadFileSize += numRead
+    } while (true)
+    inputStream.close()
+} catch (e: Exception) {
+    e.printStackTrace()
 }
