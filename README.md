@@ -17,7 +17,7 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
     - Milestone 3: Re-arrange pages - merge All Voices screen and Categories screen, and implement Settings screen [Jan. 1, 2025 ~ Feb. 26, 2025]
       - Revision 1: Introduce splash screen and optimize UI state save & load [Feb. 27?, 2025 ~ Apr. 5, 2025]  
         NOTE: merge `develop-mvvm` branch
-      - Revision 2: migrate to multi-module development [TBA]
+      - Revision 2: migrate to multi-module development [May 7, 2025 ~ TBA]
     - Milestone 4: Introduce animation [TBA]
 - 1st Edition "Master Up": TBA
 - 2nd Edition "SuiCYAN": TBA
