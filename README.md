@@ -32,6 +32,11 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
 
 Limited Voice will **NOT** be implemented, due to request from author of original website.
 
+## About "New" Voices
+
+Milestone 1 to Milestone 3 Revision 1: "Added on 2023/12/08 and later"  
+Milestone 3 Revision 2 and later: "Added on 2025/5/12 and later"
+
 # Technologies
 
 Jetpack Compose, Jetpack Navigation, Hilt, Kotlin Serialization, Kotlin DateTime API, Preferences DataStore, Room, etc.
