@@ -23,6 +23,7 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
 - 2nd Edition "SuiCYAN": TBA
 
 # Features
+
 - **Voices**: click to play, long press to add to playlist  
 - **Sources**: list of YouTube live streams where the voices are clipped from  
 - **Playlist**: create/rename/delete playlists, move single item up and down, click to play, supports loop playing  
@@ -30,7 +31,12 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
 
 # Notes
 
-Limited Voice will **NOT** be implemented, due to request from author of original website.
+For typeface consistency, Noto Sans & Serif CJK font is globally used and embedded in this app. That's why the released APKs are large.
+
+Due to request from author of original website, feature limitations are below: 
+
+1. This app works completely offline. Voice data will **NOT** be fetched from server.
+2. For the same reason, Limited Voices(available on special days) will **NOT** be accessible from this app.
 
 ## About "New" Voices
 
