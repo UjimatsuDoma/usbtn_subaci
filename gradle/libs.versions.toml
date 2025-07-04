@@ -1,5 +1,5 @@
 [versions]
-agp = "8.9.1"
+agp = "8.9.3"
 coilCompose = "3.0.4"
 coilNetworkOkhttp = "3.0.4"
 commonsIo = "2.18.0"
@@ -7,6 +7,7 @@ constraintlayoutCompose = "1.1.1"
 coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.4"
 fluentSystemIcons = "1.1.271"
+gradle = "8.10.0"
 hiltAndroid = "2.51.1"
 hiltNavigationCompose = "1.2.0"
 kotlin = "2.1.20"
@@ -15,14 +16,14 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
-kotlinxDatetime = "0.6.1"
-kotlinxSerializationJson = "1.7.3"
+kotlinxDatetime = "0.6.2"
+kotlinxSerializationJson = "1.8.0"
 material = "1.12.0"
-lifecycleRuntimeKtx = "2.8.7"
+lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
-composeBom = "2025.03.01"
+composeBom = "2025.06.01"
 metadataExtractor = "2.19.0"
-navigationCompose = "2.8.9"
+navigationCompose = "2.9.0"
 roomCompiler = "2.6.1"
 roomKtx = "2.6.1"
 roomRuntime = "2.6.1"
@@ -44,6 +45,7 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCo
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilNetworkOkhttp" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commonsIo" }
 fluent-system-icons = { module = "com.microsoft.design:fluent-system-icons", version.ref = "fluentSystemIcons" }
+gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -71,4 +73,10 @@ metadata-extractor = { module = "com.drewnoakes:metadata-extractor", version.ref
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 
+# project local plugins
+subaci-application-flavor = { id = "prac.tanken.subaci.application.flavor" }
+subaci-library-convention = { id = "prac.tanken.subaci.library.convention" }
+subaci-resource-task-configuration = { id = "prac.tanken.subaci.resource.config" }
+android-library = { id = "com.android.library", version.ref = "agp" }

@@ -29,11 +29,11 @@ import androidx.compose.ui.text.font.FontFamily
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AdvancedButton(
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     onLongPress: (() -> Unit)? = null,
     onDoubleClick: (() -> Unit)? = null,
     contentFontFamily: FontFamily,
-    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     shape: Shape = RoundedCornerShape(25),
     colors: ButtonColors = ButtonDefaults.buttonColors(),

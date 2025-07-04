@@ -16,13 +16,15 @@ class DailyVoiceUseCase(
 
     val dailyVoiceEventFlow: Flow<UseCaseEvent> =
         combineTransform(dailyVoiceEntityFlow, voicesFlow) { dailyVoiceEntity, voices ->
-            val expired = dailyVoiceEntity?.addDate?.let { todayStr != it } == true
-            if (dailyVoiceEntity == null || expired) {
-                voicesRepository.updateDailyVoice(voices.random().id)
-                emit(UseCaseEvent.Info(resRepository.stringRes(R.string.daily_random_voice_refreshed)))
-            } else {
-                val voice = voices.first { it.id == dailyVoiceEntity.voiceId }
-                emit(UseCaseEvent.Success(voice))
+            if(voices.isNotEmpty()) {
+                val expired = dailyVoiceEntity?.addDate?.let { todayStr != it } == true
+                if (dailyVoiceEntity == null || expired) {
+                    voicesRepository.updateDailyVoice(voices.random().id)
+                    emit(UseCaseEvent.Info(resRepository.stringRes(R.string.daily_random_voice_refreshed)))
+                } else {
+                    val voice = voices.first { it.id == dailyVoiceEntity.voiceId }
+                    emit(UseCaseEvent.Success(voice))
+                }
             }
         }
 }

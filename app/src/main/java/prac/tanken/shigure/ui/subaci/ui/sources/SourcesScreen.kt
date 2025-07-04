@@ -1,5 +1,6 @@
 package prac.tanken.shigure.ui.subaci.ui.sources
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,9 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -27,6 +26,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,13 +47,13 @@ import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.data.mock.sourcesPreviewData
 import prac.tanken.shigure.ui.subaci.data.mock.voicesPreviewData
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
-import prac.tanken.shigure.ui.subaci.ui.NotoSerifJP
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.ui.component.VoiceButton
 import prac.tanken.shigure.ui.subaci.ui.component.VoicesFlowRow
 import prac.tanken.shigure.ui.subaci.ui.sources.model.SourcesListItem
 import prac.tanken.shigure.ui.subaci.ui.sources.model.SourcesUiState
+import prac.tanken.shigure.ui.subaci.ui.theme.NotoSerifJP
 import prac.tanken.shigure.ui.subaci.ui.theme.ShigureUiButtonAppComposeImplementationTheme
 import prac.tanken.shigure.ui.subaci.R as TankenR
 
@@ -82,6 +82,8 @@ fun SourcesScreen(
             val actualState = uiState.value as SourcesUiState.Loaded
             val tabs = actualState.tabs
 
+
+
             Column {
                 var pagerState = rememberPagerState(
                     initialPage = 0,
@@ -109,6 +111,10 @@ fun SourcesScreen(
                         state = pagerState,
                         pageContent = {
                             val sources = tabs[selectedTab].sourceList
+
+                            LaunchedEffect(Unit) {
+                                Log.d("Sources Screen", "received size: ${sources.size}")
+                            }
 
                             SourcesScreen(
                                 sources = sources,

@@ -1,5 +1,6 @@
 package prac.tanken.shigure.ui.subaci.ui.voices
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,12 +55,12 @@ import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.data.model.voices.voicesGroupedByItems
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
 import prac.tanken.shigure.ui.subaci.data.util.combineKey
-import prac.tanken.shigure.ui.subaci.ui.NotoSerifJP
-import prac.tanken.shigure.ui.subaci.ui.NotoSerifMultiLang
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.ui.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.ui.component.TestVoiceButton
 import prac.tanken.shigure.ui.subaci.ui.component.TestVoicesFlowRow
+import prac.tanken.shigure.ui.subaci.ui.theme.NotoSerifJP
+import prac.tanken.shigure.ui.subaci.ui.theme.NotoSerifMultiLang
 import prac.tanken.shigure.ui.subaci.ui.voices.model.DailyVoiceUiState
 import prac.tanken.shigure.ui.subaci.ui.voices.model.VoicesGroupedUiState
 import prac.tanken.shigure.ui.subaci.R as TankenR
@@ -71,8 +73,38 @@ fun VoicesScreen(
 ) {
     val uiState by viewModel.uiState
 
+    LaunchedEffect(uiState) {
+        val message = buildString {
+            append("UI state of voices screen: ")
+            append("daily voice ${uiState.dailyVoiceUiState::class.simpleName} ")
+            append("groups ${uiState.voicesGroupedUiState::class.simpleName}")
+        }
+        Log.d("VoicesScreen", message)
+    }
+
     Column(modifier) {
         when (uiState.voicesGroupedUiState) {
+            is VoicesGroupedUiState.Success -> {
+                val dailyVoiceUiState = uiState.dailyVoiceUiState
+                val voicesGroupedUiState = uiState.voicesGroupedUiState as VoicesGroupedUiState.Success
+                val voicesGrouped = voicesGroupedUiState.voicesGrouped
+
+                VoicesTopBar(
+                    dailyVoiceUiState = dailyVoiceUiState,
+                    onDailyVoice = viewModel::playDailyVoice,
+                    voicesGroupedBy = voicesGrouped.voicesGroupedBy,
+                    onChangeVoicesGroupedBy = viewModel::updateVoicesGroupedBy,
+                )
+                VoicesScreen(
+                    voicesGrouped = voicesGrouped,
+                    onPlay = viewModel::onButtonClicked,
+                    onAddToPlaylist = viewModel::addToPlaylist,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                )
+            }
+
             is VoicesGroupedUiState.Error -> {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -100,27 +132,6 @@ fun VoicesScreen(
                 ) {
                     Text("Please wait...")
                 }
-            }
-
-            is VoicesGroupedUiState.Success -> {
-                val dailyVoiceUiState = uiState.dailyVoiceUiState
-                val voicesGrouped =
-                    (uiState.voicesGroupedUiState as VoicesGroupedUiState.Success).voicesGrouped
-
-                VoicesTopBar(
-                    dailyVoiceUiState = dailyVoiceUiState,
-                    onDailyVoice = viewModel::playDailyVoice,
-                    voicesGroupedBy = voicesGrouped.voicesGroupedBy,
-                    onChangeVoicesGroupedBy = viewModel::updateVoicesGroupedBy,
-                )
-                VoicesScreen(
-                    voicesGrouped = voicesGrouped,
-                    onPlay = viewModel::onButtonClicked,
-                    onAddToPlaylist = viewModel::addToPlaylist,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                )
             }
         }
     }

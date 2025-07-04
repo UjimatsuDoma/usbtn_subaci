@@ -15,7 +15,7 @@ import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.model.voices.toReference
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
-import prac.tanken.shigure.ui.subaci.ui.NotoSansJP
+import prac.tanken.shigure.ui.subaci.ui.theme.NotoSansJP
 import prac.tanken.shigure.ui.subaci.ui.voices.model.VoicesVO
 
 @Composable

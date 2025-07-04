@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import prac.tanken.shigure.ui.subaci.ui.NotoSerifMultiLang
+import prac.tanken.shigure.ui.subaci.ui.theme.NotoSerifMultiLang
 import prac.tanken.shigure.ui.subaci.ui.theme.ShigureUiButtonAppComposeImplementationTheme
 import prac.tanken.shigure.ui.subaci.R as TankenR
 

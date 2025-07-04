@@ -1,5 +1,6 @@
 package prac.tanken.shigure.ui.subaci.ui.voices
 
+import android.util.Log
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -99,6 +100,7 @@ class VoicesViewModel @Inject constructor(
     private fun observeVoicesGroupedBy() = viewModelScope.launch {
         voicesUseCase.voicesGroupedEventFlow
             .collect { event ->
+
                 when (event) {
                     is UseCaseEvent.Error -> {
                         val newState = VoicesGroupedUiState.Error(event.message)
@@ -117,7 +119,12 @@ class VoicesViewModel @Inject constructor(
 
                     is UseCaseEvent.Success<*> -> {
                         val newState = if (event.data is VoicesGrouped) {
-                            VoicesGroupedUiState.Success(event.data)
+                            VoicesGroupedUiState.Success(event.data).apply {
+                                Log.d(
+                                    this@VoicesViewModel::class.simpleName,
+                                    "received voices mapped from repo size: ${this.voicesGrouped.voiceGroups.size}"
+                                )
+                            }
                         } else VoicesGroupedUiState.Error.fromThrowable(IllegalArgumentException())
                         uiState.value = uiState.value.copy(voicesGroupedUiState = newState)
                     }
