@@ -1,1 +1,6 @@
 /build
+
+src/main/assets/
+src/main/res/raw/audio_list.json
+src/main/res/raw/class_list.json
+src/main/res/raw/video_list.json
