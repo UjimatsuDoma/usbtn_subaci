@@ -12,10 +12,12 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
+    }
 }
 
-rootProject.name = "Shigure Ui Button App Compose Implementation"
-
-includeBuild("build-logic")
-includeBuild("core")
-includeBuild("my-app")
+rootProject.name = "build-logic"
+include("convention")
