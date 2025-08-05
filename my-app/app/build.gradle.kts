@@ -2,6 +2,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 
 plugins {
+    alias(libs.plugins.subaci.hello)
     alias(libs.plugins.subaci.resource.download)
 
     alias(libs.plugins.android.application)
