@@ -19,4 +19,9 @@ version = "unspecified"
 dependencies {
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
+    // Kotlin DateTime
+    implementation(libs.kotlinx.datetime)
+
+    // Apache Commons IO
+    implementation(libs.commons.io)
 }

@@ -3,9 +3,9 @@ package prac.tanken.shigure.ui.subaci.domain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combineTransform
 import prac.tanken.shigure.ui.subaci.R
+import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
+import prac.tanken.shigure.ui.subaci.core.data.repository.VoicesRepository
 import prac.tanken.shigure.ui.subaci.data.helper.DailyVoiceHelper.todayStr
-import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
-import prac.tanken.shigure.ui.subaci.data.repository.VoicesRepository
 
 class DailyVoiceUseCase(
     val resRepository: ResRepository,

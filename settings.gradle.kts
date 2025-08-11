@@ -18,4 +18,5 @@ rootProject.name = "Shigure Ui Button App Compose Implementation"
 
 includeBuild("build-logic")
 includeBuild("core")
+includeBuild("data")
 includeBuild("my-app")

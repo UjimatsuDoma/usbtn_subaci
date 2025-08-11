@@ -1,6 +1,8 @@
 package prac.tanken.shigure.ui.subaci.data.di
 
 import android.content.Context
+import android.content.res.AssetManager
+import android.content.res.Resources
 import android.media.MediaPlayer
 import android.os.Build
 import dagger.Module
@@ -13,14 +15,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    @Provides
-    @Singleton
-    fun provideResources(@ApplicationContext appContext: Context) = appContext.resources
-
-    @Provides
-    @Singleton
-    fun provideAssets(@ApplicationContext appContext: Context) = appContext.assets
-
     @Provides
     @Singleton
     fun provideMediaPlayer(@ApplicationContext appContext: Context) =

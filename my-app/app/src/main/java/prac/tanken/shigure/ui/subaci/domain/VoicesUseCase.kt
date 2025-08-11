@@ -3,12 +3,11 @@ package prac.tanken.shigure.ui.subaci.domain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combineTransform
 import prac.tanken.shigure.ui.subaci.R
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGrouped
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGroupedBy
-import prac.tanken.shigure.ui.subaci.data.model.voices.mutableVoiceGroups
-import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
-import prac.tanken.shigure.ui.subaci.data.repository.VoicesRepository
-import prac.tanken.shigure.ui.subaci.ui.voices.model.toVoicesVO
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.mutableVoiceGroups
+import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
+import prac.tanken.shigure.ui.subaci.core.data.repository.VoicesRepository
 
 class VoicesUseCase(
     val resRepository: ResRepository,
@@ -25,16 +24,15 @@ class VoicesUseCase(
             categoriesFlow
         ) { voicesGroupedBy, voices, categories ->
             emit(UseCaseEvent.Loading)
-            val voicesSorted = voices.sortedBy { it.k }
-            voicesGroupedBy?.let {
-                when (it) {
+            val voicesSorted = voices.sortedBy { voice-> voice.k }
+            voicesGroupedBy?.let { voicesGroupedBy ->
+                when (voicesGroupedBy) {
                     VoicesGroupedBy.Category -> {
                         val voicesGrouped = mutableVoiceGroups().apply {
                             categories.forEach { category ->
                                 val idList = category.idList
                                 val categoryVoices = voicesSorted
-                                    .filter { it.id in idList.map { it.id } }
-                                    .map { it.toVoicesVO() }
+                                    .filter { voice -> voice.id in idList.map { it.id } }
                                     .toList()
                                 this.put(category.className, categoryVoices)
                             }
@@ -44,7 +42,6 @@ class VoicesUseCase(
 
                     VoicesGroupedBy.Kana -> {
                         val voicesGrouped = voicesSorted
-                            .map { it.toVoicesVO() }
                             .groupBy { it.a }
                             .mapKeys { entry ->
                                 when (entry.key) {

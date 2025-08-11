@@ -54,7 +54,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelectionVO
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
 import prac.tanken.shigure.ui.subaci.data.util.combineKey
 import prac.tanken.shigure.ui.subaci.ui.NotoSerifJP
@@ -68,7 +67,6 @@ import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistUpsertError
 import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistUpsertIntent
 import prac.tanken.shigure.ui.subaci.ui.playlist.model.PlaylistUpsertState
 import prac.tanken.shigure.ui.subaci.ui.playlist.model.playlistNotSelectedVO
-import prac.tanken.shigure.ui.subaci.ui.sources.model.SourcesUiState
 import prac.tanken.shigure.ui.subaci.ui.theme.ShigureUiButtonAppComposeImplementationTheme
 import com.microsoft.fluent.mobile.icons.R as FluentR
 import prac.tanken.shigure.ui.subaci.R as TankenR
@@ -180,7 +178,7 @@ fun PlaylistScreen(
 @Composable
 private fun PlaylistTopBar(
     modifier: Modifier = Modifier,
-    playlistSelection: List<PlaylistSelectionVO> = emptyList(),
+    playlistSelection: List<prac.tanken.shigure.ui.subaci.core.data.model.playlist.PlaylistSelectionVO> = emptyList(),
     playbackState: PlaylistPlaybackState,
     onAddPlaylist: () -> Unit = {},
     onDeletePlaylist: () -> Unit = {},

@@ -14,11 +14,8 @@ kotlin {
     }
 }
 
-group = "prac.tanken.shigure.ui.subaci"
-version = "unspecified"
-
 dependencies {
-    compileOnly("prac.tanken.shigure.ui.subaci:model")
+    compileOnly(libs.subaci.core.model)
     // Kotlin Serialization
     compileOnly(libs.kotlinx.serialization.json)
 }

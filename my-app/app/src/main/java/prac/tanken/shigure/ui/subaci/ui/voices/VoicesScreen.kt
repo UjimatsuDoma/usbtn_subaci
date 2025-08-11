@@ -46,12 +46,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.launch
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceGroup
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGrouped
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGroupedBy
-import prac.tanken.shigure.ui.subaci.data.model.voices.voicesGroupedByItems
-import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
+import prac.tanken.shigure.ui.subaci.core.data.model.voice.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.data.model.voice.toReference
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceGroup
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.voicesGroupedByItems
 import prac.tanken.shigure.ui.subaci.data.util.combineKey
 import prac.tanken.shigure.ui.subaci.ui.NotoSerifJP
 import prac.tanken.shigure.ui.subaci.ui.NotoSerifMultiLang
@@ -61,6 +61,7 @@ import prac.tanken.shigure.ui.subaci.ui.component.TestVoiceButton
 import prac.tanken.shigure.ui.subaci.ui.component.TestVoicesFlowRow
 import prac.tanken.shigure.ui.subaci.ui.voices.model.DailyVoiceUiState
 import prac.tanken.shigure.ui.subaci.ui.voices.model.VoicesGroupedUiState
+import prac.tanken.shigure.ui.subaci.ui.voices.model.toVoicesVO
 import prac.tanken.shigure.ui.subaci.R as TankenR
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -238,7 +239,7 @@ private fun VoicesScreen(
 
                     Column {
                         TestVoiceButton(
-                            vo = voice,
+                            vo = voice.toVoicesVO(),
                             onPlay = onPlay,
                             onLongPress = { expanded = true },
                         )
@@ -277,7 +278,7 @@ fun VoiceGroupDialog(
     modifier: Modifier = Modifier,
     items: List<String>,
     onItemClicked: (Int) -> Unit = {},
-    onDismiss: CallbackInvokedAsIs = {},
+    onDismiss: () -> Unit = {},
 ) = Dialog(onDismiss) {
     Card(modifier) {
         Column(

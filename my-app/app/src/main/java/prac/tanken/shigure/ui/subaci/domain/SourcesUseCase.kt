@@ -1,7 +1,7 @@
 package prac.tanken.shigure.ui.subaci.domain
 
 import kotlinx.coroutines.flow.combineTransform
-import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
+import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.ui.sources.model.SourcesListItem
 
 class SourcesUseCase(

@@ -5,7 +5,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.drew.imaging.ImageMetadataReader
 import com.drew.metadata.jpeg.JpegDirectory
 import kotlinx.serialization.Serializable
-import prac.tanken.shigure.ui.subaci.data.model.Voice
+import prac.tanken.shigure.ui.subaci.core.data.model.voice.Voice
 import java.io.InputStream
 
 @Serializable

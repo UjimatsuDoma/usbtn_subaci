@@ -2,21 +2,14 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 
 plugins {
-    alias(libs.plugins.subaci.hello)
-    alias(libs.plugins.subaci.resource.download)
-
     alias(libs.plugins.android.application)
+    alias(libs.plugins.android.hilt)
+    alias(libs.plugins.androidx.room)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.symbol.processing)
-    id("com.google.dagger.hilt.android")
-    id("androidx.room")
-    id("kotlin-parcelize")
-}
-
-tasks.preBuild {
-    dependsOn("downloadResource")
 }
 
 kotlin {
@@ -101,29 +94,37 @@ android {
 
 dependencies {
     // Child projects
+    implementation(libs.subaci.core.model)
+    implementation(libs.subaci.data.source)
 
-    // Basic dependencies
+    // Basic Android library dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+
+    // Compose
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    // Compose ConstraintLayout
+    implementation(libs.androidx.constraintlayout.compose)
+
+    // AndroidX Lifecycle
+    implementation(libs.androidx.lifecycle.runtime.ktx)
 
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
-    // Kotlin Reflect
+    // Kotlin Reflection
     implementation(libs.kotlin.reflect)
     // Kotlin DateTime
     implementation(libs.kotlinx.datetime)
@@ -141,8 +142,6 @@ dependencies {
     // Google Material Icons
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
-    // Compose ConstraintLayout
-    implementation(libs.androidx.constraintlayout.compose)
     // SplashScreen API
     implementation(libs.androidx.core.splashscreen)
 

@@ -1,7 +1,7 @@
 package prac.tanken.shigure.ui.subaci.ui.voices.model
 
 import kotlinx.serialization.Serializable
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoicesGrouped
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped
 
 @Serializable
 sealed interface VoicesGroupedUiState {

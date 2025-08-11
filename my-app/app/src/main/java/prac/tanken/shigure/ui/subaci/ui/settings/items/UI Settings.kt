@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Label
@@ -40,13 +39,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import prac.tanken.shigure.ui.subaci.R
+import prac.tanken.shigure.ui.subaci.core.data.model.settings.AppSettings
+import prac.tanken.shigure.ui.subaci.core.data.model.settings.ui.AppColor
+import prac.tanken.shigure.ui.subaci.core.data.model.settings.ui.AppDarkMode
+import prac.tanken.shigure.ui.subaci.core.data.model.settings.ui.BottomBarLabelBehaviour
 import prac.tanken.shigure.ui.subaci.data.util.AUTO_DARK_MODE_SUPPORTED
 import prac.tanken.shigure.ui.subaci.data.util.DYNAMIC_COLOR_SUPPORTED
 import prac.tanken.shigure.ui.subaci.data.util.androidVersionErrorMessage
-import prac.tanken.shigure.ui.subaci.ui.app.AppColor
-import prac.tanken.shigure.ui.subaci.ui.app.AppDarkMode
-import prac.tanken.shigure.ui.subaci.ui.app.AppSettings
-import prac.tanken.shigure.ui.subaci.ui.app.BottomBarLabelBehaviour
+import prac.tanken.shigure.ui.subaci.core.data.model.settings.ui.UiSettings
 import prac.tanken.shigure.ui.subaci.ui.component.RadioButtonCard
 
 fun LazyListScope.uiSettings(
@@ -55,6 +55,8 @@ fun LazyListScope.uiSettings(
     onUpdateAppSettings: (AppSettings) -> Unit = {},
 ) = item {
     Column(modifier) {
+        val uiSettings = appSettings.uiSettings
+
         ListItem(
             headlineContent = {
                 Text(
@@ -64,19 +66,37 @@ fun LazyListScope.uiSettings(
             }
         )
         AppColorSetting(
-            appColor = appSettings.appColor,
-            onUpdateAppColor = { onUpdateAppSettings(appSettings.copy(appColor = it)) }
+            appColor = uiSettings.appColor,
+            onUpdateAppColor = {
+                onUpdateAppSettings(
+                    appSettings.copy(
+                        uiSettings = uiSettings.copy(
+                            appColor = it
+                        )
+                    )
+                )
+            }
         )
         AppDarkModeSetting(
-            appDarkMode = appSettings.appDarkMode,
-            onUpdateAppDarkMode = { onUpdateAppSettings(appSettings.copy(appDarkMode = it)) }
+            appDarkMode = uiSettings.appDarkMode,
+            onUpdateAppDarkMode = {
+                onUpdateAppSettings(
+                    appSettings.copy(
+                        uiSettings = uiSettings.copy(
+                            appDarkMode = it
+                        )
+                    )
+                )
+            }
         )
         BottomBarLabelBehaviourSetting(
-            bottomBarLabelBehaviour = appSettings.bottomBarLabelBehaviour,
+            bottomBarLabelBehaviour = uiSettings.bottomBarLabelBehaviour,
             onUpdateBottomBarLabelBehaviour = {
                 onUpdateAppSettings(
                     appSettings.copy(
-                        bottomBarLabelBehaviour = it
+                        uiSettings = uiSettings.copy(
+                            bottomBarLabelBehaviour = it
+                        )
                     )
                 )
             }
@@ -137,7 +157,7 @@ private fun ColumnScope.AppColorSetting(
                 .clickable { expanded = !expanded }
         )
 
-        AnimatedVisibility (expanded) {
+        AnimatedVisibility(expanded) {
             Row(
                 modifier = Modifier
                     .height(intrinsicSize = IntrinsicSize.Max)
@@ -179,13 +199,13 @@ private fun AppColorSettingPreview() {
     }
 }
 
-@Preview(apiLevel = Build.VERSION_CODES.Q)
-@Composable
-private fun AppColorSettingPreviewLegacy() {
-    Card {
-        AppColorSetting()
-    }
-}
+//@Preview(apiLevel = Build.VERSION_CODES.Q)
+//@Composable
+//private fun AppColorSettingPreviewLegacy() {
+//    Card {
+//        AppColorSetting()
+//    }
+//}
 
 @Composable
 private fun ColumnScope.AppDarkModeSetting(
@@ -194,7 +214,7 @@ private fun ColumnScope.AppDarkModeSetting(
     onUpdateAppDarkMode: (AppDarkMode) -> Unit = {},
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    var dropdownIcon =
+    val dropdownIcon =
         if (expanded) Icons.Default.ArrowDropUp
         else Icons.Default.ArrowDropDown
 
@@ -232,7 +252,7 @@ private fun ColumnScope.AppDarkModeSetting(
                 .clickable { expanded = !expanded }
         )
 
-        AnimatedVisibility (expanded) {
+        AnimatedVisibility(expanded) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
@@ -283,13 +303,13 @@ private fun AppDarkModeSettingPreview() {
     }
 }
 
-@Preview(apiLevel = Build.VERSION_CODES.P)
-@Composable
-private fun AppDarkModeSettingPreviewLegacy() {
-    Card {
-        AppDarkModeSetting()
-    }
-}
+//@Preview(apiLevel = Build.VERSION_CODES.P)
+//@Composable
+//private fun AppDarkModeSettingPreviewLegacy() {
+//    Card {
+//        AppDarkModeSetting()
+//    }
+//}
 
 @Composable
 private fun ColumnScope.BottomBarLabelBehaviourSetting(
@@ -336,7 +356,7 @@ private fun ColumnScope.BottomBarLabelBehaviourSetting(
                 .clickable { expanded = !expanded }
         )
 
-        AnimatedVisibility (expanded) {
+        AnimatedVisibility(expanded) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier

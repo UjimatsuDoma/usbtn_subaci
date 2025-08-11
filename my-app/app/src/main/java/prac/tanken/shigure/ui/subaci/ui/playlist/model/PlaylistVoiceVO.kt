@@ -1,7 +1,7 @@
 package prac.tanken.shigure.ui.subaci.ui.playlist.model
 
+import prac.tanken.shigure.ui.subaci.core.data.model.voice.Voice
 import kotlinx.serialization.Serializable
-import prac.tanken.shigure.ui.subaci.data.model.Voice
 
 @Serializable
 data class PlaylistVoiceVO(

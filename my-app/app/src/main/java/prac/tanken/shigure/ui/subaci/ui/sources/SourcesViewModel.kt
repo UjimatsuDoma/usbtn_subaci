@@ -9,9 +9,9 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.data.model.voice.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.data.player.MyPlayer
-import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.data.util.ToastUtil
 import prac.tanken.shigure.ui.subaci.domain.SourcesUseCase
 import prac.tanken.shigure.ui.subaci.domain.UseCaseEvent

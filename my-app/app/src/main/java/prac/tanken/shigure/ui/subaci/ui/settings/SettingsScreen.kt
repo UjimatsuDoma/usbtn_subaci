@@ -4,7 +4,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import prac.tanken.shigure.ui.subaci.ui.app.AppSettings
+import prac.tanken.shigure.ui.subaci.core.data.model.settings.AppSettings
 import prac.tanken.shigure.ui.subaci.ui.settings.items.aboutSettings
 import prac.tanken.shigure.ui.subaci.ui.settings.items.uiSettings
 

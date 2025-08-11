@@ -20,4 +20,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "core"
-include("model", "data-source", "common")
+include("core-model", "common", "ui")

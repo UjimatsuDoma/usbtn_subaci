@@ -1,18 +1,12 @@
 package prac.tanken.shigure.ui.subaci.core.common.nio
 
-import java.io.BufferedReader
+import prac.tanken.shigure.ui.subaci.core.common.io.readText
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStreamReader
-import java.lang.RuntimeException
 import java.net.HttpURLConnection
 import java.net.URL
 
-fun URL.readText() = buildString {
-    BufferedReader(InputStreamReader(openStream())).use {
-        it.lineSequence().forEach { appendLine(it) }
-    }
-}
+fun URL.readText() = openStream().readText()
 
 fun URL.downloadFile(
     dest: String,

@@ -80,11 +80,20 @@ fluent-system-icons = { module = "com.microsoft.design:fluent-system-icons", ver
 commons-io = { module = "commons-io:commons-io", version.ref = "commonsIo" }
 metadata-extractor = { module = "com.drewnoakes:metadata-extractor", version.ref = "metadataExtractor" }
 
+# Project-defined libraries
+subaci-core-common = { group = "prac.tanken.shigure.ui.subaci", name = "common" }
+subaci-core-model = { group = "prac.tanken.shigure.ui.subaci", name = "core-model" }
+subaci-core-model-test = { group = "prac.tanken.shigure.ui.subaci", name = "core-model-test" }
+subaci-data-source = { group = "prac.tanken.shigure.ui.subaci", name = "data-source" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+androidx-room = { id = "androidx.room", version.ref = "room" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-symbol-processing = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

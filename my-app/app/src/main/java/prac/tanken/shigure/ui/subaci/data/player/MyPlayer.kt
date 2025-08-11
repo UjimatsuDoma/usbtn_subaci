@@ -1,9 +1,8 @@
 package prac.tanken.shigure.ui.subaci.data.player
 
 import android.media.MediaPlayer
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
-import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
-import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
+import prac.tanken.shigure.ui.subaci.core.data.model.voice.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import javax.inject.Inject
 
 class MyPlayer @Inject constructor(
@@ -26,8 +25,8 @@ class MyPlayer @Inject constructor(
 
     fun playByReference(
         vr: VoiceReference,
-        onStart: CallbackInvokedAsIs = {},
-        onComplete: CallbackInvokedAsIs = {},
+        onStart: () -> Unit = {},
+        onComplete: () -> Unit = {},
     ) {
         stopIfPlaying()
         val afd = resRepository.getVoiceAFD(vr)
@@ -62,7 +61,7 @@ class MyPlayer @Inject constructor(
                 onComplete = {
                     if (index < list.lastIndex)
                         play(index + 1)
-                    else if(isLooping)
+                    else if (isLooping)
                         play(0)
                     else onComplete()
                 }

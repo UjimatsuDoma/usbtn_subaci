@@ -48,9 +48,11 @@ class MainActivity : ComponentActivity() {
             val appViewModel: AppViewModel = viewModel()
 
             val appSettingsState by appViewModel.appSettings
+            val uiSettings = appSettingsState.uiSettings
 
             ShigureUiButtonAppComposeImplementationTheme(
-                appSettingsState.appColor, appSettingsState.appDarkMode
+                uiSettings.appColor,
+                uiSettings.appDarkMode
             ) {
                 val navController = rememberNavController()
                 var orientation by remember { mutableIntStateOf(Configuration.ORIENTATION_PORTRAIT) }
@@ -69,7 +71,7 @@ class MainActivity : ComponentActivity() {
                             bottomBar = {
                                 MainNavigationBar(
                                     navController = navController,
-                                    bottomBarLabelBehaviour = appSettingsState.bottomBarLabelBehaviour
+                                    bottomBarLabelBehaviour = uiSettings.bottomBarLabelBehaviour
                                 )
                             }
                         ) { innerPadding ->
@@ -93,7 +95,7 @@ class MainActivity : ComponentActivity() {
                                 )
                                 MainNavigationRail(
                                     navController = navController,
-                                    bottomBarLabelBehaviour = appSettingsState.bottomBarLabelBehaviour
+                                    bottomBarLabelBehaviour = uiSettings.bottomBarLabelBehaviour
                                 )
                             }
                         }

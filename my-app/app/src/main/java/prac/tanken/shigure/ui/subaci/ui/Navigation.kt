@@ -23,7 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import prac.tanken.shigure.ui.subaci.ui.app.BottomBarLabelBehaviour
+import prac.tanken.shigure.ui.subaci.core.data.model.settings.ui.BottomBarLabelBehaviour
 import prac.tanken.shigure.ui.subaci.ui.playlist.PlaylistScreen
 import prac.tanken.shigure.ui.subaci.ui.playlist.PlaylistViewModel
 import prac.tanken.shigure.ui.subaci.ui.settings.SettingsScreen

@@ -1,8 +1,8 @@
 package prac.tanken.shigure.ui.subaci.ui.voices.model
 
 import kotlinx.serialization.Serializable
-import prac.tanken.shigure.ui.subaci.data.model.Voice
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.data.model.voice.Voice
+import prac.tanken.shigure.ui.subaci.core.data.model.voice.VoiceReference
 
 @Serializable
 data class VoicesVO(

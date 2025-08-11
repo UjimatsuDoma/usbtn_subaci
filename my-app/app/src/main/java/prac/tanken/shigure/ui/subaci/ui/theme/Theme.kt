@@ -18,9 +18,9 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import prac.tanken.shigure.ui.subaci.core.data.model.settings.ui.AppColor
+import prac.tanken.shigure.ui.subaci.core.data.model.settings.ui.AppDarkMode
 import prac.tanken.shigure.ui.subaci.ui.NotoSansMultiLang
-import prac.tanken.shigure.ui.subaci.ui.app.AppColor
-import prac.tanken.shigure.ui.subaci.ui.app.AppDarkMode
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,

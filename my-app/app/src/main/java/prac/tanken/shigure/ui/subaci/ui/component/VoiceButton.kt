@@ -10,10 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import prac.tanken.shigure.ui.subaci.core.data.model.voice.Voice
+import prac.tanken.shigure.ui.subaci.core.data.model.voice.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.data.model.voice.toReference
 import prac.tanken.shigure.ui.subaci.R as TankenR
-import prac.tanken.shigure.ui.subaci.data.model.Voice
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
-import prac.tanken.shigure.ui.subaci.data.model.voices.toReference
 import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
 import prac.tanken.shigure.ui.subaci.ui.NotoSansJP
 import prac.tanken.shigure.ui.subaci.ui.voices.model.VoicesVO

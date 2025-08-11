@@ -12,11 +12,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import prac.tanken.shigure.ui.subaci.data.model.PlaylistSelectionVO
-import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.data.model.playlist.PlaylistSelectionVO
+import prac.tanken.shigure.ui.subaci.core.data.model.playlist.toSelectionVO
+import prac.tanken.shigure.ui.subaci.core.data.model.voice.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.data.player.MyPlayer
-import prac.tanken.shigure.ui.subaci.data.repository.PlaylistRepository
-import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.data.util.ToastUtil
 import prac.tanken.shigure.ui.subaci.domain.PlaylistUseCase
 import prac.tanken.shigure.ui.subaci.domain.UseCaseEvent

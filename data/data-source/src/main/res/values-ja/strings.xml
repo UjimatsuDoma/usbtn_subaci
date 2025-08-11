@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_color_dynamic">システム</string>
+    <string name="app_color_built_in">アプリ</string>
+    <string name="app_bottom_bar_label_always_show">表示する</string>
+    <string name="app_bottom_bar_label_show_when_selected">選択されたのを表示する</string>
+    <string name="app_bottom_bar_label_always_hide">表示しない</string>
+    <string name="app_dark_mode_dynamic">自動的に切り替える</string>
+    <string name="app_dark_mode_dark">ダークモードON</string>
+    <string name="app_dark_mode_light">ダークモードOFF</string>
+    <string name="voices_grouped_by_category">用途</string>
+    <string name="voices_grouped_by_kana">五十音</string>
+</resources>

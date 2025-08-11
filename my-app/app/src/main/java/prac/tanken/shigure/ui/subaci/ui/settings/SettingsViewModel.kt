@@ -5,9 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import prac.tanken.shigure.ui.subaci.data.repository.SettingsRepository
+import prac.tanken.shigure.ui.subaci.core.data.model.settings.AppSettings
 import prac.tanken.shigure.ui.subaci.data.util.ToastUtil
-import prac.tanken.shigure.ui.subaci.ui.app.AppSettings
+import prac.tanken.shigure.ui.subaci.core.data.model.settings.ui.UiSettings
+import prac.tanken.shigure.ui.subaci.core.data.repository.SettingsRepository
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,7 +17,7 @@ class SettingsViewModel @Inject constructor(
     val toastUtil: ToastUtil,
 ) : ViewModel() {
     private val appSettingsFlow = settingsRepository.appSettingsFlow
-    private var _appSettings = mutableStateOf<AppSettings>(AppSettings())
+    private var _appSettings = mutableStateOf(AppSettings())
     val appSettings = _appSettings
 
     init {

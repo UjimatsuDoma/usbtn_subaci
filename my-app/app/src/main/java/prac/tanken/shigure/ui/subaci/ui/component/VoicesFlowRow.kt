@@ -16,18 +16,16 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import prac.tanken.shigure.ui.subaci.data.mock.voicesPreviewData
-import prac.tanken.shigure.ui.subaci.data.model.Voice
+import prac.tanken.shigure.ui.subaci.core.data.mock.voicesPreviewData
+import prac.tanken.shigure.ui.subaci.core.data.model.voice.Voice
 import prac.tanken.shigure.ui.subaci.data.util.randomList
 import prac.tanken.shigure.ui.subaci.ui.theme.ShigureUiButtonAppComposeImplementationTheme
-import prac.tanken.shigure.ui.subaci.ui.voices.model.VoicesVO
 import com.microsoft.fluent.mobile.icons.R as FluentR
 
 @Composable
@@ -140,11 +138,11 @@ private fun VoicesFlowRowPreview() = ShigureUiButtonAppComposeImplementationThem
 
 @Composable
 fun TestVoicesFlowRow(
-    voices: List<VoicesVO>,
+    voices: List<Voice>,
     modifier: Modifier = Modifier,
     initialMaxLines: Int = 10,
     linesDeltaStep: Int = 5,
-    elementContent: @Composable (VoicesVO) -> Unit = {}
+    elementContent: @Composable (Voice) -> Unit = {}
 ) {
     val totalItems = voices.size
     val lazyThreshold = 20
