@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_sources">来源直播</string>
+    <string name="home_sources_desc">部分语音的来源直播的列表。</string>
+    <string name="sources_tab_with_voices">有对应语音</string>
+    <string name="sources_tab_without_voices">仅标注来源</string>
+</resources>

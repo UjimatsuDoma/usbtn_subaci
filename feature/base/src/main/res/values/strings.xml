@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_badge_new">NEW</string>
+    <string name="loading">Loading</string>
+</resources>

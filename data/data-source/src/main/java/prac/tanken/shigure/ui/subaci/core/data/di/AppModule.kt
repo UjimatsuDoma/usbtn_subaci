@@ -3,8 +3,6 @@ package prac.tanken.shigure.ui.subaci.core.data.di
 import android.content.Context
 import android.content.res.AssetManager
 import android.content.res.Resources
-import android.media.MediaPlayer
-import android.os.Build
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,13 +20,4 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAssets(@ApplicationContext appContext: Context): AssetManager = appContext.assets
-
-//    @Provides
-//    @Singleton
-//    fun provideMediaPlayer(@ApplicationContext appContext: Context) =
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-//            MediaPlayer(appContext)
-//        } else {
-//            MediaPlayer()
-//        }
 }

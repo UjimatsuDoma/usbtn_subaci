@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 导航项 -->
+    <string name="playlist_nav_dest">Playlist</string>
+    <string name="playlist_nav_dest_desc">Playlist screen</string>
+    <!-- 插入或更新播放列表 -->
+    <string name="playlist_upsert_dialog_insert_title">New playlist</string>
+    <string name="playlist_upsert_error_blank_name">Playlist name should not be blank.</string>
+    <string name="playlist_upsert_dialog_submit">Submit</string>
+    <string name="playlist_upsert_dialog_cancel">Cancel</string>
+    <string name="playlist_upsert_dialog_update_title">Rename playlist</string>
+    <string name="playlist_upsert_error_replicated_name">A playlist with this name already exists.</string>
+    <string name="playlist_upsert_name_placeholder">Playlist name</string>
+    <string name="playlist_upsert_info_name_not_changed">Enter a different name.</string>
+    <string name="playlist_upsert_name_label">Name</string>
+    <string name="playlist_rename_playlist">Rename</string>
+    <!-- 删除播放列表 -->
+    <string name="playlist_delete_dialog_title">Delete playlist</string>
+    <string name="playlist_delete_dialog_message">This playlist will be deleted, and it cannot be undone. Proceed?</string>
+    <string name="playlist_delete_dialog_proceed">Proceed</string>
+    <string name="playlist_delete_dialog_cancel">Cancel</string>
+    <string name="playlist_delete_playlist">Delete playlist</string>
+
+    <string name="playlist_select_playlist_content">Please select playlist.</string>
+    <string name="playlist_no_playlists_content">Click + button to create playlist.</string>
+    <string name="loading">Loading</string>
+    <string name="playlist_no_playlists">No playlists</string>
+    <string name="playlist_select_playlist">__SELECT__</string>
+    <string name="playlist_desc_add_playlist">Add playlist</string>
+    <string name="playlist_desc_delete_playlist">Delete this playlist.</string>
+    <string name="playlist_desc_rename_playlist">Rename playlist</string>
+    <string name="playlist_move_up">Move up</string>
+    <string name="playlist_move_down">Move down</string>
+    <string name="playlist_delete_item">Delete</string>
+    <string name="playlist_no_item">No items in this playlist.</string>
+    <string name="error_playlist_move_item_oob">Cannot move item: out of bounds.</string>
+    <string name="playlist_desc_playback_control">Play or stop playing this playlist.</string>
+    <string name="playlist_desc_toggle_looping">Toggle on or off loop-playing.</string>
+    <string name="playlist_desc_overflow_menu">Overflow menu of Playlist screen.</string>
+    <string name="playlist_new_name_default">New Playlist</string>
+    <string name="error_playlist_duplicate_item">Item already exists in playlist.</string>
+</resources>

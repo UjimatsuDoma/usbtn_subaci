@@ -1,5 +1,6 @@
 package prac.tanken.shigure.ui.subaci
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,20 +16,22 @@ import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.core.data.model.settings.AppSettings
 import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.core.data.repository.SettingsRepository
-import prac.tanken.shigure.ui.subaci.data.util.ToastUtil
+import prac.tanken.shigure.ui.subaci.settings.R as SettingsR
 import javax.inject.Inject
 
 @HiltViewModel
 class AppViewModel @Inject constructor(
     val settingsRepository: SettingsRepository,
     val resRepository: ResRepository,
-    val toastUtil: ToastUtil,
 ) : ViewModel() {
     private val appSettingsFlow = settingsRepository.appSettingsFlow
         .onEach { appSettings ->
             if (appSettings == null) {
                 settingsRepository.updateAppSettings(AppSettings())
-                toastUtil.toast(resRepository.stringRes(R.string.settings_initialized_message))
+                Log.d(
+                    this::class.simpleName,
+                    resRepository.stringRes(SettingsR.string.settings_initialized_message)
+                )
             }
         }
     private var _appSettings = mutableStateOf(AppSettings())

@@ -5,6 +5,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
 import prac.tanken.shigure.ui.subaci.core.common.nio.downloadFile
+import prac.tanken.shigure.ui.subaci.core.common.nio.readToString
 import prac.tanken.shigure.ui.subaci.core.common.serialization.encodeJsonString
 import prac.tanken.shigure.ui.subaci.core.common.serialization.parseJsonString
 import prac.tanken.shigure.ui.subaci.core.data.model.category.Category
@@ -22,14 +23,14 @@ import java.net.URI
 const val htmlUrl = "${BASE_URL}/usbtn.html"
 
 fun getVoices(url: String): List<Voice> {
-    val html = URI(url).toURL().readText()
+    val html = URI(url).toURL().readToString()
     val matches = voiceRegex.findAll(html)
     val voices = matches.map { parseJsonString<Voice>(it.groupValues[0]) }.toList()
     return voices.toList()
 }
 
 fun getCategories(url: String): List<Category> {
-    val html = URI(url).toURL().readText()
+    val html = URI(url).toURL().readToString()
     val matches = categoryRegex.findAll(html)
     val categories = matches.map {
         val categoryJson = it.groupValues[0]
@@ -47,7 +48,7 @@ fun getCategories(url: String): List<Category> {
 }
 
 fun getSources(url: String): List<Source> {
-    val html = URI(url).toURL().readText()
+    val html = URI(url).toURL().readToString()
     val matches = sourceRegex.findAll(html)
     val sources = matches.map { Source(it.groupValues[1], it.groupValues[2]) }.toList()
     return sources

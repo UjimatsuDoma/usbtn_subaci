@@ -14,9 +14,11 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Shigure Ui Button App Compose Implementation"
+rootProject.name = "ShigureUiButtonAppComposeImplementation"
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 includeBuild("build-logic")
 includeBuild("core")
 includeBuild("data")
+includeBuild("feature")
 includeBuild("my-app")

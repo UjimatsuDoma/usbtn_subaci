@@ -1,30 +1,53 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     `kotlin-dsl`
-    id("java-library")
-    alias(libs.plugins.jetbrains.kotlin.jvm)
-    alias(libs.plugins.kotlin.serialization)
 }
+
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
+
 kotlin {
     compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+        jvmTarget = JvmTarget.JVM_17
     }
 }
 
 dependencies {
-    compileOnly(libs.subaci.core.model)
-    // Kotlin Serialization
-    compileOnly(libs.kotlinx.serialization.json)
+    // Necessary for writing plugins
+    compileOnly(libs.android.gradle.plugin)
+    compileOnly(libs.kotlin.gradle.plugin)
 }
 
 gradlePlugin {
     plugins {
+        // OHAYOU SEKAI GOOD MORNING WORLD!!
         register("SUBACIHello") {
             id = libs.plugins.subaci.hello.get().pluginId
             implementationClass = "HelloPlugin"
+        }
+        // Convention plugins
+        register("SUBACIAndroidApplicationConvention") {
+            id = libs.plugins.subaci.android.application.asProvider().get().pluginId
+            implementationClass = "AndroidApplicationConventionPlugin"
+        }
+        register("SUBACIAndroidApplicationComposeConvention") {
+            id = libs.plugins.subaci.android.application.compose.get().pluginId
+            implementationClass = "AndroidApplicationComposeConventionPlugin"
+        }
+        register("SUBACIAndroidLibraryConvention") {
+            id = libs.plugins.subaci.android.library.asProvider().get().pluginId
+            implementationClass = "AndroidLibraryConventionPlugin"
+        }
+        register("SUBACIAndroidLibraryComposeConvention") {
+            id = libs.plugins.subaci.android.library.compose.get().pluginId
+            implementationClass = "AndroidLibraryComposeConventionPlugin"
+        }
+        register("SUBACIJvmLibraryConvention") {
+            id = libs.plugins.subaci.jvm.library.get().pluginId
+            implementationClass = "JvmLibraryConventionPlugin"
         }
     }
 }

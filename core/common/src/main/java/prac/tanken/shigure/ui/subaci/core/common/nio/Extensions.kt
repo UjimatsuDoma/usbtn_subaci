@@ -6,7 +6,7 @@ import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-fun URL.readText() = openStream().readText()
+fun URL.readToString() = openStream().readText()
 
 fun URL.downloadFile(
     dest: String,
