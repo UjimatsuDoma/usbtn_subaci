@@ -5,6 +5,8 @@ import java.time.ZonedDateTime
 plugins {
     alias(libs.plugins.subaci.android.application)
     alias(libs.plugins.subaci.android.application.compose)
+
+//    alias(libs.plugins.kotlin.android)
 }
 
 android {

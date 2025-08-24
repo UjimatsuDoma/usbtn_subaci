@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import prac.tanken.shigure.ui.subaci.base.component.BasicListItem
 import prac.tanken.shigure.ui.subaci.settings.BuildConfig
 import prac.tanken.shigure.ui.subaci.settings.R as SettingsR
-import prac.tanken.shigure.ui.subaci.common_res.R as CommonR
+import prac.tanken.shigure.ui.subaci.core.common_android.R as CommonR
 
 fun LazyListScope.aboutSettings(
     modifier: Modifier = Modifier,

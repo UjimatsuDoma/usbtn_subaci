@@ -11,7 +11,7 @@ dependencies {
     implementation(projects.feature.base)
     implementation(projects.feature.playlist)
     implementation(libs.subaci.core.common)
-    implementation(libs.subaci.core.common.resource)
+    implementation(libs.subaci.core.common.android)
     implementation(libs.subaci.core.model)
     implementation(libs.subaci.core.player)
     implementation(libs.subaci.core.ui)

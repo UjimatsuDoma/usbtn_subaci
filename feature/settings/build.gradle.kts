@@ -39,6 +39,6 @@ android {
 dependencies {
     implementation(projects.feature.base)
     implementation(libs.subaci.core.model)
-    implementation(libs.subaci.core.common.resource)
+    implementation(libs.subaci.core.common.android)
     implementation(libs.subaci.data.source)
 }

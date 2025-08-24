@@ -89,7 +89,7 @@ kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-p
 
 # Project-defined libraries
 subaci-core-common = { group = "prac.tanken.shigure.ui.subaci", name = "common" }
-subaci-core-common-resource = { group = "prac.tanken.shigure.ui.subaci", name = "common-res" }
+subaci-core-common-android = { group = "prac.tanken.shigure.ui.subaci", name = "common-android" }
 subaci-core-model = { group = "prac.tanken.shigure.ui.subaci", name = "core-model" }
 subaci-core-player = { group = "prac.tanken.shigure.ui.subaci", name = "player" }
 subaci-core-ui = { group = "prac.tanken.shigure.ui.subaci", name = "ui" }

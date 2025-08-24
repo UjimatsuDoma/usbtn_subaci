@@ -25,6 +25,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,8 +50,12 @@ import prac.tanken.shigure.ui.subaci.base.component.VoicesFlowRow
 import prac.tanken.shigure.ui.subaci.core.data.mock.sourcesPreviewData
 import prac.tanken.shigure.ui.subaci.core.data.mock.voicesPreviewData
 import prac.tanken.shigure.ui.subaci.core.data.model.voice.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.ui.NotoCJKLocale
 import prac.tanken.shigure.ui.subaci.core.ui.NotoSerifJP
+import prac.tanken.shigure.ui.subaci.core.ui.NotoStyle
+import prac.tanken.shigure.ui.subaci.core.ui.WithNotoCJKTypography
 import prac.tanken.shigure.ui.subaci.core.ui.theme.ShigureUiButtonAppComposeImplementationTheme
+import prac.tanken.shigure.ui.subaci.core.ui.theme.getNotoTypography
 import prac.tanken.shigure.ui.subaci.sources.SourcesViewModel
 import prac.tanken.shigure.ui.subaci.sources.model.SourcesListItem
 import prac.tanken.shigure.ui.subaci.sources.model.SourcesUiState
@@ -107,11 +112,19 @@ fun SourcesScreen(
                     HorizontalPager(
                         state = pagerState,
                         pageContent = {
-                            val sources by remember {
-                                mutableStateOf(tabs[selectedTab].sourceList)
+                            var loading by remember { mutableStateOf(false) }
+                            var sources by remember {
+                                mutableStateOf(emptyList<SourcesListItem>())
                             }
 
-                            SourcesScreen(
+                            LaunchedEffect(selectedTab) {
+                                loading = true
+                                sources = tabs[selectedTab].sourceList
+                                loading = false
+                            }
+
+                            if (loading) LoadingScreenBody()
+                            else SourcesScreen(
                                 sources = sources,
                                 onPlay = viewModel::playByReference,
                                 modifier = Modifier
@@ -145,16 +158,18 @@ private fun SourcesScreen(
     modifier: Modifier = Modifier,
     sources: List<SourcesListItem>,
     onPlay: (VoiceReference) -> Unit = {},
-) = LazyColumn(modifier) {
-    items(sources) { source ->
-        SourcesListItem(
-            item = source,
-            onPlay = onPlay,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        )
+) {
+    LazyColumn(modifier) {
+        items(sources) { source ->
+            SourcesListItem(
+                item = source,
+                onPlay = onPlay,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
     }
 }
 
@@ -206,11 +221,12 @@ private fun SourcesListItem(
                 }
                 .padding(16.dp)
         ) {
-            Text(
-                text = item.title,
-                fontFamily = NotoSerifJP,
-                modifier = Modifier.weight(1f)
-            )
+            WithNotoCJKTypography(NotoStyle.SERIF, NotoCJKLocale.JP) {
+                Text(
+                    text = item.title,
+                    modifier = Modifier.weight(1f)
+                )
+            }
             if (hasVoices) {
                 Icon(
                     imageVector = if (!expanded) {
@@ -223,16 +239,18 @@ private fun SourcesListItem(
             }
         }
         if (expanded && hasVoices) {
-            VoicesFlowRow(
-                voices = item.voices,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 16.dp)
-            ) { voice ->
-                VoiceButton(
-                    voice = voice,
-                    onPlay = onPlay,
-                )
+            WithNotoCJKTypography(NotoStyle.SANS, NotoCJKLocale.JP) {
+                VoicesFlowRow(
+                    voices = item.voices,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 16.dp)
+                ) { voice ->
+                    VoiceButton(
+                        voice = voice,
+                        onPlay = onPlay,
+                    )
+                }
             }
         }
     }
@@ -242,7 +260,9 @@ private fun SourcesListItem(
 @Composable
 private fun SourcesListItemPreview(
     modifier: Modifier = Modifier
-) = ShigureUiButtonAppComposeImplementationTheme {
+) = ShigureUiButtonAppComposeImplementationTheme(
+    typography = getNotoTypography(NotoSerifJP)
+) {
     val source = sourcesPreviewData().random()
     val voices = voicesPreviewData().filter {
         it.videoId == source.videoId

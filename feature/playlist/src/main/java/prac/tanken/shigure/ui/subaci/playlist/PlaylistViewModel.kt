@@ -29,7 +29,7 @@ import prac.tanken.shigure.ui.subaci.playlist.model.PlaylistUpsertIntent
 import prac.tanken.shigure.ui.subaci.playlist.model.PlaylistUpsertState
 import prac.tanken.shigure.ui.subaci.playlist.model.PlaylistVO
 import prac.tanken.shigure.ui.subaci.playlist.model.playlistNotSelectedVO
-import prac.tanken.shigure.ui.subaci.common_res.R as CommonR
+import prac.tanken.shigure.ui.subaci.core.common_android.R as CommonR
 
 @HiltViewModel
 class PlaylistViewModel @Inject constructor(

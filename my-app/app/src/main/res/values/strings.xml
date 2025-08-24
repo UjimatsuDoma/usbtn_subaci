@@ -1,4 +1,3 @@
 <resources>
-    <string name="app_name">SUBACI</string>
     <string name="title_activity_main" translatable="false">MainActivity</string>
 </resources>

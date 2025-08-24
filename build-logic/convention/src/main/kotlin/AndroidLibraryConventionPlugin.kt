@@ -8,6 +8,7 @@ import prac.tanken.shigure.ui.subaci.build_logic.convention.configureAndroidComm
 import prac.tanken.shigure.ui.subaci.build_logic.convention.configureCommonDependencies
 import prac.tanken.shigure.ui.subaci.build_logic.convention.configureFlavors
 import prac.tanken.shigure.ui.subaci.build_logic.convention.configureKotlinAndroid
+import prac.tanken.shigure.ui.subaci.build_logic.convention.configureSdkVersion
 import prac.tanken.shigure.ui.subaci.build_logic.convention.libs
 
 class AndroidLibraryConventionPlugin : Plugin<Project> {
@@ -20,9 +21,25 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             version = "unspecified"
 
             extensions.configure<LibraryExtension> {
-                configureFlavors(this)
+                configureFlavors(this) {
+                    configureSdkVersion(it)
+                }
                 configureAndroidBase(this)
                 configureKotlinAndroid(this)
+
+                buildTypes {
+                    release {
+                        isMinifyEnabled = false
+                        proguardFiles(
+                            getDefaultProguardFile("proguard-android-optimize.txt"),
+                            "proguard-rules.pro"
+                        )
+                    }
+                }
+
+                buildFeatures {
+                    buildConfig = true
+                }
 
                 defaultConfig {
                     consumerProguardFiles.add(file("proguard-rules.pro"))

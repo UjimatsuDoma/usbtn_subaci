@@ -35,7 +35,6 @@ class VoicesUseCase(
                             categories.forEach { category ->
                                 val idList = category.idList
                                 val categoryVoices = voicesSorted
-                                    .map { it.toVoicesVO() }
                                     .filter { voice -> voice.id in idList.map { it.id } }
                                     .toList()
                                 this.put(category.className, categoryVoices)
@@ -47,7 +46,7 @@ class VoicesUseCase(
                     VoicesGroupedBy.Kana -> {
                         val voicesGrouped = voicesSorted
                             .groupBy { it.a }
-                            .mapValues { it.value.map { voice -> voice.toVoicesVO() } }
+                            .mapValues { it.value }
                             .mapKeys { entry ->
                                 when (entry.key) {
                                     "A" -> "あ行"

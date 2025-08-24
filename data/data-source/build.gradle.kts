@@ -24,6 +24,7 @@ dependencies {
     // Other projects
     implementation(libs.subaci.core.model)
     implementation(libs.subaci.core.common)
+    implementation(libs.subaci.core.common.android)
 
     // Kotlin Reflection
     implementation(libs.kotlin.reflect)

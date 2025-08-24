@@ -20,4 +20,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "core"
-include("core-model", "common", "common-res", "ui")
+include("core-model", "common", "common-android", "ui")

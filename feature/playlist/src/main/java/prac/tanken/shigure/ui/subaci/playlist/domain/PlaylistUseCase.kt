@@ -13,7 +13,7 @@ import prac.tanken.shigure.ui.subaci.playlist.model.PlaylistVO
 import prac.tanken.shigure.ui.subaci.playlist.model.playlistNotSelectedVO
 import prac.tanken.shigure.ui.subaci.playlist.model.toPlaylistVoiceVO
 import prac.tanken.shigure.ui.subaci.playlist.R as TankenR
-import prac.tanken.shigure.ui.subaci.common_res.R as CommonR
+import prac.tanken.shigure.ui.subaci.core.common_android.R as CommonR
 
 class PlaylistUseCase(
     val playlistRepository: PlaylistRepository,

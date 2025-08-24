@@ -1,365 +1,84 @@
+@file:OptIn(ExperimentalTextApi::class)
+
 package prac.tanken.shigure.ui.subaci.core.ui
 
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
+import prac.tanken.shigure.ui.subaci.core.ui.theme.getNotoTypography
 
-@OptIn(ExperimentalTextApi::class)
-val NotoSansJP =
-    FontFamily(
-        Font(
-            R.font.noto_sans_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Thin.weight)),
-            weight = FontWeight.Thin,
-        ),
-        Font(
-            R.font.noto_sans_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.ExtraLight.weight)),
-            weight = FontWeight.ExtraLight,
-        ),
-        Font(
-            R.font.noto_sans_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Light.weight)),
-            weight = FontWeight.Light,
-        ),
-        Font(
-            R.font.noto_sans_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Normal.weight)),
-            weight = FontWeight.Normal,
-        ),
-        Font(
-            R.font.noto_sans_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Medium.weight)),
-            weight = FontWeight.Medium,
-        ),
-        Font(
-            R.font.noto_sans_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.SemiBold.weight)),
-            weight = FontWeight.SemiBold,
-        ),
-        Font(
-            R.font.noto_sans_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Bold.weight)),
-            weight = FontWeight.Bold,
-        ),
-        Font(
-            R.font.noto_sans_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.ExtraBold.weight)),
-            weight = FontWeight.ExtraBold,
-        ),
-        Font(
-            R.font.noto_sans_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Black.weight)),
-            weight = FontWeight.Black,
-        ),
-    )
+@Composable
+fun getNotoFamily(
+    style: NotoStyle,
+    locale: NotoCJKLocale? = null,
+): FontFamily {
+    val cxt = LocalContext.current
+    return remember {
+        FontFamily(
+            (100..900 step 100).map { fontWeight ->
+                SUBACIAssetsFont(
+                    assetManager = cxt.assets,
+                    path = "fonts/${style.fileName}.ttc",
+                    weight = FontWeight(fontWeight),
+                    style = FontStyle.Normal,
+                    ttcIndex = locale?.ttcIndex,
+                    variationSettings = FontVariation.Settings(
+                        FontVariation.weight(fontWeight)
+                    )
+                )
+            }
+        )
+    }
+}
 
-@OptIn(ExperimentalTextApi::class)
-val NotoSerifJP =
-    FontFamily(
-        Font(
-            R.font.noto_serif_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.ExtraLight.weight)),
-            weight = FontWeight.ExtraLight,
-        ),
-        Font(
-            R.font.noto_serif_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Light.weight)),
-            weight = FontWeight.Light,
-        ),
-        Font(
-            R.font.noto_serif_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Normal.weight)),
-            weight = FontWeight.Normal,
-        ),
-        Font(
-            R.font.noto_serif_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Medium.weight)),
-            weight = FontWeight.Medium,
-        ),
-        Font(
-            R.font.noto_serif_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.SemiBold.weight)),
-            weight = FontWeight.SemiBold,
-        ),
-        Font(
-            R.font.noto_serif_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Bold.weight)),
-            weight = FontWeight.Bold,
-        ),
-        Font(
-            R.font.noto_serif_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.ExtraBold.weight)),
-            weight = FontWeight.ExtraBold,
-        ),
-        Font(
-            R.font.noto_serif_jp_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Black.weight)),
-            weight = FontWeight.Black,
-        ),
-    )
+val NotoSansJP @Composable get() = getNotoFamily(NotoStyle.SANS, NotoCJKLocale.JP)
 
-@OptIn(ExperimentalTextApi::class)
-val NotoSansMultiLang =
-    FontFamily(
-        Font(
-            R.font.noto_sans_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Thin.weight)),
-            weight = FontWeight.Thin,
-        ),
-        Font(
-            R.font.noto_sans_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.Thin.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.Thin,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_sans_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.ExtraLight.weight)),
-            weight = FontWeight.ExtraLight,
-        ),
-        Font(
-            R.font.noto_sans_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.ExtraLight.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.ExtraLight,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_sans_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Light.weight)),
-            weight = FontWeight.Light,
-        ),
-        Font(
-            R.font.noto_sans_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.Light.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.Light,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_sans_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Normal.weight)),
-            weight = FontWeight.Normal,
-        ),
-        Font(
-            R.font.noto_sans_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.Normal.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.Normal,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_sans_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Medium.weight)),
-            weight = FontWeight.Medium,
-        ),
-        Font(
-            R.font.noto_sans_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.Medium.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.Medium,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_sans_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.SemiBold.weight)),
-            weight = FontWeight.SemiBold,
-        ),
-        Font(
-            R.font.noto_sans_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.SemiBold.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.SemiBold,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_sans_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Bold.weight)),
-            weight = FontWeight.Bold,
-        ),
-        Font(
-            R.font.noto_sans_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.Bold.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.Bold,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_sans_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.ExtraBold.weight)),
-            weight = FontWeight.ExtraBold,
-        ),
-        Font(
-            R.font.noto_sans_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.ExtraBold.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.ExtraBold,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_sans_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Black.weight)),
-            weight = FontWeight.Black,
-        ),
-        Font(
-            R.font.noto_sans_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.Black.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.Black,
-            style = FontStyle.Italic
-        ),
-    )
+val NotoSerifJP @Composable get() = getNotoFamily(NotoStyle.SERIF, NotoCJKLocale.JP)
 
-@OptIn(ExperimentalTextApi::class)
-val NotoSerifMultiLang =
-    FontFamily(
-        Font(
-            R.font.noto_serif_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Thin.weight)),
-            weight = FontWeight.Thin,
-        ),
-        Font(
-            R.font.noto_serif_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.Thin.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.Thin,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_serif_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.ExtraLight.weight)),
-            weight = FontWeight.ExtraLight,
-        ),
-        Font(
-            R.font.noto_serif_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.ExtraLight.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.ExtraLight,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_serif_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Light.weight)),
-            weight = FontWeight.Light,
-        ),
-        Font(
-            R.font.noto_serif_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.Light.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.Light,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_serif_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Normal.weight)),
-            weight = FontWeight.Normal,
-        ),
-        Font(
-            R.font.noto_serif_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.Normal.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.Normal,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_serif_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Medium.weight)),
-            weight = FontWeight.Medium,
-        ),
-        Font(
-            R.font.noto_serif_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.Medium.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.Medium,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_serif_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.SemiBold.weight)),
-            weight = FontWeight.SemiBold,
-        ),
-        Font(
-            R.font.noto_serif_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.SemiBold.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.SemiBold,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_serif_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Bold.weight)),
-            weight = FontWeight.Bold,
-        ),
-        Font(
-            R.font.noto_serif_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.Bold.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.Bold,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_serif_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.ExtraBold.weight)),
-            weight = FontWeight.ExtraBold,
-        ),
-        Font(
-            R.font.noto_serif_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.ExtraBold.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.ExtraBold,
-            style = FontStyle.Italic
-        ),
-        Font(
-            R.font.noto_serif_variable,
-            variationSettings = FontVariation.Settings(FontVariation.weight(FontWeight.Black.weight)),
-            weight = FontWeight.Black,
-        ),
-        Font(
-            R.font.noto_serif_variable_italic,
-            variationSettings = FontVariation.Settings(
-                FontVariation.weight(FontWeight.Black.weight),
-                FontVariation.italic(1f)
-            ),
-            weight = FontWeight.Black,
-            style = FontStyle.Italic
-        ),
+val NotoSansAutoLang @Composable get() = getNotoFamily(NotoStyle.SANS)
+
+val NotoSerifAutoLang @Composable get() = getNotoFamily(NotoStyle.SERIF)
+
+@Composable
+fun WithNotoCJKTypography(
+    style: NotoStyle,
+    locale: NotoCJKLocale? = null,
+    content: @Composable () -> Unit
+) {
+    val fontFamily = when (style) {
+        NotoStyle.SANS -> {
+            when (locale) {
+                NotoCJKLocale.JP -> NotoSansJP
+                else -> NotoSansAutoLang
+            }
+        }
+
+        NotoStyle.SERIF -> {
+            when (locale) {
+                NotoCJKLocale.JP -> NotoSerifJP
+                else -> NotoSerifAutoLang
+            }
+        }
+    }
+
+    MaterialTheme(
+        typography = getNotoTypography(fontFamily),
+        content = {
+            CompositionLocalProvider(
+                LocalTextStyle provides LocalTextStyle.current.merge(
+                    TextStyle(fontFeatureSettings = "\"locl\" " + if (locale != null) "0" else "1")
+                ),
+                content = content
+            )
+        }
     )
+}

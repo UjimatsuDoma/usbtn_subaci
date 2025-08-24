@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combineTransform
 import prac.tanken.shigure.ui.subaci.base.domain.BaseUseCase
 import prac.tanken.shigure.ui.subaci.base.domain.UseCaseEvent
-import prac.tanken.shigure.ui.subaci.core.common.datetime.todayStr
+import prac.tanken.shigure.ui.subaci.core.common_android.datetime.todayStr
 import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.core.data.repository.VoicesRepository
 import prac.tanken.shigure.ui.subaci.voices.R

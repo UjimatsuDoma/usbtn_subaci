@@ -1,5 +1,6 @@
 package prac.tanken.shigure.ui.subaci.build_logic.convention
 
+import com.android.build.api.dsl.ApplicationBaseFlavor
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.ProductFlavor
 
@@ -30,6 +31,21 @@ fun configureFlavors(
                     dimension = appFlavor.dimension.value
                     flavorConfigurationBlock(this, appFlavor)
                 }
+            }
+        }
+    }
+}
+
+fun ProductFlavor.configureSdkVersion(appFlavor: AppFlavor) {
+    when (appFlavor) {
+        AppFlavor.MODERN -> {
+            minSdk = 26
+        }
+
+        AppFlavor.PRE_OREO -> {
+            minSdk = 21
+            if (this is ApplicationBaseFlavor) {
+                maxSdk = 25
             }
         }
     }

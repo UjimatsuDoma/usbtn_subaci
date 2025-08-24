@@ -25,6 +25,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,12 +40,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import prac.tanken.shigure.ui.subaci.base.component.RadioButtonCard
+import prac.tanken.shigure.ui.subaci.core.common_android.version.androidVersionErrorMessage
 import prac.tanken.shigure.ui.subaci.core.data.model.settings.AppSettings
 import prac.tanken.shigure.ui.subaci.core.data.model.settings.ui.AppColor
 import prac.tanken.shigure.ui.subaci.core.data.model.settings.ui.AppDarkMode
 import prac.tanken.shigure.ui.subaci.core.data.model.settings.ui.BottomBarLabelBehaviour
 import prac.tanken.shigure.ui.subaci.settings.R
-import prac.tanken.shigure.ui.subaci.settings.androidVersionErrorMessage
 
 fun LazyListScope.uiSettings(
     modifier: Modifier = Modifier,
