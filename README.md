@@ -17,9 +17,8 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
     - Milestone 3: Re-arrange pages - merge All Voices screen and Categories screen, and implement Settings screen [Jan. 1, 2025 ~ Feb. 26, 2025]
       - Revision 1: Introduce splash screen and optimize UI state save & load [Feb. 27?, 2025 ~ Apr. 5, 2025]  
         NOTE: merge `develop-mvvm` branch
-      - Revision 2: Migrate to multi-module development [May 7, 2025 ~ TBA]<br>
-        Revision 2: ~Migrate from Compose `FontFamily` to manual `Typeface` injection for `MODERN` build, to make use of [Noto CJK Variable OTC](https://github.com/notofonts/noto-cjk) and eventually reducing APK file size. [Jul. 26 ~ TBA]~ leave it for Milestone 5
-      - Revision 3: TBA
+      - Revision 2: Migrate to multi-module development; Migrate from Compose `FontFamily` to custom `AndroidFont` implementation for `MODERN` build, to make use of [Noto CJK Variable OTC](https://github.com/notofonts/noto-cjk) and eventually reducing APK file size. [May 7, 2025 ~ Aug. 24, 2025]
+      - Revision 3: Performance optimizations [Aug. , 2025 ~ TBA]
     - Milestone 4: Introduce animation [TBA]
 - 1st Edition "Master Up": TBA
 - 2nd Edition "SuiCYAN": TBA
@@ -29,7 +28,7 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
 - **Voices**: click to play, long press to add to playlist  
 - **Sources**: list of YouTube live streams where the voices are clipped from  
 - **Playlist**: create/rename/delete playlists, move single item up and down, click to play, supports loop playing  
-- **Daily Random Voice**: self-check and update if needed, at launch time.  
+- **Daily Random Voice**: self-check and update if needed, at launch time.
 
 # Notes
 
