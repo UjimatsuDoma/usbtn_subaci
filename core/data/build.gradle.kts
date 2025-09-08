@@ -1,43 +1,33 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.subaci.android.library)
+    alias(libs.plugins.subaci.android.library.compose)
+    alias(libs.plugins.subaci.resource.download)
+}
+
+tasks {
+    preBuild {
+        dependsOn(named("downloadVoices"))
+        dependsOn(named("downloadCategories"))
+        dependsOn(named("downloadSources"))
+        dependsOn(named("checkIfFilesExist"))
+    }
 }
 
 android {
     namespace = "prac.tanken.shigure.ui.subaci.core.data"
-    compileSdk = 35
-
-    defaultConfig {
-        minSdk = 21
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
 }
 
 dependencies {
+    implementation(projects.core.common)
+    implementation(projects.core.ui)
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    // Kotlin Reflect
+    implementation(libs.kotlin.reflect)
+
+    // Room Database
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    // Preferences DataStore
+    implementation(libs.androidx.datastore.preferences)
 }

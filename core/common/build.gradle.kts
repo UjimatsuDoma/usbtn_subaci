@@ -7,5 +7,6 @@ android {
 }
 
 dependencies {
-
+    // Kotlin DateTime
+    implementation(libs.kotlinx.datetime)
 }

@@ -65,8 +65,6 @@ android {
 dependencies {
     implementation(libs.androidx.activity.compose)
 
-    // Kotlin Reflect
-    implementation(libs.kotlin.reflect)
     // Kotlin DateTime
     implementation(libs.kotlinx.datetime)
 
