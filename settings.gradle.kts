@@ -21,4 +21,12 @@ dependencyResolutionManagement {
 
 rootProject.name = "Shigure Ui Button App Compose Implementation"
 include(":app")
- 
+includeBuild("build-logic")
+include(":core:data")
+include(":core:common")
+include(":core:ui")
+include(":feature:base")
+include(":feature:voices")
+include(":feature:sources")
+include(":feature:playlist")
+include(":feature:settings")
