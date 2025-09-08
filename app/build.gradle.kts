@@ -11,19 +11,10 @@ val now = buildString {
 
 plugins {
     alias(libs.plugins.subaci.android.application)
+    alias(libs.plugins.subaci.android.application.compose)
 
-    alias(libs.plugins.android.hilt)
     alias(libs.plugins.androidx.room)
-    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.parcelize)
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.symbol.processing)
-}
-
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.add("-Xwhen-guards")
-    }
 }
 
 android {
@@ -63,7 +54,6 @@ android {
         }
     }
     buildFeatures {
-        compose = true
         buildConfig = true
     }
 
@@ -75,16 +65,10 @@ android {
 dependencies {
     implementation(libs.androidx.activity.compose)
 
-    // Kotlin Serialization
-    implementation(libs.kotlinx.serialization.json)
     // Kotlin Reflect
     implementation(libs.kotlin.reflect)
     // Kotlin DateTime
     implementation(libs.kotlinx.datetime)
-
-    // DI stuff
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.android.compiler)
 
     // Compose ConstraintLayout
     implementation(libs.androidx.constraintlayout.compose)

@@ -43,7 +43,7 @@ fun URL.downloadFile(
     if (inputStream == null) throw RuntimeException("Stream is null")
     // 目的路径不存在则创建
     val path = dest.substringBeforeLast("/")
-    val fileName = dest.substringAfterLast("/")
+//    val fileName = dest.substringAfterLast("/")
     val dir = File(path)
     if (!dir.exists()) dir.mkdir()
     // 文件输出流
