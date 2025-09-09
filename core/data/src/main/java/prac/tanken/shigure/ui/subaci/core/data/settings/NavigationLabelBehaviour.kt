@@ -1,4 +1,4 @@
-package prac.tanken.shigure.ui.subaci.core.ui.settings
+package prac.tanken.shigure.ui.subaci.core.data.settings
 
 import androidx.annotation.StringRes
 import kotlinx.serialization.Serializable

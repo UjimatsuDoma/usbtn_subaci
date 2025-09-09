@@ -1,4 +1,4 @@
-package prac.tanken.shigure.ui.subaci.core.ui.settings
+package prac.tanken.shigure.ui.subaci.core.data.settings
 
 import android.os.Build
 import androidx.annotation.StringRes
