@@ -1,7 +1,7 @@
-app/src/main/assets/
-app/src/main/res/raw/audio_list.json
-app/src/main/res/raw/class_list.json
-app/src/main/res/raw/video_list.json
+assets/
+audio_list.json
+class_list.json
+video_list.json
 
 # Gradle files
 .gradle/
