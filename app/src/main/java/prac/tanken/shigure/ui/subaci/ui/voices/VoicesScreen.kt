@@ -152,7 +152,7 @@ private fun VoicesTopBar(
             ) {
                 Icon(
                     imageVector = Icons.Default.Casino,
-                    contentDescription = stringResource(TankenR.string.daily_random_voice)
+                    contentDescription = stringResource(TankenR.string.voices_desc_daily_random_voice)
                 )
             }
             var showGroupedByMenu by rememberSaveable { mutableStateOf(false) }
