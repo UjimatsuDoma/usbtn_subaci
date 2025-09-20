@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import prac.tanken.shigure.ui.subaci.core.data.di.SettingsDataStore
-import prac.tanken.shigure.ui.subaci.core.data.model.settings.AppSettings
 import prac.tanken.shigure.ui.subaci.core.data.preferences.SettingsKeys
+import prac.tanken.shigure.ui.subaci.core.data.settings.AppSettings
 import javax.inject.Inject
 
 class SettingsRepository @Inject constructor(

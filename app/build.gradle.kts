@@ -63,6 +63,15 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.common)
+    implementation(projects.core.data)
+    implementation(projects.core.ui)
+    implementation(projects.feature.base)
+    implementation(projects.feature.voices)
+    implementation(projects.feature.sources)
+    implementation(projects.feature.playlist)
+    implementation(projects.feature.settings)
+
     implementation(libs.androidx.activity.compose)
 
     // Kotlin DateTime

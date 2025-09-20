@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.subaci.android.library)
     alias(libs.plugins.subaci.android.library.compose)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -8,5 +9,6 @@ android {
 }
 
 dependencies {
-
+    implementation(projects.core.common)
+    implementation(projects.core.data)
 }
