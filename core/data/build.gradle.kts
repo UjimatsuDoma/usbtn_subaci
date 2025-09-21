@@ -1,25 +1,34 @@
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import kotlin.apply
+
 plugins {
     alias(libs.plugins.subaci.android.library)
     alias(libs.plugins.subaci.android.library.compose)
     alias(libs.plugins.subaci.resource.download)
+
+    alias(libs.plugins.androidx.room)
 }
 
 tasks {
-    preBuild {
-        dependsOn(named("downloadVoices"))
-        dependsOn(named("downloadCategories"))
-        dependsOn(named("downloadSources"))
-        dependsOn(named("checkIfFilesExist"))
-    }
+//    preBuild {
+//        dependsOn(named("downloadVoices"))
+//        dependsOn(named("downloadCategories"))
+//        dependsOn(named("downloadSources"))
+//        dependsOn(named("checkIfFilesExist"))
+//    }
 }
 
 android {
     namespace = "prac.tanken.shigure.ui.subaci.core.data"
+
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
 }
 
 dependencies {
     implementation(projects.core.common)
-    implementation(projects.core.ui)
 
     // Kotlin Reflect
     implementation(libs.kotlin.reflect)

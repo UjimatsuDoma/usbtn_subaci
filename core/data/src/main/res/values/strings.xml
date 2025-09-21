@@ -1,3 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="voices_grouped_by_category">Category</string>
+    <string name="voices_grouped_by_kana">Kana</string>
+
+    <string name="app_color_dynamic">Follow system</string>
+    <string name="app_color_built_in">Built-in color</string>
+    <string name="app_dark_mode_dynamic">Follow system</string>
+    <string name="app_dark_mode_dark">Dark</string>
+    <string name="app_dark_mode_light">Light</string>
+    <string name="app_bottom_bar_label_always_show">Always show</string>
+    <string name="app_bottom_bar_label_always_hide">Always hide</string>
+    <string name="app_bottom_bar_label_show_when_selected">Show when selected</string>
 </resources>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">ういボタンC</string>
+
     <string name="error_illegal_index">不当な添え字です。</string>
     <string name="error_illegal_state">不適切な状態である。</string>
     <string name="error_android_version_prefix">"Android "</string>

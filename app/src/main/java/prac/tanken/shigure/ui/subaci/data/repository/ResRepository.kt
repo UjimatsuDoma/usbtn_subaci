@@ -6,12 +6,11 @@ import androidx.annotation.StringRes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import prac.tanken.shigure.ui.subaci.R
-import prac.tanken.shigure.ui.subaci.data.model.voices.Category
 import prac.tanken.shigure.ui.subaci.data.model.Voice
 import prac.tanken.shigure.ui.subaci.data.model.sources.SourceEntity
+import prac.tanken.shigure.ui.subaci.data.model.voices.Category
 import prac.tanken.shigure.ui.subaci.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.data.util.parseJsonString
 import prac.tanken.shigure.ui.subaci.data.util.readIS2Text

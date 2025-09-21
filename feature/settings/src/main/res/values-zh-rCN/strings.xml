@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="home_settings">应用设置</string>
-    <string name="home_settings_desc">“应用设置”页面。</string>
+    <string name="settings_nav_dest">应用设置</string>
+    <string name="settings_nav_dest_desc">“应用设置”页面。</string>
 
     <string name="settings_about_title">关于</string>
     <string name="settings_ui">界面</string>

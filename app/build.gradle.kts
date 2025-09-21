@@ -1,13 +1,6 @@
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-val now = buildString {
-    ZonedDateTime.now(ZoneId.systemDefault()).apply {
-        append(String.format("%d%02d%02d", year, monthValue, dayOfMonth))
-        append("-")
-        append(String.format("%02d%02d%02d", hour, minute, second))
-    }
-}
 
 plugins {
     alias(libs.plugins.subaci.android.application)
@@ -35,9 +28,6 @@ android {
         debug {
             isMinifyEnabled = false
             isDebuggable = true
-
-            buildConfigField("String", "BUILT_IN_COLOR_SOURCE", "\"22523677\"")
-            buildConfigField("String", "BUILD_TIME", "\"$now\"")
         }
         release {
             isMinifyEnabled = true
@@ -48,13 +38,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
-            buildConfigField("String", "BUILT_IN_COLOR_SOURCE", "\"22523677\"")
-            buildConfigField("String", "BUILD_TIME", "\"$now\"")
         }
-    }
-    buildFeatures {
-        buildConfig = true
     }
 
     room {
@@ -65,6 +49,7 @@ android {
 dependencies {
     implementation(projects.core.common)
     implementation(projects.core.data)
+    implementation(projects.core.player)
     implementation(projects.core.ui)
     implementation(projects.feature.base)
     implementation(projects.feature.voices)

@@ -3,8 +3,8 @@ package prac.tanken.shigure.ui.subaci.core.ui
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
-import prac.tanken.shigure.ui.subaci.core.data.settings.AppColor
-import prac.tanken.shigure.ui.subaci.core.data.settings.AppDarkMode
+import prac.tanken.shigure.ui.subaci.core.data.settings.ui.AppColor
+import prac.tanken.shigure.ui.subaci.core.data.settings.ui.AppDarkMode
 import prac.tanken.shigure.ui.subaci.core.ui.theme.ShigureUiButtonAppComposeImplementationTheme
 import prac.tanken.shigure.ui.subaci.core.ui.theme.getNotoTypography
 

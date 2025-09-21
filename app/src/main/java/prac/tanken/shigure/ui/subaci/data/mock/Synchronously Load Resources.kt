@@ -2,11 +2,11 @@ package prac.tanken.shigure.ui.subaci.data.mock
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import prac.tanken.shigure.ui.subaci.R
-import prac.tanken.shigure.ui.subaci.data.model.Voice
-import prac.tanken.shigure.ui.subaci.data.model.sources.SourceEntity
-import prac.tanken.shigure.ui.subaci.data.model.voices.Category
-import prac.tanken.shigure.ui.subaci.data.util.parseJsonString
+import prac.tanken.shigure.ui.subaci.core.common.serialization.parseJsonString
+import prac.tanken.shigure.ui.subaci.core.data.R
+import prac.tanken.shigure.ui.subaci.core.data.model.Voice
+import prac.tanken.shigure.ui.subaci.core.data.model.sources.SourceEntity
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.Category
 import prac.tanken.shigure.ui.subaci.data.util.readIS2Text
 
 @Composable

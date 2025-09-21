@@ -1,8 +1,8 @@
-package prac.tanken.shigure.ui.subaci.core.data.settings
+package prac.tanken.shigure.ui.subaci.core.data.settings.ui
 
 import androidx.annotation.StringRes
 import kotlinx.serialization.Serializable
-import prac.tanken.shigure.ui.subaci.core.ui.R
+import prac.tanken.shigure.ui.subaci.core.data.R
 
 @Serializable
 sealed class NavigationLabelBehaviour(@param:StringRes val displayName: Int) {

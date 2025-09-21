@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="home_settings">設定</string>
-    <string name="home_settings_desc">このアプリの設定画面です。</string>
+    <string name="settings_nav_dest">設定</string>
+    <string name="settings_nav_dest_desc">このアプリの設定画面です。</string>
 
     <string name="settings_about_title">このアプリについて</string>
     <string name="settings_ui">UI</string>

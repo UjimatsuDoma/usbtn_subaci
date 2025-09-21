@@ -1,4 +1,4 @@
-package prac.tanken.shigure.ui.subaci.core.common.android
+package prac.tanken.shigure.ui.subaci.core.common.android.toast
 
 import android.content.Context
 import android.widget.Toast

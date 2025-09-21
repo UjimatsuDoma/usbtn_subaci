@@ -4,10 +4,10 @@ import kotlinx.serialization.Serializable
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import prac.tanken.shigure.ui.subaci.build_logic.common.downloadFile
 import prac.tanken.shigure.ui.subaci.build_logic.common.encodeJsonString
-import prac.tanken.shigure.ui.subaci.build_logic.common.parseJsonString
 import prac.tanken.shigure.ui.subaci.build_logic.common.readToString
 import java.io.File
 import java.io.FileWriter
@@ -18,7 +18,7 @@ abstract class SourcesDownloadTask : DefaultTask() {
     @get:InputDirectory
     abstract val destination: DirectoryProperty
 
-    fun getSources(): List<SourceEntity> {
+    fun fetchSources(): List<SourceEntity> {
         val html = URI(HTML_URL).toURL().readToString()
         val matches = sourceRegex.findAll(html)
         val sources = matches.map { SourceEntity(it.groupValues[1], it.groupValues[2]) }.toList()
@@ -29,10 +29,10 @@ abstract class SourcesDownloadTask : DefaultTask() {
     fun run() {
         val file = destination.asFile.get()
 
-        repeat(10) { currentTry ->
+        for(currentTry in 0 until 10) {
             try {
                 println("fetching sources json...")
-                val sources = getSources()
+                val sources = fetchSources()
                 FileWriter("$file/src/main/res/raw/video_list.json").use {
                     it.write(encodeJsonString(sources))
                 }
@@ -49,7 +49,7 @@ abstract class SourcesDownloadTask : DefaultTask() {
                         )
                     }
                 }
-                return@repeat
+                break
             } catch (e: Exception) {
                 e.printStackTrace()
                 logger.error("ERROR RETRY: ${currentTry + 1}/10")
@@ -73,7 +73,7 @@ abstract class SourcesDownloadTask : DefaultTask() {
         )
         var result = ""
         for (resolution in resolutions) {
-            val url = "http://i3.ytimg.com/vi/$videoId/$resolution.jpg"
+            val url = "http://i.ytimg.com/vi/$videoId/$resolution.jpg"
             val con = URI(url).toURL().openConnection() as HttpURLConnection
             con.requestMethod = "GET"
             con.connect()
