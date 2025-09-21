@@ -34,3 +34,4 @@ include(":feature:playlist")
 include(":feature:settings")
 
 includeBuild("build-logic")
+include(":core:player")

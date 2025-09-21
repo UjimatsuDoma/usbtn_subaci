@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="home_playlist">播放列表</string>
-    <string name="home_playlist_desc">“播放列表”页面</string>
+    <string name="playlist_nav_dest">播放列表</string>
+    <string name="playlist_nav_dest_desc">“播放列表”页面</string>
 
     <string name="playlist_no_playlists">无播放列表</string>
     <string name="playlist_no_playlists_content">点击加号创建播放列表</string>

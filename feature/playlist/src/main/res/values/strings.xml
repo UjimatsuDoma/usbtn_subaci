@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="home_playlist">Playlist</string>
-    <string name="home_playlist_desc">Playlist screen</string>
+    <string name="playlist_nav_dest">Playlist</string>
+    <string name="playlist_nav_dest_desc">Playlist screen</string>
 
     <string name="playlist_no_playlists">No playlists</string>
     <string name="playlist_no_playlists_content">Click + button to create playlist.</string>

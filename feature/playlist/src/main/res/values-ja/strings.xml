@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="home_playlist">連続再生</string>
-    <string name="home_playlist_desc">再生リストのページです。</string>
+    <string name="playlist_nav_dest">連続再生</string>
+    <string name="playlist_nav_dest_desc">再生リストのページです。</string>
 
     <string name="playlist_no_playlists">再生リストがありません。</string>
     <string name="playlist_no_playlists_content">＋ボタンを押して再生リストを作ってみましょう。</string>

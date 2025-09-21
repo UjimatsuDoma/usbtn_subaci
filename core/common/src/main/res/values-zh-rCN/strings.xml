@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_illegal_index">下标不合法</string>
+    <string name="error_illegal_state">非法状态。</string>
+    <string name="error_android_version_prefix">"需要Android "</string>
+    <string name="error_android_version_suffix">以上</string>
+</resources>
