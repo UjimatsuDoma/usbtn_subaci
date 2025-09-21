@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 open class MainDestination(
-    @StringRes val displayName: Int,
-    @StringRes val desc: Int,
-    @DrawableRes val unselectedIcon: Int,
-    @DrawableRes val selectedIcon: Int,
+    @param:StringRes val displayName: Int,
+    @param:StringRes val desc: Int,
+    @param:DrawableRes val unselectedIcon: Int,
+    @param:DrawableRes val selectedIcon: Int,
 )

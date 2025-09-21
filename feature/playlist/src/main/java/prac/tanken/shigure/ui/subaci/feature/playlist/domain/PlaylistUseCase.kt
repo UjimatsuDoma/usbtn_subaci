@@ -1,7 +1,9 @@
 package prac.tanken.shigure.ui.subaci.feature.playlist.domain
 
 import kotlinx.coroutines.flow.combineTransform
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import prac.tanken.shigure.ui.subaci.core.common.serialization.parseJsonString
 import prac.tanken.shigure.ui.subaci.core.data.model.playlistNotSelected
 import prac.tanken.shigure.ui.subaci.core.data.repository.PlaylistRepository
 import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
@@ -10,6 +12,8 @@ import prac.tanken.shigure.ui.subaci.feature.base.domain.UseCaseEvent
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistVO
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.playlistNotSelectedVO
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.toPlaylistVoiceVO
+import prac.tanken.shigure.ui.subaci.core.common.R as CommonR
+import prac.tanken.shigure.ui.subaci.feature.playlist.R as PlaylistR
 
 class PlaylistUseCase(
     val playlistRepository: PlaylistRepository,
@@ -75,7 +79,7 @@ class PlaylistUseCase(
         val oldList = Json.decodeFromString<List<String>>(entity.playlistItems)
         if (oldList.contains(voiceId)) {
             throw IllegalStateException(
-                resRepository.stringRes(TankenR.string.error_playlist_duplicate_item)
+                resRepository.stringRes(PlaylistR.string.error_playlist_duplicate_item)
             )
         }
         val newList = oldList + voiceId
@@ -112,7 +116,7 @@ class PlaylistUseCase(
         val moveUpValid = moveUp && index in 1..items.lastIndex
         val moveDownValid = !moveUp && index in 0 until items.lastIndex
         if (!(moveUpValid || moveDownValid)) {
-            val message = resRepository.stringRes(TankenR.string.error_playlist_move_item_oob)
+            val message = resRepository.stringRes(PlaylistR.string.error_playlist_move_item_oob)
             throw IllegalStateException(message)
         }
 
