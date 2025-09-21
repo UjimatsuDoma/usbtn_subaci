@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_playlist">播放列表</string>
+    <string name="home_playlist_desc">“播放列表”页面</string>
+
+    <string name="playlist_no_playlists">无播放列表</string>
+    <string name="playlist_no_playlists_content">点击加号创建播放列表</string>
+    <string name="playlist_no_item">该播放列表内无项目</string>
+    <string name="playlist_select_playlist">__请选择__</string>
+    <string name="playlist_select_playlist_content">请选择播放列表。</string>
+
+    <string name="playlist_desc_playback_control">播放或停止播放该播放列表</string>
+    <string name="playlist_desc_toggle_looping">循环播放的切换按钮</string>
+    <string name="playlist_desc_overflow_menu">“播放列表”页面的溢出菜单</string>
+
+    <string name="playlist_upsert_dialog_insert_title">添加播放列表</string>
+    <string name="playlist_upsert_dialog_update_title">重命名播放列表</string>
+    <string name="playlist_upsert_name_label">名称</string>
+    <string name="playlist_upsert_name_placeholder">播放列表名称</string>
+    <string name="playlist_rename_playlist">重命名</string>
+    <string name="playlist_new_name_default">新播放列表</string>
+    <string name="playlist_upsert_dialog_submit">提交</string>
+    <string name="playlist_upsert_dialog_cancel">取消</string>
+
+    <string name="playlist_delete_playlist">删除</string>
+    <string name="playlist_delete_dialog_title">删除播放列表</string>
+    <string name="playlist_delete_dialog_message">当前播放列表将被删除，该操作无法撤销！是否继续？</string>
+    <string name="playlist_delete_dialog_proceed">继续</string>
+    <string name="playlist_delete_dialog_cancel">取消</string>
+
+    <string name="playlist_upsert_error_blank_name">播放列表名称不应为空。</string>
+    <string name="playlist_upsert_error_replicated_name">该名称已被占用。</string>
+    <string name="playlist_upsert_info_name_not_changed">新名称与原名称相同。</string>
+
+    <string name="playlist_desc_add_playlist">创建播放列表</string>
+    <string name="playlist_desc_delete_playlist">删除该播放列表</string>
+    <string name="playlist_desc_rename_playlist">更改当前播放列表的名称。</string>
+
+    <string name="playlist_move_up">上移</string>
+    <string name="playlist_move_down">下移</string>
+    <string name="playlist_delete_item">删除</string>
+
+    <string name="error_playlist_duplicate_item">选中的播放列表已存在该语音。</string>
+    <string name="error_playlist_move_item_oob">已在列表边界， 无法移动</string>
+</resources>

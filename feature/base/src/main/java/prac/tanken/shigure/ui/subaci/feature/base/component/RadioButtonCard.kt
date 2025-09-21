@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import prac.tanken.shigure.ui.subaci.data.util.CallbackInvokedAsIs
 
 @Composable
 fun RadioButtonCard(
@@ -25,7 +24,7 @@ fun RadioButtonCard(
     shape: Shape = CardDefaults.shape,
     selected: Boolean = false,
     enabled: Boolean = true,
-    onSelected: CallbackInvokedAsIs = {},
+    onSelected: () -> Unit = {},
     title: String = "This is title",
     disabledMessage: String = """
         This feature is not available on Android X.

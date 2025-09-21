@@ -9,9 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import prac.tanken.shigure.ui.subaci.ui.NotoSerifMultiLang
-import prac.tanken.shigure.ui.subaci.ui.theme.ShigureUiButtonAppComposeImplementationTheme
-import prac.tanken.shigure.ui.subaci.R as TankenR
+import prac.tanken.shigure.ui.subaci.core.ui.NotoSerifAutoLang
+import prac.tanken.shigure.ui.subaci.feature.base.R
+import prac.tanken.shigure.ui.subaci.core.ui.theme.ShigureUiButtonAppComposeImplementationTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -20,9 +20,9 @@ fun LoadingTopBar(modifier: Modifier = Modifier) {
         windowInsets = WindowInsets(0),
         title = {
             Text(
-                text = stringResource(TankenR.string.loading),
+                text = stringResource(R.string.loading),
                 fontWeight = FontWeight.Black,
-                fontFamily = NotoSerifMultiLang
+                fontFamily = NotoSerifAutoLang
             )
         },
         modifier = modifier

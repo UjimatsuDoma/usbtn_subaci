@@ -179,14 +179,6 @@ private fun AppColorSettingPreview() {
     }
 }
 
-@Preview(apiLevel = Build.VERSION_CODES.Q)
-@Composable
-private fun AppColorSettingPreviewLegacy() {
-    Card {
-        AppColorSetting()
-    }
-}
-
 @Composable
 private fun ColumnScope.AppDarkModeSetting(
     modifier: Modifier = Modifier,
@@ -278,14 +270,6 @@ private fun ColumnScope.AppDarkModeSetting(
 @Preview
 @Composable
 private fun AppDarkModeSettingPreview() {
-    Card {
-        AppDarkModeSetting()
-    }
-}
-
-@Preview(apiLevel = Build.VERSION_CODES.P)
-@Composable
-private fun AppDarkModeSettingPreviewLegacy() {
     Card {
         AppDarkModeSetting()
     }

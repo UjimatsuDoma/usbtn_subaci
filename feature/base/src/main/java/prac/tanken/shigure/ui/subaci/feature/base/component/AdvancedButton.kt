@@ -58,10 +58,7 @@ fun AdvancedButton(
         border = border,
     ) {
         CompositionLocalProvider(
-            LocalContentColor provides contentColor,
-            LocalTextStyle provides LocalTextStyle.current.merge(
-                MaterialTheme.typography.labelLarge
-            ).copy(fontFamily = contentFontFamily)
+            LocalContentColor provides contentColor
         ) {
             Row(
                 Modifier.defaultMinSize(
