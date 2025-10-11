@@ -14,4 +14,5 @@ sealed class VoicesGroupedBy(
     data object Kana : VoicesGroupedBy(R.string.voices_grouped_by_kana)
 }
 
-val voicesGroupedByItems = VoicesGroupedBy::class.sealedSubclasses.map { it.objectInstance as VoicesGroupedBy }
+val voicesGroupedByItems = VoicesGroupedBy::class.sealedSubclasses
+    .map { it.objectInstance as VoicesGroupedBy }

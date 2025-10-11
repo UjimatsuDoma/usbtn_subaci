@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_voices">ボイス</string>
+    <string name="home_voices_desc">ボイスの全一覧ページです。</string>
+
+    <string name="voices_add_to_playlist">再生リストに追加する</string>
+    <string name="voices_group_dialog_title">グループ</string>
+    <string name="voices_desc_daily_random_voice">今日のランダムボイス</string>
+
+    <string name="voices_grouped_by_category">用途</string>
+    <string name="voices_grouped_by_kana">五十音</string>
+
+    <string name="daily_random_voice_refreshed">今日のランダムボイスをご用意いたしました。</string>
+    <string name="daily_random_voice_play_prefix">今日のランダムボイス：</string>
+    <string name="voices_grouped_by_reset_prefix">ボイスの組み分け初期設定：</string>
+</resources>

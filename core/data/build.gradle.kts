@@ -11,12 +11,12 @@ plugins {
 }
 
 tasks {
-//    preBuild {
-//        dependsOn(named("downloadVoices"))
-//        dependsOn(named("downloadCategories"))
-//        dependsOn(named("downloadSources"))
-//        dependsOn(named("checkIfFilesExist"))
-//    }
+    preBuild {
+        dependsOn(named("downloadVoices"))
+        dependsOn(named("downloadCategories"))
+        dependsOn(named("downloadSources"))
+        dependsOn(named("checkIfFilesExist"))
+    }
 }
 
 android {

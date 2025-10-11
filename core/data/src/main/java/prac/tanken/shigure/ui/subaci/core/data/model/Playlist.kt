@@ -23,11 +23,6 @@ data class PlaylistEntity(
             voices.filter { it.id==voiceId }.toList()[0]
         }.toList()
     )
-
-    fun toSelectionVO() = PlaylistSelectionVO(
-        id = id,
-        playlistName = playlistName
-    )
 }
 
 @Entity(
@@ -55,14 +50,4 @@ data class Playlist(
     val id: Long,
     val playlistName: String,
     val playlistItems: List<Voice>,
-)
-
-data class PlaylistSelectionVO(
-    val id: Long,
-    val playlistName: String,
-)
-
-fun Playlist.toSelectionVO() = PlaylistSelectionVO(
-    id = id,
-    playlistName = playlistName
 )

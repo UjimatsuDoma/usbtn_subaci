@@ -51,11 +51,13 @@ import prac.tanken.shigure.ui.subaci.core.data.mock.sourcesPreviewData
 import prac.tanken.shigure.ui.subaci.core.data.mock.voicesPreviewData
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.core.ui.NotoCJKLocale
+import prac.tanken.shigure.ui.subaci.core.ui.NotoSansJP
 import prac.tanken.shigure.ui.subaci.core.ui.NotoSerifJP
 import prac.tanken.shigure.ui.subaci.core.ui.NotoStyle
 import prac.tanken.shigure.ui.subaci.core.ui.WithNotoCJKTypography
 import prac.tanken.shigure.ui.subaci.core.ui.theme.ShigureUiButtonAppComposeImplementationTheme
 import prac.tanken.shigure.ui.subaci.core.ui.theme.getNotoTypography
+import prac.tanken.shigure.ui.subaci.feature.base.model.voices.toVoicesVO
 import prac.tanken.shigure.ui.subaci.feature.sources.SourcesViewModel
 import prac.tanken.shigure.ui.subaci.feature.sources.model.SourcesListItem
 import prac.tanken.shigure.ui.subaci.feature.sources.model.SourcesUiState
@@ -239,7 +241,7 @@ private fun SourcesListItem(
             }
         }
         if (expanded && hasVoices) {
-            WithNotoCJKTypography(NotoStyle.SANS, NotoCJKLocale.JP) {
+            NotoSansJP {
                 VoicesFlowRow(
                     voices = item.voices,
                     modifier = Modifier
@@ -247,7 +249,7 @@ private fun SourcesListItem(
                         .padding(bottom = 16.dp)
                 ) { voice ->
                     VoiceButton(
-                        voice = voice,
+                        voicesVO = voice,
                         onPlay = onPlay,
                     )
                 }
@@ -266,7 +268,7 @@ private fun SourcesListItemPreview(
     val source = sourcesPreviewData().random()
     val voices = voicesPreviewData().filter {
         it.videoId == source.videoId
-    }.toList()
+    }.map { it.toVoicesVO() }.toList()
 
     SourcesListItem(
         item = SourcesListItem(source.videoId, source.title, voices),

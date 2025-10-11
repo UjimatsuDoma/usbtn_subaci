@@ -54,7 +54,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import prac.tanken.shigure.ui.subaci.core.data.model.PlaylistSelectionVO
 import prac.tanken.shigure.ui.subaci.feature.base.component.ErrorMessageStrip
 import prac.tanken.shigure.ui.subaci.feature.base.component.InfoMessageStrip
 import prac.tanken.shigure.ui.subaci.core.ui.NotoCJKLocale
@@ -66,6 +65,7 @@ import prac.tanken.shigure.ui.subaci.feature.playlist.PlaylistViewModel
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistPlaybackIntent
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistPlaybackSettings
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistPlaybackState
+import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistSelectionVO
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistUpsertError
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistUpsertIntent
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistUpsertState

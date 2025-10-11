@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
@@ -27,7 +28,7 @@ fun getNotoFamily(
             (100..900 step 100).map { fontWeight ->
                 SUBACIAssetsFont(
                     assetManager = cxt.assets,
-                    path = "fonts/${style.fileName}.ttc",
+                    path = "notocjk/${style.fileName}.ttc",
                     weight = FontWeight(fontWeight),
                     style = FontStyle.Normal,
                     ttcIndex = locale?.ttcIndex,
@@ -82,3 +83,33 @@ fun WithNotoCJKTypography(
         }
     )
 }
+
+@Composable
+fun NotoSerifAuto(content: @Composable () -> Unit) =
+    WithNotoCJKTypography(
+        style = NotoStyle.SERIF,
+        content = content
+    )
+
+@Composable
+fun NotoSansAuto(content: @Composable () -> Unit) =
+    WithNotoCJKTypography(
+        style = NotoStyle.SANS,
+        content = content
+    )
+
+@Composable
+fun NotoSerifJP(content: @Composable () -> Unit) =
+    WithNotoCJKTypography(
+        style = NotoStyle.SERIF,
+        locale = NotoCJKLocale.JP,
+        content = content
+    )
+
+@Composable
+fun NotoSansJP(content: @Composable () -> Unit) =
+    WithNotoCJKTypography(
+        style = NotoStyle.SANS,
+        locale = NotoCJKLocale.JP,
+        content = content
+    )

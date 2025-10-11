@@ -1,13 +1,6 @@
-import java.time.ZoneId
-import java.time.ZonedDateTime
-
-
 plugins {
     alias(libs.plugins.subaci.android.application)
     alias(libs.plugins.subaci.android.application.compose)
-
-    alias(libs.plugins.androidx.room)
-    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -40,10 +33,6 @@ android {
             )
         }
     }
-
-    room {
-        schemaDirectory("$projectDir/schemas")
-    }
 }
 
 dependencies {
@@ -66,18 +55,5 @@ dependencies {
     implementation(libs.androidx.constraintlayout.compose)
     // SplashScreen API
     implementation(libs.androidx.core.splashscreen)
-
-    // Room Database
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
-    // Preferences DataStore
-    implementation(libs.androidx.datastore.preferences)
-
-    // Coil Image Loader
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
-    // Metadata Extractor by Drew Noakes
-    implementation(libs.metadata.extractor)
 
 }

@@ -22,13 +22,4 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAssets(@ApplicationContext appContext: Context): AssetManager = appContext.assets
-
-    @Provides
-    @Singleton
-    fun provideMediaPlayer(@ApplicationContext appContext: Context) =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            MediaPlayer(appContext)
-        } else {
-            MediaPlayer()
-        }
 }

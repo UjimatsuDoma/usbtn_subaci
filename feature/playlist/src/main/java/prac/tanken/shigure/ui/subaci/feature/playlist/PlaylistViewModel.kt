@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.feature.base.domain.UseCaseEvent
-import prac.tanken.shigure.ui.subaci.core.data.model.PlaylistSelectionVO
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.core.player.MyPlayer
@@ -22,11 +21,13 @@ import prac.tanken.shigure.ui.subaci.feature.playlist.domain.PlaylistUseCase
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistPlaybackIntent
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistPlaybackSettings
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistPlaybackState
+import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistSelectionVO
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistUpsertError
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistUpsertIntent
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistUpsertState
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistVO
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.playlistNotSelectedVO
+import prac.tanken.shigure.ui.subaci.feature.playlist.model.toSelectionVO
 import javax.inject.Inject
 import prac.tanken.shigure.ui.subaci.core.common.R as CommonR
 

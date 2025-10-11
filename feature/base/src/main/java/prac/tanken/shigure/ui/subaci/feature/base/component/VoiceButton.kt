@@ -11,29 +11,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
-import prac.tanken.shigure.ui.subaci.core.data.model.voices.toReference
+import prac.tanken.shigure.ui.subaci.core.ui.NotoSansAuto
 import prac.tanken.shigure.ui.subaci.feature.base.R
+import prac.tanken.shigure.ui.subaci.feature.base.model.voices.VoicesVO
+import prac.tanken.shigure.ui.subaci.feature.base.model.voices.toReference
 
 @Composable
 fun VoiceButton(
-    voice: Voice,
+    voicesVO: VoicesVO,
     modifier: Modifier = Modifier,
     onPlay: (VoiceReference) -> Unit = {},
     onLongPress: () -> Unit = {},
 ) = AdvancedButton(
-    onClick = { onPlay(voice.toReference()) },
+    onClick = { onPlay(voicesVO.toReference()) },
     onLongPress = onLongPress,
     shape = RoundedCornerShape(16.dp),
     modifier = modifier.width(IntrinsicSize.Max)
 ) {
     Text(
-        text = voice.label,
+        text = voicesVO.label,
         modifier = Modifier.weight(1f)
     )
-    if (voice.new == true) {
+    if (voicesVO.new) {
         Spacer(Modifier.size(4.dp))
-        Badge { Text(stringResource(R.string.app_badge_new)) }
+        NotoSansAuto {
+            Badge { Text(stringResource(R.string.app_badge_new)) }
+        }
     }
 }

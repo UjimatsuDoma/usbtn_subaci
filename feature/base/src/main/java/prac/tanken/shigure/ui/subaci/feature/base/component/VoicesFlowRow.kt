@@ -15,12 +15,14 @@ import androidx.compose.ui.unit.dp
 import prac.tanken.shigure.ui.subaci.core.data.mock.voicesPreviewData
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 import prac.tanken.shigure.ui.subaci.core.ui.theme.ShigureUiButtonAppComposeImplementationTheme
+import prac.tanken.shigure.ui.subaci.feature.base.model.voices.VoicesVO
+import prac.tanken.shigure.ui.subaci.feature.base.model.voices.toVoicesVO
 
 @Composable
 fun VoicesFlowRow(
-    voices: List<Voice>,
+    voices: List<VoicesVO>,
     modifier: Modifier = Modifier,
-    elementContent: @Composable (Voice) -> Unit = {}
+    elementContent: @Composable (VoicesVO) -> Unit = {}
 ) {
     val state = rememberLazyStaggeredGridState()
 
@@ -40,9 +42,9 @@ fun VoicesFlowRow(
 @Preview
 @Composable
 private fun VoicesFlowRowPreview() = ShigureUiButtonAppComposeImplementationTheme {
-    val voices = voicesPreviewData().shuffled().subList(0, 55)
+    val voices = voicesPreviewData().shuffled().subList(0, 55).map { it.toVoicesVO() }
 
-    VoicesFlowRow(voices){
-        VoiceButton(it)
+    VoicesFlowRow(voices){ voicesVO ->
+        VoiceButton(voicesVO)
     }
 }

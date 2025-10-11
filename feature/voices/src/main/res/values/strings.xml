@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_voices">Voices</string>
+    <string name="home_voices_desc">Voices screen</string>
+
+    <!--  feature: voices  -->
+    <string name="voices_add_to_playlist">Add to playlist</string>
+    <string name="voices_group_dialog_title">Select group</string>
+    <string name="voices_desc_daily_random_voice">Daily random voice</string>
+
+    <string name="voices_grouped_by_category">Category</string>
+    <string name="voices_grouped_by_kana">Kana</string>
+
+    <string name="daily_random_voice_refreshed">Rolled the dice…</string>
+    <string name="daily_random_voice_play_prefix">"Voice today: "</string>
+    <string name="voices_grouped_by_reset_prefix">"Set voices grouped by "</string>
+</resources>

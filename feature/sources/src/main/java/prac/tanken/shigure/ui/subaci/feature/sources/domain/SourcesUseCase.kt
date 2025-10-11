@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.combineTransform
 import prac.tanken.shigure.ui.subaci.feature.base.domain.BaseUseCase
 import prac.tanken.shigure.ui.subaci.feature.base.domain.UseCaseEvent
 import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
+import prac.tanken.shigure.ui.subaci.feature.base.model.voices.toVoicesVO
 import prac.tanken.shigure.ui.subaci.feature.sources.model.SourcesListItem
 
 class SourcesUseCase(
@@ -18,8 +19,15 @@ class SourcesUseCase(
         emit(UseCaseEvent.Loading)
         val event = suspendTryOrFail {
             val newList = sources.map { sourceEntity ->
-                val voicesFiltered = voices.filter { it.videoId == sourceEntity.videoId }.toList()
-                SourcesListItem(sourceEntity.videoId, sourceEntity.title, voicesFiltered)
+                val voicesFiltered = voices
+                    .filter { it.videoId == sourceEntity.videoId }
+                    .map { it.toVoicesVO() }
+                    .toList()
+                SourcesListItem(
+                    sourceEntity.videoId,
+                    sourceEntity.title,
+                    voicesFiltered
+                )
             }.toList()
             UseCaseEvent.Success(newList)
         }
