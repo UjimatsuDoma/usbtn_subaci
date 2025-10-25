@@ -29,8 +29,8 @@ fun VoicesFlowRow(
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
         state = state,
-        verticalItemSpacing = 8.dp,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalItemSpacing = 4.dp,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
     ) {
         items(items = voices, key = { voice -> voice.id }) { voice ->

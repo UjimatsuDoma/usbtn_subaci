@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -57,7 +59,10 @@ import prac.tanken.shigure.ui.subaci.core.ui.NotoSerifAuto
 import prac.tanken.shigure.ui.subaci.core.ui.NotoSerifJP
 import prac.tanken.shigure.ui.subaci.core.ui.NotoStyle
 import prac.tanken.shigure.ui.subaci.core.ui.WithNotoCJKTypography
+import prac.tanken.shigure.ui.subaci.core.ui.notoSans
+import prac.tanken.shigure.ui.subaci.core.ui.notoSerif
 import prac.tanken.shigure.ui.subaci.core.ui.util.combineKey
+import prac.tanken.shigure.ui.subaci.core.ui.withLocalStyle
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoiceButton
@@ -145,12 +150,11 @@ private fun VoicesTopBar(
         modifier = modifier,
         windowInsets = WindowInsets(0),
         title = {
-            NotoSerifAuto {
-                Text(
-                    text = stringResource(CommonR.string.app_name),
-                    fontWeight = FontWeight.Black,
-                )
-            }
+            Text(
+                text = stringResource(CommonR.string.app_name),
+                style = MaterialTheme.typography.titleLarge.notoSerif(),
+                fontWeight = FontWeight.Black,
+            )
         },
         actions = {
             IconButton(
@@ -186,7 +190,7 @@ private fun VoicesTopBar(
                         text = {
                             Text(
                                 text = stringResource(it.displayName),
-                                style = MaterialTheme.typography.bodyLarge,
+                                style = MaterialTheme.typography.labelLarge,
                             )
                         },
                         leadingIcon = {
@@ -248,15 +252,15 @@ private fun VoicesScreen(
         ) {
             mapEntries.forEach { (title, voicesVOs) ->
                 item(span = StaggeredGridItemSpan.FullLine) {
-                    WithNotoCJKTypography(NotoStyle.SERIF, NotoCJKLocale.JP) {
+                    NotoSerifJP {
                         Text(
                             text = title,
-                            style = MaterialTheme.typography.titleLarge,
+                            style = MaterialTheme.typography.titleLarge.withLocalStyle(),
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .clickable { showVoiceGroupDialog = true }
                                 .fillMaxWidth()
-                                .padding(16.dp)
+                                .padding(8.dp)
                         )
                     }
                 }
@@ -303,31 +307,30 @@ fun VoiceGroupDialog(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.padding(16.dp),
             content = {
-                NotoSansAuto {
-                    Text(
-                        text = stringResource(TankenR.string.voices_group_dialog_title),
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                }
+                Text(
+                    text = stringResource(TankenR.string.voices_group_dialog_title),
+                    style = MaterialTheme.typography.headlineMedium.notoSans(),
+                )
                 NotoSerifJP {
-                    LazyColumn(Modifier.weight(1f)) {
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         itemsIndexed(
                             items = items,
                             key = { index, item -> index combineKey item }
                         ) { index, item ->
                             Text(
                                 text = item.first,
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleMedium.withLocalStyle(),
+                                fontWeight = FontWeight.Bold,
                                 modifier = Modifier
                                     .clickable {
                                         onDismiss()
                                         onItemClicked(index)
                                     }
                                     .fillMaxWidth()
-                                    .padding(
-                                        horizontal = 16.dp,
-                                        vertical = 8.dp
-                                    )
                             )
                         }
                     }

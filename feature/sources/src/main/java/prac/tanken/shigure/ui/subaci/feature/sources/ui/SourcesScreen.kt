@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,11 +17,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -50,13 +53,11 @@ import prac.tanken.shigure.ui.subaci.feature.base.component.VoicesFlowRow
 import prac.tanken.shigure.ui.subaci.core.data.mock.sourcesPreviewData
 import prac.tanken.shigure.ui.subaci.core.data.mock.voicesPreviewData
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
-import prac.tanken.shigure.ui.subaci.core.ui.NotoCJKLocale
 import prac.tanken.shigure.ui.subaci.core.ui.NotoSansJP
 import prac.tanken.shigure.ui.subaci.core.ui.NotoSerifJP
-import prac.tanken.shigure.ui.subaci.core.ui.NotoStyle
-import prac.tanken.shigure.ui.subaci.core.ui.WithNotoCJKTypography
 import prac.tanken.shigure.ui.subaci.core.ui.theme.ShigureUiButtonAppComposeImplementationTheme
 import prac.tanken.shigure.ui.subaci.core.ui.theme.getNotoTypography
+import prac.tanken.shigure.ui.subaci.core.ui.withLocalStyle
 import prac.tanken.shigure.ui.subaci.feature.base.model.voices.toVoicesVO
 import prac.tanken.shigure.ui.subaci.feature.sources.SourcesViewModel
 import prac.tanken.shigure.ui.subaci.feature.sources.model.SourcesListItem
@@ -161,7 +162,11 @@ private fun SourcesScreen(
     sources: List<SourcesListItem>,
     onPlay: (VoiceReference) -> Unit = {},
 ) {
-    LazyColumn(modifier) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         items(sources) { source ->
             SourcesListItem(
                 item = source,
@@ -169,12 +174,12 @@ private fun SourcesScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
             )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SourcesListItem(
     modifier: Modifier = Modifier,
@@ -192,66 +197,85 @@ private fun SourcesListItem(
         val hasVoices = item.voices.isNotEmpty()
         val isPreview = LocalInspectionMode.current
 
-        if (isPreview) {
-            Image(
-                painter = painterResource(TankenR.drawable.demo_source_thumb),
-                contentDescription = null,
-                modifier = modifier(16f / 9f)
-            )
-        } else {
-            SubcomposeAsyncImage(
-                model = item.url,
-                loading = {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = modifier(item.thumbAspectRatio),
-                        content = { CircularProgressIndicator() }
-                    )
-                },
-                contentDescription = null,
-                modifier = modifier(item.thumbAspectRatio)
-            )
-        }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clickable {
-                    if (hasVoices) {
-                        expanded = !expanded
-                    }
-                }
-                .padding(16.dp)
-        ) {
-            WithNotoCJKTypography(NotoStyle.SERIF, NotoCJKLocale.JP) {
+        NotoSerifJP {
+            if (isPreview) {
+                Image(
+                    painter = painterResource(TankenR.drawable.demo_source_thumb),
+                    contentDescription = null,
+                    modifier = modifier(16f / 9f)
+                )
+            } else {
+                SubcomposeAsyncImage(
+                    model = item.url,
+                    loading = {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = modifier(item.thumbAspectRatio),
+                            content = { CircularProgressIndicator() }
+                        )
+                    },
+                    contentDescription = null,
+                    modifier = modifier(item.thumbAspectRatio)
+                )
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clickable { if (hasVoices) { expanded = true } }
+                    .padding(16.dp)
+            ) {
                 Text(
                     text = item.title,
                     modifier = Modifier.weight(1f)
                 )
-            }
-            if (hasVoices) {
-                Icon(
-                    imageVector = if (!expanded) {
-                        Icons.Default.ArrowDropDown
-                    } else {
-                        Icons.Default.ArrowDropUp
-                    },
-                    contentDescription = null
-                )
-            }
-        }
-        if (expanded && hasVoices) {
-            NotoSansJP {
-                VoicesFlowRow(
-                    voices = item.voices,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 16.dp)
-                ) { voice ->
-                    VoiceButton(
-                        voicesVO = voice,
-                        onPlay = onPlay,
+                if (hasVoices) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                        contentDescription = null
                     )
+                }
+            }
+            if (expanded && hasVoices) {
+                ModalBottomSheet(onDismissRequest = { expanded = false }) {
+                    Column {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .padding(8.dp)
+                        ) {
+                            SubcomposeAsyncImage(
+                                model = item.url,
+                                loading = {
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                        modifier = modifier(item.thumbAspectRatio),
+                                        content = { CircularProgressIndicator() }
+                                    )
+                                },
+                                contentDescription = null,
+                                modifier = modifier(item.thumbAspectRatio)
+                            )
+                        }
+                        Text(
+                            text = item.title,
+                            style = MaterialTheme.typography.titleMedium.withLocalStyle(),
+                            modifier = Modifier.padding(8.dp),
+                        )
+                        NotoSansJP {
+                            VoicesFlowRow(
+                                voices = item.voices,
+                                modifier = Modifier
+                                    .padding(8.dp),
+                            ) { voice ->
+                                VoiceButton(
+                                    voicesVO = voice,
+                                    onPlay = onPlay,
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

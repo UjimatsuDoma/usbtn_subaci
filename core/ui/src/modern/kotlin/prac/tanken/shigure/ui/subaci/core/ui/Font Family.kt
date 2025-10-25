@@ -75,8 +75,8 @@ fun WithNotoCJKTypography(
         typography = getNotoTypography(fontFamily),
         content = {
             CompositionLocalProvider(
-                LocalTextStyle provides LocalTextStyle.current.merge(
-                    TextStyle(fontFeatureSettings = "\"locl\" " + if (locale != null) "0" else "1")
+                LocalTextStyle provides LocalTextStyle.current.copy(
+                    fontFeatureSettings = "\"locl\" " + if (locale != null) "0" else "1"
                 ),
                 content = content
             )
@@ -113,3 +113,49 @@ fun NotoSansJP(content: @Composable () -> Unit) =
         locale = NotoCJKLocale.JP,
         content = content
     )
+
+@Composable
+fun TextStyle.withLocalStyle() =
+    copy(
+        fontFamily = LocalTextStyle.current.fontFamily,
+        fontFeatureSettings = LocalTextStyle.current.fontFeatureSettings
+    )
+
+@Composable
+fun TextStyle.notoCjkStyle(
+    style: NotoStyle,
+    locale: NotoCJKLocale? = null,
+): TextStyle {
+    val fontFamily = when (style) {
+        NotoStyle.SANS -> {
+            when (locale) {
+                NotoCJKLocale.JP -> NotoSansJP
+                else -> NotoSansAutoLang
+            }
+        }
+
+        NotoStyle.SERIF -> {
+            when (locale) {
+                NotoCJKLocale.JP -> NotoSerifJP
+                else -> NotoSerifAutoLang
+            }
+        }
+    }
+
+    return this.copy(
+        fontFamily = fontFamily,
+        fontFeatureSettings = "\"locl\" " + if (locale != null) "0" else "1"
+    )
+}
+
+@Composable
+fun TextStyle.notoSerifJP() = notoCjkStyle(NotoStyle.SERIF, NotoCJKLocale.JP)
+
+@Composable
+fun TextStyle.notoSansJP() = notoCjkStyle(NotoStyle.SANS, NotoCJKLocale.JP)
+
+@Composable
+fun TextStyle.notoSerif() = notoCjkStyle(NotoStyle.SERIF)
+
+@Composable
+fun TextStyle.notoSans() = notoCjkStyle(NotoStyle.SERIF)

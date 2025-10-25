@@ -21,18 +21,14 @@ fun MainNavHost(
     val backStackEntry = navController.currentBackStackEntryAsState().value
     val currentRoute = backStackEntry?.destination?.route
 
-    saveableStateHolder.SaveableStateProvider(
-        key = currentRoute ?: ""
+    NavHost(
+        navController = navController,
+        startDestination = Voices,
+        modifier = modifier
     ) {
-        NavHost(
-            navController = navController,
-            startDestination = Voices,
-            modifier = modifier
-        ) {
-            settingsScreen()
-            playlistScreen()
-            sourcesScreen()
-            voicesScreen()
-        }
+        settingsScreen()
+        playlistScreen()
+        sourcesScreen()
+        voicesScreen()
     }
 }
