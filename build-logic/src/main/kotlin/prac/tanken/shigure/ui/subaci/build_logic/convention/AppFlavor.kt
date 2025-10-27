@@ -1,8 +1,14 @@
 package prac.tanken.shigure.ui.subaci.build_logic.convention
 
 import com.android.build.api.dsl.ApplicationBaseFlavor
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.ProductFlavor
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.plugins
 
 enum class FlavorDimension(val value: String) {
     API("api")
@@ -16,7 +22,7 @@ enum class AppFlavor(
     PRE_OREO(value = "preOreo", dimension = FlavorDimension.API)
 }
 
-fun configureFlavors(
+fun Project.configureFlavors(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
     flavorConfigurationBlock: ProductFlavor.(flavor: AppFlavor) -> Unit = {},
 ) {
@@ -30,6 +36,7 @@ fun configureFlavors(
                 register(appFlavor.value) {
                     dimension = appFlavor.dimension.value
                     flavorConfigurationBlock(this, appFlavor)
+                    configureDependenciesByFlavor(appFlavor, this@apply)
                 }
             }
         }
@@ -47,6 +54,20 @@ fun ProductFlavor.configureSdkVersion(appFlavor: AppFlavor) {
             if (this is ApplicationBaseFlavor) {
                 maxSdk = 25
             }
+        }
+    }
+}
+
+fun Project.configureDependenciesByFlavor(
+    appFlavor: AppFlavor,
+    commonExtension: CommonExtension<*, *, *, *, *, *>,
+) {
+    when(appFlavor) {
+        AppFlavor.MODERN -> {
+
+        }
+        AppFlavor.PRE_OREO -> {
+
         }
     }
 }

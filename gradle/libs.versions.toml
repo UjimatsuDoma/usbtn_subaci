@@ -21,6 +21,9 @@ kotlinxDatetime = "0.6.1"
 kotlinxSerializationJson = "1.7.3"
 ksp = "2.2.10-2.0.2"
 
+chaquopy-xvi = "16.1.0"
+chaquopy-xiv = "14.0.2"
+
 coil = "3.0.4"
 room = "2.7.2"
 
@@ -92,6 +95,8 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
+chaquopy-xvi = { id = "com.chaquo.python", version.ref = "chaquopy-xvi" }
+chaquopy-xiv = { id = "com.chaquo.python", version.ref = "chaquopy-xiv" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }

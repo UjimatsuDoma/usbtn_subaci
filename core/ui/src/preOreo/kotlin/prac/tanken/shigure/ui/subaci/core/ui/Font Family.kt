@@ -1,11 +1,13 @@
 package prac.tanken.shigure.ui.subaci.core.ui
 
 import android.os.Build
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -99,3 +101,77 @@ fun WithNotoCJKTypography(
         content = content
     )
 }
+
+@Composable
+fun NotoSerifAuto(content: @Composable () -> Unit) =
+    WithNotoCJKTypography(
+        style = NotoStyle.SERIF,
+        content = content
+    )
+
+@Composable
+fun NotoSansAuto(content: @Composable () -> Unit) =
+    WithNotoCJKTypography(
+        style = NotoStyle.SANS,
+        content = content
+    )
+
+@Composable
+fun NotoSerifJP(content: @Composable () -> Unit) =
+    WithNotoCJKTypography(
+        style = NotoStyle.SERIF,
+        locale = NotoCJKLocale.JP,
+        content = content
+    )
+
+@Composable
+fun NotoSansJP(content: @Composable () -> Unit) =
+    WithNotoCJKTypography(
+        style = NotoStyle.SANS,
+        locale = NotoCJKLocale.JP,
+        content = content
+    )
+
+@Composable
+fun TextStyle.withLocalStyle() =
+    copy(
+        fontFamily = LocalTextStyle.current.fontFamily,
+    )
+
+@Composable
+fun TextStyle.notoCjkStyle(
+    style: NotoStyle,
+    locale: NotoCJKLocale? = null,
+): TextStyle {
+    val fontFamily = when (style) {
+        NotoStyle.SANS -> {
+            when (locale) {
+                NotoCJKLocale.JP -> NotoSansJP
+                else -> NotoSansAutoLang
+            }
+        }
+
+        NotoStyle.SERIF -> {
+            when (locale) {
+                NotoCJKLocale.JP -> NotoSerifJP
+                else -> NotoSerifAutoLang
+            }
+        }
+    }
+
+    return this.copy(
+        fontFamily = fontFamily,
+    )
+}
+
+@Composable
+fun TextStyle.notoSerifJP() = notoCjkStyle(NotoStyle.SERIF, NotoCJKLocale.JP)
+
+@Composable
+fun TextStyle.notoSansJP() = notoCjkStyle(NotoStyle.SANS, NotoCJKLocale.JP)
+
+@Composable
+fun TextStyle.notoSerif() = notoCjkStyle(NotoStyle.SERIF)
+
+@Composable
+fun TextStyle.notoSans() = notoCjkStyle(NotoStyle.SERIF)

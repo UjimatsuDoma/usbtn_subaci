@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -29,7 +28,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -52,13 +50,8 @@ import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.voicesGroupedByItems
-import prac.tanken.shigure.ui.subaci.core.ui.NotoCJKLocale
-import prac.tanken.shigure.ui.subaci.core.ui.NotoSansAuto
 import prac.tanken.shigure.ui.subaci.core.ui.NotoSansJP
-import prac.tanken.shigure.ui.subaci.core.ui.NotoSerifAuto
 import prac.tanken.shigure.ui.subaci.core.ui.NotoSerifJP
-import prac.tanken.shigure.ui.subaci.core.ui.NotoStyle
-import prac.tanken.shigure.ui.subaci.core.ui.WithNotoCJKTypography
 import prac.tanken.shigure.ui.subaci.core.ui.notoSans
 import prac.tanken.shigure.ui.subaci.core.ui.notoSerif
 import prac.tanken.shigure.ui.subaci.core.ui.util.combineKey

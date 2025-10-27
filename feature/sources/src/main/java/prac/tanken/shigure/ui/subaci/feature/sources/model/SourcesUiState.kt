@@ -16,7 +16,7 @@ sealed interface SourcesUiState {
     data class Loaded(val sources: List<SourcesListItem>) : SourcesUiState {
         @Serializable
         data class Tab(
-            @StringRes val tabName: Int,
+            @param:StringRes val tabName: Int,
             val sourceList: List<SourcesListItem>,
         )
 

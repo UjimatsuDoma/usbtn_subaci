@@ -2,6 +2,7 @@ package prac.tanken.shigure.ui.subaci.core.ui.theme
 
 import android.app.Activity
 import android.os.Build
+import android.view.WindowInsets
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
@@ -290,7 +291,25 @@ fun ShigureUiButtonAppComposeImplementationTheme(
 //                            !appDarkModeReal
 
                 val window = (view.context as Activity).window
-                window.statusBarColor = colorScheme.primary.toArgb()
+//                if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+//
+//                } else {
+//                    window.statusBarColor = colorScheme.primary.toArgb()
+//                }
+                val color = colorScheme.primary.toArgb()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    // Android 15+
+                    window.decorView.setOnApplyWindowInsetsListener { view, insets ->
+                        val statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars())
+                        view.setBackgroundColor(color)
+                        view.setPadding(0, statusBarInsets.top, 0, 0)
+                        insets
+                    }
+                } else {
+                    // 老版本还要用这个，压一压
+                    @Suppress("DEPRECATION")
+                    window.statusBarColor = color // For Android 14 and below
+                }
                 WindowCompat.getInsetsController(window, view)
                     .isAppearanceLightStatusBars = !darkTheme
             }

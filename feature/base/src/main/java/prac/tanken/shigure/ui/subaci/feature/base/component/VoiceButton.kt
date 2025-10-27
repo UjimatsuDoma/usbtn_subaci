@@ -47,14 +47,4 @@ fun VoiceButton(
             }
         }
     }
-//    Text(
-//        text = buildAnnotatedString {
-//            append(voicesVO.label)
-//            if (voicesVO.new) {
-//                withStyle(TextStyle()) {
-//                    append("")
-//                }
-//            }
-//        }
-//    )
 }

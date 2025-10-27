@@ -12,10 +12,19 @@ plugins {
 
 tasks {
     preBuild {
-        dependsOn(named("downloadVoices"))
-        dependsOn(named("downloadCategories"))
-        dependsOn(named("downloadSources"))
-        dependsOn(named("checkIfFilesExist"))
+        setMustRunAfter(
+            listOf(
+                named("downloadVoices"),
+                named("downloadCategories"),
+                named("downloadSources"),
+                named("checkIfFilesExist")
+            )
+        )
+        named("downloadVoices").get().mustRunAfter(named("checkIfFilesExist"))
+        named("downloadCategories").get().mustRunAfter(named("checkIfFilesExist"))
+        named("downloadSources").get().mustRunAfter(named("checkIfFilesExist"))
+//        dependsOn(named("downloadCategories"))
+//        dependsOn(named("downloadSources"))
     }
 }
 
