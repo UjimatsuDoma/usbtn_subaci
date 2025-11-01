@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_nav_dest">应用设置</string>
+    <string name="settings_nav_dest_desc">“应用设置”页面。</string>
+
+    <string name="settings_about_title">关于</string>
+    <string name="settings_ui">界面</string>
+    <string name="settings_ui_app_color">应用配色</string>
+    <string name="settings_ui_app_dark_mode">暗黑模式</string>
+    <string name="settings_ui_bottom_bar_label_behaviour">导航栏标签</string>
+    <string name="app_built_in_color_source">内置配色来源图片</string>
+    <string name="app_build_time">构建时间</string>
+
+    <string name="app_color_dynamic">跟随系统</string>
+    <string name="app_color_built_in">内置配色</string>
+    <string name="app_dark_mode_dynamic">自动切换</string>
+    <string name="app_dark_mode_dark">暗色</string>
+    <string name="app_dark_mode_light">亮色</string>
+    <string name="app_bottom_bar_label_always_show">总是显示</string>
+    <string name="app_bottom_bar_label_always_hide">从不显示</string>
+    <string name="app_bottom_bar_label_show_when_selected">选中显示</string>
+
+    <string name="settings_initialized_message">进行初次设置。</string>
+</resources>

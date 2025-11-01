@@ -12,10 +12,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import prac.tanken.shigure.ui.subaci.data.repository.ResRepository
-import prac.tanken.shigure.ui.subaci.data.repository.SettingsRepository
-import prac.tanken.shigure.ui.subaci.data.util.ToastUtil
-import prac.tanken.shigure.ui.subaci.ui.app.AppSettings
+import prac.tanken.shigure.ui.subaci.core.common.android.toast.ToastUtil
+import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
+import prac.tanken.shigure.ui.subaci.core.data.repository.SettingsRepository
+import prac.tanken.shigure.ui.subaci.core.data.settings.AppSettings
+import prac.tanken.shigure.ui.subaci.feature.settings.R
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,7 +32,7 @@ class AppViewModel @Inject constructor(
                 toastUtil.toast(resRepository.stringRes(R.string.settings_initialized_message))
             }
         }
-    private var _appSettings = mutableStateOf<AppSettings>(AppSettings())
+    private var _appSettings = mutableStateOf(AppSettings())
     val appSettings = _appSettings
 
     val resourcesLoaded = resRepository.run {

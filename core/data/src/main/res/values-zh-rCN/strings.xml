@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="voices_grouped_by_category">分类</string>
+    <string name="voices_grouped_by_kana">五十音</string>
+
+    <string name="app_color_dynamic">跟随系统</string>
+    <string name="app_color_built_in">内置配色</string>
+    <string name="app_dark_mode_dynamic">自动切换</string>
+    <string name="app_dark_mode_dark">暗色</string>
+    <string name="app_dark_mode_light">亮色</string>
+    <string name="app_bottom_bar_label_always_show">总是显示</string>
+    <string name="app_bottom_bar_label_always_hide">从不显示</string>
+    <string name="app_bottom_bar_label_show_when_selected">选中显示</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_sources">Sources</string>
+    <string name="home_sources_desc">Clip source of some voices are listed on this page.</string>
+
+    <!--  feature: sources  -->
+    <string name="sources_tab_with_voices">w/ voices</string>
+    <string name="sources_tab_without_voices">w/o voices</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SUBACI</string>
+
+    <string name="error_illegal_index">Illegal index specified.</string>
+    <string name="error_illegal_state">Illegal state.</string>
+    <string name="error_android_version_prefix">Available on Android </string>
+    <string name="error_android_version_suffix">" and above"</string>
+</resources>
