@@ -12,6 +12,7 @@ hiltAndroid = "2.57.1"
 hiltNavigationCompose = "1.2.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
+leakcanaryAndroid = "2.14"
 lifecycleRuntime = "2.9.2"
 material = "1.12.0"
 navigationCompose = "2.9.3"
@@ -56,6 +57,7 @@ androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lif
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 # KotlinX libs

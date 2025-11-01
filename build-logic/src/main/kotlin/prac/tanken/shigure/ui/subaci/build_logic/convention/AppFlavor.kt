@@ -1,14 +1,9 @@
 package prac.tanken.shigure.ui.subaci.build_logic.convention
 
 import com.android.build.api.dsl.ApplicationBaseFlavor
-import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.ProductFlavor
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.plugins
 
 enum class FlavorDimension(val value: String) {
     API("api")

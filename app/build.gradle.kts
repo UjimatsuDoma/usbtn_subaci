@@ -56,4 +56,7 @@ dependencies {
     // SplashScreen API
     implementation(libs.androidx.core.splashscreen)
 
+    // LeakCanary
+    implementation(libs.leakcanary.android)
+
 }
