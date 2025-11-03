@@ -19,7 +19,7 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
         NOTE: merge `develop-mvvm` branch
       - Revision 2: Migrate to multi-module development [May 7, 2025 ~ TBA]<br>
         Revision 2: Migrate from Compose `FontFamily` to manual `Typeface` injection for `MODERN` build, to make use of [Noto CJK Variable OTC](https://github.com/notofonts/noto-cjk) and eventually reducing APK file size. [Jul. 26, 2025 ~ Oct. 31, 2025]. Yet this causes app to break at random time, to be fixed in Milestone 3.
-      - Revision 3: Optimize font management by utilizing 7-Zip and `fonttools` libraries [TBA]
+      - Revision 3: Optimize font management by utilizing 7-Zip ~and `fonttools` libraries~ Leave that for a separate repo [TBA]
       - Revision 4: Migrate Toasts to Snackbars [TBA]
     - Milestone 4: Introduce animation and optimize UX [2026? ~ TBA]
 - 1st Edition "Master Up": TBA
