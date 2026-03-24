@@ -33,6 +33,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,16 +47,13 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.voicesGroupedByItems
-import prac.tanken.shigure.ui.subaci.core.ui.NotoSansJP
-import prac.tanken.shigure.ui.subaci.core.ui.NotoSerifJP
-import prac.tanken.shigure.ui.subaci.core.ui.notoSans
-import prac.tanken.shigure.ui.subaci.core.ui.notoSerif
 import prac.tanken.shigure.ui.subaci.core.ui.util.combineKey
-import prac.tanken.shigure.ui.subaci.core.ui.withLocalStyle
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoiceButton
@@ -73,7 +71,7 @@ fun VoicesScreen(
     modifier: Modifier = Modifier,
     viewModel: VoicesViewModel,
 ) {
-    val uiState by viewModel.uiState
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(modifier) {
         when (uiState.voicesGroupedUiState) {
@@ -145,7 +143,7 @@ private fun VoicesTopBar(
         title = {
             Text(
                 text = stringResource(CommonR.string.app_name),
-                style = MaterialTheme.typography.titleLarge.notoSerif(),
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Black,
             )
         },
@@ -213,7 +211,7 @@ private fun VoicesScreen(
     onPlay: (VoiceReference) -> Unit,
     onAddToPlaylist: (VoiceReference) -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
+    val scope: CoroutineScope = rememberCoroutineScope()
     val lazyStaggeredGridState = rememberLazyStaggeredGridState()
 
     val mapEntries = voicesGrouped?.voiceGroups?.entries?.toList() ?: emptyList()
@@ -235,50 +233,46 @@ private fun VoicesScreen(
     }
 
 
-    NotoSansJP {
-        LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
-            state = lazyStaggeredGridState,
-            verticalItemSpacing = 4.dp,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.padding(horizontal = 4.dp)
-        ) {
-            mapEntries.forEach { (title, voicesVOs) ->
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    NotoSerifJP {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.titleLarge.withLocalStyle(),
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .clickable { showVoiceGroupDialog = true }
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        )
-                    }
-                }
-                items(items = voicesVOs, key = { it.id }) { voicesVO ->
-                    var expanded by remember { mutableStateOf(false) }
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(2),
+        state = lazyStaggeredGridState,
+        verticalItemSpacing = 4.dp,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier.padding(horizontal = 4.dp)
+    ) {
+        mapEntries.forEach { (title, voicesVOs) ->
+            item(span = StaggeredGridItemSpan.FullLine) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .clickable { showVoiceGroupDialog = true }
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+            }
+            items(items = voicesVOs, key = { it.id }) { voicesVO ->
+                var expanded by remember { mutableStateOf(false) }
 
-                    Column {
-                        VoiceButton(
-                            voicesVO = voicesVO,
-                            onPlay = onPlay,
-                            onLongPress = { expanded = true },
-                            modifier = Modifier.fillMaxWidth()
+                Column {
+                    VoiceButton(
+                        voicesVO = voicesVO,
+                        onPlay = onPlay,
+                        onLongPress = { expanded = true },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(TankenR.string.voices_add_to_playlist)) },
+                            onClick = {
+                                expanded = false
+                                onAddToPlaylist(voicesVO.toReference())
+                            }
                         )
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(TankenR.string.voices_add_to_playlist)) },
-                                onClick = {
-                                    expanded = false
-                                    onAddToPlaylist(voicesVO.toReference())
-                                }
-                            )
-                        }
                     }
                 }
             }
@@ -302,30 +296,28 @@ fun VoiceGroupDialog(
             content = {
                 Text(
                     text = stringResource(TankenR.string.voices_group_dialog_title),
-                    style = MaterialTheme.typography.headlineMedium.notoSans(),
+                    style = MaterialTheme.typography.headlineMedium,
                 )
-                NotoSerifJP {
-                    LazyColumn(
-                        modifier = Modifier.weight(1f),
-                        contentPadding = PaddingValues(horizontal = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        itemsIndexed(
-                            items = items,
-                            key = { index, item -> index combineKey item }
-                        ) { index, item ->
-                            Text(
-                                text = item.first,
-                                style = MaterialTheme.typography.titleMedium.withLocalStyle(),
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier
-                                    .clickable {
-                                        onDismiss()
-                                        onItemClicked(index)
-                                    }
-                                    .fillMaxWidth()
-                            )
-                        }
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    itemsIndexed(
+                        items = items,
+                        key = { index, item -> index combineKey item }
+                    ) { index, item ->
+                        Text(
+                            text = item.first,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .clickable {
+                                    onDismiss()
+                                    onItemClicked(index)
+                                }
+                                .fillMaxWidth()
+                        )
                     }
                 }
             }

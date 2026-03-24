@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "prac.tanken.shigure.ui.subaci"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "prac.tanken.shigure.ui.subaci"
         minSdk = 21
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 8
         versionName = "Milestone 3 Revision 2"
 
@@ -45,6 +45,7 @@ dependencies {
     implementation(projects.feature.sources)
     implementation(projects.feature.playlist)
     implementation(projects.feature.settings)
+    implementation(projects.fontman)
 
     implementation(libs.androidx.activity.compose)
 

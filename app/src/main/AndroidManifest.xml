@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-sdk tools:overrideLibrary="androidx.*"/>
+
     <application
         android:name=".SUBACIApplication"
         android:allowBackup="true"
@@ -13,12 +15,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShigureUiButtonAppComposeImplementation"
-        android:largeHeap="true"
-        tools:targetApi="tiramisu">
+        android:largeHeap="true">
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.SplashTheme">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

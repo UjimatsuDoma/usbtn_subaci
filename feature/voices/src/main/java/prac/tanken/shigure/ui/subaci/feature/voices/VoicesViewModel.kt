@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.core.common.android.toast.ToastUtil
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
@@ -34,7 +35,7 @@ class VoicesViewModel @Inject constructor(
     val myPlayer: MyPlayer
 ) : ViewModel() {
     // 新增：封装的UI状态
-    var uiState = mutableStateOf<VoicesUiState>(initialVoicesUiState)
+    var uiState = MutableStateFlow(initialVoicesUiState)
         private set
 
     // 新增：选中的播放列表的ID

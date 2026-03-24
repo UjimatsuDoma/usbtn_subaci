@@ -1,177 +1,79 @@
 package prac.tanken.shigure.ui.subaci.core.ui
 
-import android.os.Build
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import prac.tanken.shigure.ui.subaci.core.ui.theme.getNotoTypography
-import java.util.Locale
+import prac.tanken.shigure.ui.subaci.core.ui.font.NotoCJKLocale
+import prac.tanken.shigure.ui.subaci.core.ui.font.NotoStyle
+import prac.tanken.shigure.ui.subaci.core.ui.font.fontsDir
+import java.io.File
 
 @Composable
-fun getNotoFamily(
+fun getNotoFamilySingleLocale(
     style: NotoStyle,
     locale: NotoCJKLocale,
 ): FontFamily {
     val cxt = LocalContext.current
+    val fontsDir = File(cxt.filesDir, "fonts")
     return remember {
         FontFamily(
-            Font(
-                assetManager = cxt.assets,
-                path = "noto_fonts/${style.fileName}/${locale.code}/regular.ttf",
-                weight = FontWeight.W400,
-            ),
-            Font(
-                assetManager = cxt.assets,
-                path = "noto_fonts/${style.fileName}/${locale.code}/_bold.ttf",
-                weight = FontWeight.W700,
-            ),
+            (1..9).map {
+                val weight = it * 100
+                Font(
+                    file = File(fontsDir, "${style.fileName}_${locale.code}_$weight.ttf")
+                )
+            }
         )
     }
 }
 
-val NotoSansJP @Composable get() = getNotoFamily(NotoStyle.SANS, NotoCJKLocale.JP)
-
-val NotoSerifJP @Composable get() = getNotoFamily(NotoStyle.SERIF, NotoCJKLocale.JP)
-
-val NotoSansSC @Composable get() = getNotoFamily(NotoStyle.SANS, NotoCJKLocale.CN)
-
-val NotoSerifSC @Composable get() = getNotoFamily(NotoStyle.SERIF, NotoCJKLocale.CN)
-
-val NotoSans @Composable get() = getNotoFamily(NotoStyle.SANS, NotoCJKLocale.DEFAULT)
-
-val NotoSerif @Composable get() = getNotoFamily(NotoStyle.SERIF, NotoCJKLocale.DEFAULT)
-
-val NotoSansAutoLang: FontFamily
-    @Composable get() {
-        val locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            LocalConfiguration.current.locales[0]
-        } else Locale.getDefault()
-        return when {
-            locale.language == "ja" -> NotoSansJP
-            locale.language == "zh" && locale.country == "CN" -> NotoSansSC
-            else -> NotoSans
-        }
-    }
-
-val NotoSerifAutoLang: FontFamily
-    @Composable get() {
-        val locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            LocalConfiguration.current.locales[0]
-        } else Locale.getDefault()
-        return when {
-            locale.language == "ja" -> NotoSerifJP
-            locale.language == "zh" && locale.country == "CN" -> NotoSerifSC
-            else -> NotoSerif
-        }
-    }
-
 @Composable
-fun WithNotoCJKTypography(
+fun getNotoFamilyByLocales(
     style: NotoStyle,
-    locale: NotoCJKLocale? = null,
-    content: @Composable () -> Unit
-) {
-    val fontFamily = when (style) {
-        NotoStyle.SANS -> {
-            when (locale) {
-                NotoCJKLocale.JP -> NotoSansJP
-                NotoCJKLocale.CN -> NotoSansSC
-                else -> NotoSansAutoLang
+    locales: List<NotoCJKLocale>,
+): FontFamily {
+    val fontsDir = fontsDir
+    return remember(style, locales) {
+        FontFamily(
+            (1..9).flatMap {
+                val wght = it * 100
+                locales.map { locale ->
+                    Font(
+                        file = File(fontsDir, "${style.fileName}_${locale.code}_$wght.ttf"),
+                        weight = FontWeight(wght),
+                        style = FontStyle.Normal
+                    )
+                }
             }
-        }
-
-        NotoStyle.SERIF -> {
-            when (locale) {
-                NotoCJKLocale.JP -> NotoSerifJP
-                NotoCJKLocale.CN -> NotoSerifSC
-                else -> NotoSerifAutoLang
-            }
-        }
+        )
     }
+}
 
-    MaterialTheme(
-        typography = getNotoTypography(fontFamily),
-        content = content
+fun getNotoFamilyByLocalesNonComposable(
+    context: Context,
+    style: NotoStyle,
+    locales: List<NotoCJKLocale>,
+): FontFamily {
+    val fontsDir = File(context.applicationContext.filesDir, "fonts")
+    return FontFamily(
+        (1..9).flatMap {
+            val wght = it * 100
+            locales.map { locale ->
+                Font(
+                    file = File(fontsDir, "${style.fileName}_${locale.code}_$wght.ttf"),
+                    weight = FontWeight(wght),
+                    style = FontStyle.Normal
+                )
+            }
+        }
     )
 }
 
-@Composable
-fun NotoSerifAuto(content: @Composable () -> Unit) =
-    WithNotoCJKTypography(
-        style = NotoStyle.SERIF,
-        content = content
-    )
+val NotoSansJP @Composable get() = getNotoFamilySingleLocale(NotoStyle.SANS, NotoCJKLocale.JP)
 
-@Composable
-fun NotoSansAuto(content: @Composable () -> Unit) =
-    WithNotoCJKTypography(
-        style = NotoStyle.SANS,
-        content = content
-    )
-
-@Composable
-fun NotoSerifJP(content: @Composable () -> Unit) =
-    WithNotoCJKTypography(
-        style = NotoStyle.SERIF,
-        locale = NotoCJKLocale.JP,
-        content = content
-    )
-
-@Composable
-fun NotoSansJP(content: @Composable () -> Unit) =
-    WithNotoCJKTypography(
-        style = NotoStyle.SANS,
-        locale = NotoCJKLocale.JP,
-        content = content
-    )
-
-@Composable
-fun TextStyle.withLocalStyle() =
-    copy(
-        fontFamily = LocalTextStyle.current.fontFamily,
-    )
-
-@Composable
-fun TextStyle.notoCjkStyle(
-    style: NotoStyle,
-    locale: NotoCJKLocale? = null,
-): TextStyle {
-    val fontFamily = when (style) {
-        NotoStyle.SANS -> {
-            when (locale) {
-                NotoCJKLocale.JP -> NotoSansJP
-                else -> NotoSansAutoLang
-            }
-        }
-
-        NotoStyle.SERIF -> {
-            when (locale) {
-                NotoCJKLocale.JP -> NotoSerifJP
-                else -> NotoSerifAutoLang
-            }
-        }
-    }
-
-    return this.copy(
-        fontFamily = fontFamily,
-    )
-}
-
-@Composable
-fun TextStyle.notoSerifJP() = notoCjkStyle(NotoStyle.SERIF, NotoCJKLocale.JP)
-
-@Composable
-fun TextStyle.notoSansJP() = notoCjkStyle(NotoStyle.SANS, NotoCJKLocale.JP)
-
-@Composable
-fun TextStyle.notoSerif() = notoCjkStyle(NotoStyle.SERIF)
-
-@Composable
-fun TextStyle.notoSans() = notoCjkStyle(NotoStyle.SERIF)
+val NotoSerifJP @Composable get() = getNotoFamilySingleLocale(NotoStyle.SERIF, NotoCJKLocale.JP)

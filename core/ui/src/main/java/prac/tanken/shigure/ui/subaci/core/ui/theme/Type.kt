@@ -5,7 +5,7 @@ import androidx.compose.ui.text.font.FontFamily
 
 val DefaultTypography = Typography()
 
-fun getNotoTypography(fontFamily: FontFamily): Typography {
+fun getTypographyByFontFamily(fontFamily: FontFamily): Typography {
     val defaultTypography = Typography()
     return Typography().copy(
         displayLarge = defaultTypography.displayLarge.copy(fontFamily = fontFamily),
@@ -22,7 +22,7 @@ fun getNotoTypography(fontFamily: FontFamily): Typography {
         bodySmall = defaultTypography.bodySmall.copy(fontFamily = fontFamily),
         labelLarge = defaultTypography.labelLarge.copy(fontFamily = fontFamily),
         labelMedium = defaultTypography.labelMedium.copy(fontFamily = fontFamily),
-        labelSmall = defaultTypography.labelSmall.copy(fontFamily = fontFamily)
+        labelSmall = defaultTypography.labelSmall.copy(fontFamily = fontFamily),
     )
 }
 

@@ -15,7 +15,7 @@ internal fun Project.configureKotlinAndroid(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) {
     commonExtension.apply {
-        compileSdk = 35
+        compileSdk = 36
 
         // config for libraries
         defaultConfig {
@@ -26,7 +26,7 @@ internal fun Project.configureKotlinAndroid(
         // config for app
         appConfig {
             defaultConfig {
-                targetSdk = 35
+                targetSdk = 36
             }
         }
 

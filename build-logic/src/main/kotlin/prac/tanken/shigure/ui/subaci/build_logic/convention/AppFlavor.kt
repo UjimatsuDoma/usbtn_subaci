@@ -4,6 +4,7 @@ import com.android.build.api.dsl.ApplicationBaseFlavor
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.ProductFlavor
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.dependencies
 
 enum class FlavorDimension(val value: String) {
     API("api")
@@ -14,7 +15,9 @@ enum class AppFlavor(
     val dimension: FlavorDimension
 ) {
     MODERN(value = "modern", dimension = FlavorDimension.API),
-    PRE_OREO(value = "preOreo", dimension = FlavorDimension.API)
+    PRE_OREO(value = "preOreo", dimension = FlavorDimension.API);
+
+    val impl="${value}Implementation"
 }
 
 fun Project.configureFlavors(
@@ -57,12 +60,16 @@ fun Project.configureDependenciesByFlavor(
     appFlavor: AppFlavor,
     commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) {
+
     when(appFlavor) {
         AppFlavor.MODERN -> {
 
         }
         AppFlavor.PRE_OREO -> {
-
+            // my library for converting font files
+            dependencies {
+                add(appFlavor.impl, libs.findLibrary("chaquo-fonttools").get())
+            }
         }
     }
 }

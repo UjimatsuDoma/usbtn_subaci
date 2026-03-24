@@ -11,10 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
-import prac.tanken.shigure.ui.subaci.core.ui.NotoSansAuto
-import prac.tanken.shigure.ui.subaci.core.ui.withLocalStyle
+import prac.tanken.shigure.ui.subaci.core.ui.font.LocalJPFont
 import prac.tanken.shigure.ui.subaci.feature.base.R
 import prac.tanken.shigure.ui.subaci.feature.base.model.voices.VoicesVO
 import prac.tanken.shigure.ui.subaci.feature.base.model.voices.toReference
@@ -33,18 +34,16 @@ fun VoiceButton(
 ) {
     Text(
         text = voicesVO.label,
-        style = MaterialTheme.typography.labelLarge.withLocalStyle(),
+        fontFamily = FontFamily(Font(resId = LocalJPFont.current.resId)),
         modifier = Modifier.weight(1f)
     )
     if (voicesVO.new) {
         Spacer(Modifier.size(4.dp))
-        NotoSansAuto {
-            Badge {
-                Text(
-                    text = stringResource(R.string.app_badge_new),
-                    style = MaterialTheme.typography.labelSmall.withLocalStyle()
-                )
-            }
+        Badge {
+            Text(
+                text = stringResource(R.string.app_badge_new),
+                style = MaterialTheme.typography.labelSmall
+            )
         }
     }
 }

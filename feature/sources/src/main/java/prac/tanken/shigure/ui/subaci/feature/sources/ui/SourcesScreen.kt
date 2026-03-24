@@ -46,18 +46,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import kotlinx.coroutines.launch
+import prac.tanken.shigure.ui.subaci.core.data.mock.sourcesPreviewData
+import prac.tanken.shigure.ui.subaci.core.data.mock.voicesPreviewData
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.ui.NotoSerifJP
+import prac.tanken.shigure.ui.subaci.core.ui.theme.ShigureUiButtonAppComposeImplementationTheme
+import prac.tanken.shigure.ui.subaci.core.ui.theme.getTypographyByFontFamily
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoiceButton
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoicesFlowRow
-import prac.tanken.shigure.ui.subaci.core.data.mock.sourcesPreviewData
-import prac.tanken.shigure.ui.subaci.core.data.mock.voicesPreviewData
-import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
-import prac.tanken.shigure.ui.subaci.core.ui.NotoSansJP
-import prac.tanken.shigure.ui.subaci.core.ui.NotoSerifJP
-import prac.tanken.shigure.ui.subaci.core.ui.theme.ShigureUiButtonAppComposeImplementationTheme
-import prac.tanken.shigure.ui.subaci.core.ui.theme.getNotoTypography
-import prac.tanken.shigure.ui.subaci.core.ui.withLocalStyle
 import prac.tanken.shigure.ui.subaci.feature.base.model.voices.toVoicesVO
 import prac.tanken.shigure.ui.subaci.feature.sources.SourcesViewModel
 import prac.tanken.shigure.ui.subaci.feature.sources.model.SourcesListItem
@@ -197,84 +195,80 @@ private fun SourcesListItem(
         val hasVoices = item.voices.isNotEmpty()
         val isPreview = LocalInspectionMode.current
 
-        NotoSerifJP {
-            if (isPreview) {
-                Image(
-                    painter = painterResource(TankenR.drawable.demo_source_thumb),
-                    contentDescription = null,
-                    modifier = modifier(16f / 9f)
-                )
-            } else {
-                SubcomposeAsyncImage(
-                    model = item.url,
-                    loading = {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = modifier(item.thumbAspectRatio),
-                            content = { CircularProgressIndicator() }
-                        )
-                    },
-                    contentDescription = null,
-                    modifier = modifier(item.thumbAspectRatio)
-                )
-            }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .clickable { if (hasVoices) { expanded = true } }
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = item.title,
-                    modifier = Modifier.weight(1f)
-                )
-                if (hasVoices) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.ArrowRight,
-                        contentDescription = null
+        if (isPreview) {
+            Image(
+                painter = painterResource(TankenR.drawable.demo_source_thumb),
+                contentDescription = null,
+                modifier = modifier(16f / 9f)
+            )
+        } else {
+            SubcomposeAsyncImage(
+                model = item.url,
+                loading = {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = modifier(item.thumbAspectRatio),
+                        content = { CircularProgressIndicator() }
                     )
-                }
+                },
+                contentDescription = null,
+                modifier = modifier(item.thumbAspectRatio)
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clickable { if (hasVoices) { expanded = true } }
+                .padding(16.dp)
+        ) {
+            Text(
+                text = item.title,
+                modifier = Modifier.weight(1f)
+            )
+            if (hasVoices) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                    contentDescription = null
+                )
             }
-            if (expanded && hasVoices) {
-                ModalBottomSheet(onDismissRequest = { expanded = false }) {
-                    Column {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .padding(8.dp)
-                        ) {
-                            SubcomposeAsyncImage(
-                                model = item.url,
-                                loading = {
-                                    Box(
-                                        contentAlignment = Alignment.Center,
-                                        modifier = modifier(item.thumbAspectRatio),
-                                        content = { CircularProgressIndicator() }
-                                    )
-                                },
-                                contentDescription = null,
-                                modifier = modifier(item.thumbAspectRatio)
-                            )
-                        }
-                        Text(
-                            text = item.title,
-                            style = MaterialTheme.typography.titleMedium.withLocalStyle(),
-                            modifier = Modifier.padding(8.dp),
-                        )
-                        NotoSansJP {
-                            VoicesFlowRow(
-                                voices = item.voices,
-                                modifier = Modifier
-                                    .padding(8.dp),
-                            ) { voice ->
-                                VoiceButton(
-                                    voicesVO = voice,
-                                    onPlay = onPlay,
+        }
+        if (expanded && hasVoices) {
+            ModalBottomSheet(onDismissRequest = { expanded = false }) {
+                Column {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(8.dp)
+                    ) {
+                        SubcomposeAsyncImage(
+                            model = item.url,
+                            loading = {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = modifier(item.thumbAspectRatio),
+                                    content = { CircularProgressIndicator() }
                                 )
-                            }
-                        }
+                            },
+                            contentDescription = null,
+                            modifier = modifier(item.thumbAspectRatio)
+                        )
+                    }
+                    Text(
+                        text = item.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(8.dp),
+                    )
+                    VoicesFlowRow(
+                        voices = item.voices,
+                        modifier = Modifier
+                            .padding(8.dp),
+                    ) { voice ->
+                        VoiceButton(
+                            voicesVO = voice,
+                            onPlay = onPlay,
+                        )
                     }
                 }
             }
@@ -287,7 +281,7 @@ private fun SourcesListItem(
 private fun SourcesListItemPreview(
     modifier: Modifier = Modifier
 ) = ShigureUiButtonAppComposeImplementationTheme(
-    typography = getNotoTypography(NotoSerifJP)
+    typography = getTypographyByFontFamily(NotoSerifJP)
 ) {
     val source = sourcesPreviewData().random()
     val voices = voicesPreviewData().filter {

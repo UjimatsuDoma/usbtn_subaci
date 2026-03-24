@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
+
 plugins {
     alias(libs.plugins.subaci.android.library)
     alias(libs.plugins.subaci.android.library.compose)
@@ -19,8 +21,9 @@ tasks {
         named("downloadVoices").get().mustRunAfter(named("checkIfFilesExist"))
         named("downloadCategories").get().mustRunAfter(named("checkIfFilesExist"))
         named("downloadSources").get().mustRunAfter(named("checkIfFilesExist"))
-//        dependsOn(named("downloadCategories"))
-//        dependsOn(named("downloadSources"))
+        named("prepareLintJarForPublish").get().mustRunAfter(named("downloadVoices"))
+        named("prepareLintJarForPublish").get().mustRunAfter(named("downloadCategories"))
+        named("prepareLintJarForPublish").get().mustRunAfter(named("downloadSources"))
     }
 }
 
@@ -34,6 +37,7 @@ android {
 
 dependencies {
     implementation(projects.core.common)
+    implementation(projects.core.ui)
 
     // Kotlin Reflect
     implementation(libs.kotlin.reflect)

@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import prac.tanken.shigure.ui.subaci.core.ui.NotoSerifAutoLang
 import prac.tanken.shigure.ui.subaci.feature.base.R
 import prac.tanken.shigure.ui.subaci.core.ui.theme.ShigureUiButtonAppComposeImplementationTheme
 
@@ -22,7 +21,6 @@ fun LoadingTopBar(modifier: Modifier = Modifier) {
             Text(
                 text = stringResource(R.string.loading),
                 fontWeight = FontWeight.Black,
-                fontFamily = NotoSerifAutoLang
             )
         },
         modifier = modifier

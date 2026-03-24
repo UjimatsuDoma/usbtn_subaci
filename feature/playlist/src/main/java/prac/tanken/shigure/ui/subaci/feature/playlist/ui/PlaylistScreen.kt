@@ -54,13 +54,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import prac.tanken.shigure.ui.subaci.feature.base.component.ErrorMessageStrip
-import prac.tanken.shigure.ui.subaci.feature.base.component.InfoMessageStrip
-import prac.tanken.shigure.ui.subaci.core.ui.NotoCJKLocale
-import prac.tanken.shigure.ui.subaci.core.ui.NotoStyle
-import prac.tanken.shigure.ui.subaci.core.ui.WithNotoCJKTypography
 import prac.tanken.shigure.ui.subaci.core.ui.theme.ShigureUiButtonAppComposeImplementationTheme
 import prac.tanken.shigure.ui.subaci.core.ui.util.combineKey
+import prac.tanken.shigure.ui.subaci.feature.base.component.ErrorMessageStrip
+import prac.tanken.shigure.ui.subaci.feature.base.component.InfoMessageStrip
 import prac.tanken.shigure.ui.subaci.feature.playlist.PlaylistViewModel
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistPlaybackIntent
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistPlaybackSettings
@@ -71,7 +68,6 @@ import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistUpsertIntent
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistUpsertState
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.playlistNotSelectedVO
 import com.microsoft.fluent.mobile.icons.R as FluentR
-import prac.tanken.shigure.ui.subaci.core.common.R as CommonR
 import prac.tanken.shigure.ui.subaci.feature.base.R as BaseR
 import prac.tanken.shigure.ui.subaci.feature.playlist.R as PlaylistR
 
@@ -230,20 +226,18 @@ private fun PlaylistTopBar(
                             painterResource(FluentR.drawable.ic_fluent_caret_down_24_filled)
                         }
 
-                    WithNotoCJKTypography(NotoStyle.SERIF) {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Black,
-                            modifier = Modifier.basicMarquee()
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.basicMarquee()
+                    )
+                    if (canToggleSelectionMenu) {
+                        Spacer(Modifier.width(8.dp))
+                        Icon(
+                            painter = trailingIcon,
+                            contentDescription = null
                         )
-                        if (canToggleSelectionMenu) {
-                            Spacer(Modifier.width(8.dp))
-                            Icon(
-                                painter = trailingIcon,
-                                contentDescription = null
-                            )
-                        }
                     }
                 }
 
@@ -351,30 +345,28 @@ private fun PlaylistScreen(
                         Column {
                             var expanded by rememberSaveable { mutableStateOf(false) }
 
-                            WithNotoCJKTypography(NotoStyle.SERIF, NotoCJKLocale.JP) {
-                                Text(
-                                    text = voice.label,
-                                    fontSize = 24.sp,
-                                    fontWeight = when (playbackState) {
-                                        is PlaylistPlaybackState.Loaded.Playing -> {
-                                            if (playbackState.index == index) FontWeight.ExtraBold
-                                            else FontWeight.Normal
-                                        }
+                            Text(
+                                text = voice.label,
+                                fontSize = 24.sp,
+                                fontWeight = when (playbackState) {
+                                    is PlaylistPlaybackState.Loaded.Playing -> {
+                                        if (playbackState.index == index) FontWeight.ExtraBold
+                                        else FontWeight.Normal
+                                    }
 
-                                        is PlaylistPlaybackState.Loaded.Stopped -> FontWeight.Normal
-                                    },
-                                    modifier = Modifier
-                                        .combinedClickable(
-                                            onClick = { onItemClicked(index) },
-                                            onLongClick = {
-                                                if (playbackState !is PlaylistPlaybackState.Loaded.Playing)
-                                                    expanded = true
-                                            }
-                                        )
-                                        .fillMaxWidth()
-                                        .padding(16.dp)
-                                )
-                            }
+                                    is PlaylistPlaybackState.Loaded.Stopped -> FontWeight.Normal
+                                },
+                                modifier = Modifier
+                                    .combinedClickable(
+                                        onClick = { onItemClicked(index) },
+                                        onLongClick = {
+                                            if (playbackState !is PlaylistPlaybackState.Loaded.Playing)
+                                                expanded = true
+                                        }
+                                    )
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            )
 
                             DropdownMenu(
                                 expanded = expanded,
