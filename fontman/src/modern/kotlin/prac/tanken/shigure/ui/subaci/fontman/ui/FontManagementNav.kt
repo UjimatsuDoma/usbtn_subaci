@@ -1,5 +1,7 @@
 package prac.tanken.shigure.ui.subaci.fontman.ui
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -19,23 +21,27 @@ fun FontManagementNavHost(
 ) {
     val vm: FontManagementViewModel = hiltViewModel()
 
-    NavHost(navController, startDestination = FontManagementDestinations.Checking) {
-        composable<FontManagementDestinations.Checking> {
-            FontCheckingScreen(
-                modifier,
-                vm,
-                onPassed = onPassed,
-                toDecompress = { navController.navigate(FontManagementDestinations.Decompress) },
-                toInstantiate = {}
-            )
-        }
-        composable<FontManagementDestinations.Decompress> {
-            FontDecompressingScreen(
-                modifier,
-                viewModel = vm,
-                onPassed = { navController.navigate(FontManagementDestinations.Checking) },
-                onBack = { navController.popBackStack() }
-            )
+    MaterialTheme {
+        Surface {
+            NavHost(navController, startDestination = FontManagementDestinations.Checking) {
+                composable<FontManagementDestinations.Checking> {
+                    FontCheckingScreen(
+                        modifier,
+                        vm,
+                        onPassed = onPassed,
+                        toDecompress = { navController.navigate(FontManagementDestinations.Decompress) },
+                        toInstantiate = {}
+                    )
+                }
+                composable<FontManagementDestinations.Decompress> {
+                    FontDecompressingScreen(
+                        modifier,
+                        viewModel = vm,
+                        onPassed = { navController.navigate(FontManagementDestinations.Checking) },
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+            }
         }
     }
 }

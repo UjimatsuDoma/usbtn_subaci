@@ -14,4 +14,5 @@
     <string name="daily_random_voice_refreshed">Rolled the dice…</string>
     <string name="daily_random_voice_play_prefix">"Voice today: "</string>
     <string name="voices_grouped_by_reset_prefix">"Set voices grouped by "</string>
+    <string name="voices_loading_groups_screen">Please wait...</string>
 </resources>

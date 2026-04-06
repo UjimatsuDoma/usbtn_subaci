@@ -34,7 +34,7 @@ fun VoiceButton(
 ) {
     Text(
         text = voicesVO.label,
-        fontFamily = FontFamily(Font(resId = LocalJPFont.current.resId)),
+        fontFamily = FontFamily(Font(resId = LocalJPFont.current.fontResId)),
         modifier = Modifier.weight(1f)
     )
     if (voicesVO.new) {

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,10 +31,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +63,7 @@ import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoiceButton
 import prac.tanken.shigure.ui.subaci.feature.base.model.voices.toReference
+import prac.tanken.shigure.ui.subaci.feature.voices.R
 import prac.tanken.shigure.ui.subaci.feature.voices.VoicesViewModel
 import prac.tanken.shigure.ui.subaci.feature.voices.model.DailyVoiceUiState
 import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGrouped
@@ -72,6 +78,7 @@ fun VoicesScreen(
     viewModel: VoicesViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackBarHostState = remember { SnackbarHostState() }
 
     Column(modifier) {
         when (uiState.voicesGroupedUiState) {
@@ -100,29 +107,49 @@ fun VoicesScreen(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    Text("Please wait...")
+                    Text(stringResource(TankenR.string.voices_loading_groups_screen))
                 }
             }
 
             is VoicesGroupedUiState.Success -> {
+                val scope = rememberCoroutineScope()
                 val dailyVoiceUiState = uiState.dailyVoiceUiState
                 val voicesGrouped =
                     (uiState.voicesGroupedUiState as VoicesGroupedUiState.Success).voicesGrouped
+                val dailyVoiceMessagePrefix =
+                    stringResource(R.string.daily_random_voice_play_prefix)
+                val pleaseWaitMessage = stringResource(CommonR.string.please_wait_message)
+                val dailyVoiceMessage = remember(dailyVoiceUiState) {
+                    if (dailyVoiceUiState is DailyVoiceUiState.Loaded) {
+                        dailyVoiceMessagePrefix + dailyVoiceUiState.voice.label
+                    } else pleaseWaitMessage
+                }
 
-                VoicesTopBar(
-                    dailyVoiceUiState = dailyVoiceUiState,
-                    onDailyVoice = viewModel::playDailyVoice,
-                    voicesGroupedBy = voicesGrouped.voicesGroupedBy,
-                    onChangeVoicesGroupedBy = viewModel::updateVoicesGroupedBy,
-                )
-                VoicesScreen(
-                    voicesGrouped = voicesGrouped,
-                    onPlay = viewModel::onButtonClicked,
-                    onAddToPlaylist = viewModel::addToPlaylist,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                )
+                Scaffold(
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                    snackbarHost = {
+                        SnackbarHost(snackBarHostState)
+                    },
+                    topBar = {
+                        VoicesTopBar(
+                            dailyVoiceUiState = dailyVoiceUiState,
+                            onDailyVoice = {
+                                scope.launch {
+                                    snackBarHostState.showSnackbar(dailyVoiceMessage)
+                                }
+                            },
+                            voicesGroupedBy = voicesGrouped.voicesGroupedBy,
+                            onChangeVoicesGroupedBy = viewModel::updateVoicesGroupedBy,
+                        )
+                    }
+                ) { innerPadding ->
+                    VoicesScreen(
+                        voicesGrouped = voicesGrouped,
+                        onPlay = viewModel::onButtonClicked,
+                        onAddToPlaylist = viewModel::addToPlaylist,
+                        modifier = Modifier.consumeWindowInsets(innerPadding)
+                    )
+                }
             }
         }
     }

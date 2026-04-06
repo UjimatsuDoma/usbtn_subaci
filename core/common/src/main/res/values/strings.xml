@@ -6,4 +6,8 @@
     <string name="error_illegal_state">Illegal state.</string>
     <string name="error_android_version_prefix">Available on Android </string>
     <string name="error_android_version_suffix">" and above"</string>
+    <string name="loading_message">Loading...</string>
+    <string name="please_wait_message">Please wait...</string>
+
+
 </resources>

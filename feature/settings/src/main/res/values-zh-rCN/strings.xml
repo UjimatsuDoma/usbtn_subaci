@@ -21,4 +21,6 @@
     <string name="app_bottom_bar_label_show_when_selected">选中显示</string>
 
     <string name="settings_initialized_message">进行初次设置。</string>
+    <string name="settings_ui_noto_style">Noto字体风格</string>
+    <string name="settings_ui_jp_font">语音文本字体</string>
 </resources>

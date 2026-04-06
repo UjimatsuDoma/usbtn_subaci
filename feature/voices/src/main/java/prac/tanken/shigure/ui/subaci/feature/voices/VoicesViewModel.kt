@@ -129,10 +129,6 @@ class VoicesViewModel @Inject constructor(
             val actualState = uiState.value.dailyVoiceUiState as DailyVoiceUiState.Loaded
             val dailyVoice = actualState.voice
             myPlayer.playByReference(VoiceReference(dailyVoice.id))
-            toastUtil.toast(buildString {
-                append(resRepository.stringRes(R.string.daily_random_voice_play_prefix))
-                append(dailyVoice.label)
-            })
         }
     }
 

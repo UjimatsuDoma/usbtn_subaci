@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="noto_sans_display_name">ゴシック</string>
+    <string name="noto_serif_display_name">明朝体</string>
+</resources>

@@ -18,10 +18,8 @@ class FontCheckingUseCase @Inject constructor(
 
     fun checkVariable(): Boolean {
         var result = true
-        val fontFiles = NotoStyle.entries.flatMap { notoStyle ->
-            NotoCJKLocale.entries.map { notoCJKLocale ->
-                File(fontsDir, "${notoStyle.fileName}_${notoCJKLocale.code}.ttf")
-            }
+        val fontFiles = NotoStyle.entries.map { notoStyle ->
+            File(fontsDir, "${notoStyle.fileName}.ttc")
         }
         for (fontFile in fontFiles) {
             if (!fontFile.exists()) {
@@ -33,10 +31,8 @@ class FontCheckingUseCase @Inject constructor(
     }
 
     fun clearVariable() {
-        val fontFiles = NotoStyle.entries.flatMap { notoStyle ->
-            NotoCJKLocale.entries.map { notoCJKLocale ->
-                File(fontsDir, "${notoStyle.fileName}_${notoCJKLocale.code}.ttf")
-            }
+        val fontFiles = NotoStyle.entries.map { notoStyle ->
+            File(fontsDir, "${notoStyle.fileName}.ttc")
         }
         for (fontFile in fontFiles) {
             if (fontFile.exists()) fontFile.delete()
@@ -46,11 +42,9 @@ class FontCheckingUseCase @Inject constructor(
     fun checkStatic(): Boolean {
         var result = true
         val fontFiles = NotoStyle.entries.flatMap { notoStyle ->
-            NotoCJKLocale.entries.flatMap { notoCJKLocale ->
-                (1..9).map {
-                    val weight = it * 100
-                    File(fontsDir, "${notoStyle.fileName}_${notoCJKLocale.code}_$weight.ttf")
-                }
+            (1..9).map {
+                val weight = it * 100
+                File(fontsDir, "${notoStyle.fileName}_$weight.ttf")
             }
         }
         for (fontFile in fontFiles) {
@@ -64,13 +58,11 @@ class FontCheckingUseCase @Inject constructor(
 
     fun clearStatic() {
         NotoStyle.entries.flatMap { notoStyle ->
-            NotoCJKLocale.entries.flatMap { notoCJKLocale ->
-                (1..9).map {
-                    val weight = it * 100
-                    val fileName = "${notoStyle.fileName}_${notoCJKLocale.code}_$weight.ttf"
-                    File(fontsDir, fileName).apply {
-                        if (exists()) delete()
-                    }
+            (1..9).map {
+                val weight = it * 100
+                val fileName = "${notoStyle.fileName}_$weight.ttf"
+                File(fontsDir, fileName).apply {
+                    if (exists()) delete()
                 }
             }
         }

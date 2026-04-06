@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -53,18 +54,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            MaterialTheme {
-                Scaffold { innerPadding ->
-                    Box(Modifier.padding(innerPadding)) {
-                        if (ready) {
-                            AppNavHost(
-                                navController = rememberNavController(),
-                                appSettings = appSettingsState
-                            )
-                        } else {
-                            LoadingIndefinitelyScreen(title = "Loading...")
-                        }
-                    }
+            if (ready) {
+                AppNavHost(
+                    navController = rememberNavController(),
+                    appSettings = appSettingsState
+                )
+            } else {
+                MaterialTheme {
+                    LoadingIndefinitelyScreen(title = "Loading...")
                 }
             }
         }

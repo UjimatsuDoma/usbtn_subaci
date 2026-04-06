@@ -23,4 +23,6 @@
     <string name="app_bottom_bar_label_show_when_selected">Show when selected</string>
 
     <string name="settings_initialized_message">Initialized settings.</string>
+    <string name="settings_ui_noto_style">Noto font style</string>
+    <string name="settings_ui_jp_font">Font for voice text</string>
 </resources>

@@ -21,4 +21,6 @@
     <string name="app_bottom_bar_label_show_when_selected">選択されたのを表示する</string>
 
     <string name="settings_initialized_message">設定を初期化しました。</string>
+    <string name="settings_ui_noto_style">Notoフォント書体</string>
+    <string name="settings_ui_jp_font">ボイスフォント</string>
 </resources>

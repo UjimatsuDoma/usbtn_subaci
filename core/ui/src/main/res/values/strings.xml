@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="jp_ipaexg_name" translatable="false">IPAexゴシック</string>
+    <string name="jp_nijimi_name" translatable="false">幻ノにじみ明朝</string>
+    <string name="jp_nikumaru_name" translatable="false">にくまるフォント</string>
+    <string name="jp_yasagothb_name" translatable="false">やさしさゴシックボールド</string>
+    <string name="jp_yasaantic_name" translatable="false">やさしさアンチック</string>
+    <string name="jp_logotypeg_name" translatable="false">ロゴたいぷゴシック</string>
+    <string name="noto_sans_display_name">Sans-serif</string>
+    <string name="noto_serif_display_name">Serif</string>
+</resources>

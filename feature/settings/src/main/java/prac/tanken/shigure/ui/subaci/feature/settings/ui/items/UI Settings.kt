@@ -16,10 +16,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.BrandingWatermark
 import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Brightness4
+import androidx.compose.material.icons.filled.Style
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,7 +37,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import prac.tanken.shigure.ui.subaci.core.common.android.version.androidVersionErrorMessage
@@ -44,6 +49,8 @@ import prac.tanken.shigure.ui.subaci.core.data.settings.AppSettings
 import prac.tanken.shigure.ui.subaci.core.data.settings.ui.AppColor
 import prac.tanken.shigure.ui.subaci.core.data.settings.ui.AppDarkMode
 import prac.tanken.shigure.ui.subaci.core.data.settings.ui.NavigationLabelBehaviour
+import prac.tanken.shigure.ui.subaci.core.ui.font.JPFonts
+import prac.tanken.shigure.ui.subaci.core.ui.font.NotoStyle
 import prac.tanken.shigure.ui.subaci.feature.settings.R
 
 fun LazyListScope.uiSettings(
@@ -98,6 +105,30 @@ fun LazyListScope.uiSettings(
                 )
             }
         )
+        NotoFontStyleSetting(
+            notoStyle = uiSettings.notoStyle,
+            onUpdateNotoStyle = {
+                onUpdateAppSettings(
+                    appSettings.copy(
+                        uiSettings = uiSettings.copy(
+                            notoStyle = it
+                        )
+                    )
+                )
+            }
+        )
+        JPFontSetting(
+            jpFont = uiSettings.jpFont,
+            onUpdateJPFont = {
+                onUpdateAppSettings(
+                    appSettings.copy(
+                        uiSettings = uiSettings.copy(
+                            jpFont = it
+                        )
+                    )
+                )
+            }
+        )
     }
 }
 
@@ -116,7 +147,7 @@ private fun ColumnScope.AppColorSetting(
     onUpdateAppColor: (AppColor) -> Unit = {},
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    var dropdownIcon =
+    val dropdownIcon =
         if (expanded) Icons.Default.ArrowDropUp
         else Icons.Default.ArrowDropDown
 
@@ -169,8 +200,12 @@ private fun ColumnScope.AppColorSetting(
                         .weight(1f)
                         .fillMaxSize(),
                     selected = appColor == AppColor.Dynamic,
-                    enabled = Build.VERSION.SDK_INT>= Build.VERSION_CODES.S,
-                    onSelected = { if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.S) onUpdateAppColor(AppColor.Dynamic) },
+                    enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
+                    onSelected = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) onUpdateAppColor(
+                            AppColor.Dynamic
+                        )
+                    },
                     title = stringResource(AppColor.Dynamic.displayName),
                     disabledMessage = androidVersionErrorMessage(Build.VERSION_CODES.S)
                 )
@@ -259,8 +294,12 @@ private fun ColumnScope.AppDarkModeSetting(
                 RadioButtonCard(
                     shape = RoundedCornerShape(size = 4.dp),
                     selected = appDarkMode == AppDarkMode.Dynamic,
-                    enabled = Build.VERSION.SDK_INT>= Build.VERSION_CODES.Q,
-                    onSelected = { if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.Q) onUpdateAppDarkMode(AppDarkMode.Dynamic) },
+                    enabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q,
+                    onSelected = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) onUpdateAppDarkMode(
+                            AppDarkMode.Dynamic
+                        )
+                    },
                     title = stringResource(AppDarkMode.Dynamic.displayName),
                     disabledMessage = androidVersionErrorMessage(Build.VERSION_CODES.Q)
                 )
@@ -300,14 +339,6 @@ private fun AppDarkModeSettingPreview() {
     }
 }
 
-//@Preview(apiLevel = Build.VERSION_CODES.P)
-//@Composable
-//private fun AppDarkModeSettingPreviewLegacy() {
-//    Card {
-//        AppDarkModeSetting()
-//    }
-//}
-
 @Composable
 private fun ColumnScope.NavigationLabelBehaviourSetting(
     modifier: Modifier = Modifier,
@@ -315,7 +346,7 @@ private fun ColumnScope.NavigationLabelBehaviourSetting(
     onUpdateNavigationLabelBehaviour: (NavigationLabelBehaviour) -> Unit = {},
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    var dropdownIcon =
+    val dropdownIcon =
         if (expanded) Icons.Default.ArrowDropUp
         else Icons.Default.ArrowDropDown
 
@@ -363,7 +394,7 @@ private fun ColumnScope.NavigationLabelBehaviourSetting(
             ) {
                 RadioButtonCard(
                     shape = RoundedCornerShape(size = 4.dp),
-                    selected = NavigationLabelBehaviour == NavigationLabelBehaviour.ShowAlways,
+                    selected = navigationLabelBehaviour == NavigationLabelBehaviour.ShowAlways,
                     onSelected = {
                         onUpdateNavigationLabelBehaviour(NavigationLabelBehaviour.ShowAlways)
                     },
@@ -374,7 +405,7 @@ private fun ColumnScope.NavigationLabelBehaviourSetting(
                 )
                 RadioButtonCard(
                     shape = RoundedCornerShape(size = 4.dp),
-                    selected = NavigationLabelBehaviour == NavigationLabelBehaviour.ShowWhenSelected,
+                    selected = navigationLabelBehaviour == NavigationLabelBehaviour.ShowWhenSelected,
                     onSelected = {
                         onUpdateNavigationLabelBehaviour(NavigationLabelBehaviour.ShowWhenSelected)
                     },
@@ -385,7 +416,7 @@ private fun ColumnScope.NavigationLabelBehaviourSetting(
                 )
                 RadioButtonCard(
                     shape = RoundedCornerShape(size = 4.dp),
-                    selected = NavigationLabelBehaviour == NavigationLabelBehaviour.Hide,
+                    selected = navigationLabelBehaviour == NavigationLabelBehaviour.Hide,
                     onSelected = {
                         onUpdateNavigationLabelBehaviour(NavigationLabelBehaviour.Hide)
                     },
@@ -404,5 +435,160 @@ private fun ColumnScope.NavigationLabelBehaviourSetting(
 private fun NavigationLabelBehaviourSettingPreview() {
     Card {
         NavigationLabelBehaviourSetting()
+    }
+}
+
+@Composable
+private fun ColumnScope.NotoFontStyleSetting(
+    modifier: Modifier = Modifier,
+    notoStyle: NotoStyle = NotoStyle.SANS,
+    onUpdateNotoStyle: (NotoStyle) -> Unit = {},
+) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val dropdownIcon =
+        if (expanded) Icons.Default.ArrowDropUp
+        else Icons.Default.ArrowDropDown
+
+    Column(modifier) {
+        ListItem(
+            leadingContent = {
+                Icon(
+                    painter = painterResource(R.drawable.logo_font_style),
+                    contentDescription = null
+                )
+            },
+            headlineContent = {
+                Text(
+                    text = stringResource(R.string.settings_ui_noto_style),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            },
+            trailingContent = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = stringResource(notoStyle.displayName),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Icon(
+                        imageVector = dropdownIcon,
+                        contentDescription = null
+                    )
+                }
+            },
+            modifier = Modifier
+                .clickable { expanded = !expanded }
+        )
+
+        AnimatedVisibility(expanded) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .height(IntrinsicSize.Max)
+                    .clip(CardDefaults.shape)
+            ) {
+                NotoStyle.entries.forEach { style->
+                    RadioButtonCard(
+                        shape = RoundedCornerShape(size = 4.dp),
+                        selected = notoStyle == style,
+                        onSelected = {
+                            onUpdateNotoStyle(style)
+                        },
+                        title = stringResource(style.displayName),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun NotoStyleSettingPreview() {
+    Card {
+        NotoFontStyleSetting()
+    }
+}
+
+@Composable
+private fun ColumnScope.JPFontSetting(
+    modifier: Modifier = Modifier,
+    jpFont: JPFonts = JPFonts.YASASHISA_GOTHIC,
+    onUpdateJPFont: (JPFonts) -> Unit = {},
+) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val dropdownIcon =
+        if (expanded) Icons.Default.ArrowDropUp
+        else Icons.Default.ArrowDropDown
+
+    Column(modifier) {
+        ListItem(
+            leadingContent = {
+                Icon(
+                    painter = painterResource(R.drawable.logo_japanese),
+                    contentDescription = null
+                )
+            },
+            headlineContent = {
+                Text(
+                    text = stringResource(R.string.settings_ui_jp_font),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            },
+            supportingContent = {
+                Text(
+                    text = stringResource(jpFont.displayName),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontFamily = FontFamily(Font(resId = jpFont.fontResId))
+                )
+            },
+            trailingContent = {
+                Icon(
+                    imageVector = dropdownIcon,
+                    contentDescription = null
+                )
+            },
+            modifier = Modifier
+                .clickable { expanded = !expanded }
+        )
+
+        AnimatedVisibility(expanded) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .height(IntrinsicSize.Max)
+                    .clip(CardDefaults.shape)
+            ) {
+                JPFonts.entries.forEach { font->
+                    RadioButtonCard(
+                        shape = RoundedCornerShape(size = 4.dp),
+                        selected = jpFont == font,
+                        onSelected = {
+                            onUpdateJPFont(font)
+                        },
+                        title = stringResource(font.displayName),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun JPFontsSettingPreview() {
+    Card {
+        JPFontSetting()
     }
 }
