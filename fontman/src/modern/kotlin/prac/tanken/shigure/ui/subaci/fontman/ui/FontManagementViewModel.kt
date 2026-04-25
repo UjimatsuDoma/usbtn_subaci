@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import net.sf.sevenzipjbinding.PropertyInfo
 import prac.tanken.shigure.ui.subaci.fontman.domain.FontCheckingState
 import prac.tanken.shigure.ui.subaci.fontman.domain.FontCheckingUseCase
 import prac.tanken.shigure.ui.subaci.fontman.domain.FontDecompressState

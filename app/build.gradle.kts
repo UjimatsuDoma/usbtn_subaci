@@ -58,6 +58,6 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
 
     // LeakCanary
-    implementation(libs.leakcanary.android)
+    debugImplementation(libs.leakcanary.android)
 
 }

@@ -21,3 +21,4 @@
 #-renamesourcefileattribute SourceFile
 
 -keep @kotlinx.serialization.Serializable class * {*;}
+-keep class net.sf.sevenzipjbinding.** { *; }

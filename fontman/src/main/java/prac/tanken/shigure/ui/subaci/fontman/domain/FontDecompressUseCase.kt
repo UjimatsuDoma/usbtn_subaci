@@ -1,16 +1,8 @@
 package prac.tanken.shigure.ui.subaci.fontman.domain
 
-import android.content.res.AssetFileDescriptor
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.withContext
-import net.sf.sevenzipjbinding.ArchiveFormat
-import net.sf.sevenzipjbinding.ExtractAskMode
-import net.sf.sevenzipjbinding.ExtractOperationResult
-import net.sf.sevenzipjbinding.IArchiveExtractCallback
-import net.sf.sevenzipjbinding.IArchiveOpenCallback
-import net.sf.sevenzipjbinding.IInArchive
 import net.sf.sevenzipjbinding.ISequentialOutStream
 import net.sf.sevenzipjbinding.SevenZip
 import net.sf.sevenzipjbinding.SevenZipException

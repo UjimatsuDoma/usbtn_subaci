@@ -2,7 +2,6 @@ package prac.tanken.shigure.ui.subaci.fontman.domain
 
 import prac.tanken.shigure.ui.subaci.core.data.repository.InternalStorageRepository
 import prac.tanken.shigure.ui.subaci.core.ui.font.NotoStyle
-import prac.tanken.shigure.ui.subaci.core.ui.font.NotoCJKLocale
 import java.io.File
 import javax.inject.Inject
 
