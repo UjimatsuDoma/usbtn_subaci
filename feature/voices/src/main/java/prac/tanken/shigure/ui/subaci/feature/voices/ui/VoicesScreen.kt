@@ -78,20 +78,20 @@ fun VoicesScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
 
-    Column(modifier) {
-        when (uiState.voicesGroupedUiState) {
-            is VoicesGroupedUiState.Error -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    val actualState = uiState.voicesGroupedUiState as VoicesGroupedUiState.Error
+    when (uiState.voicesGroupedUiState) {
+        is VoicesGroupedUiState.Error -> {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                val actualState = uiState.voicesGroupedUiState as VoicesGroupedUiState.Error
 
-                    Text("Something went wrong.\n${actualState.message}")
-                }
+                Text("Something went wrong.\n${actualState.message}")
             }
+        }
 
-            VoicesGroupedUiState.Loading -> {
+        VoicesGroupedUiState.Loading -> {
+            Column(modifier) {
                 LoadingTopBar()
                 LoadingScreenBody(
                     modifier = modifier
@@ -99,56 +99,57 @@ fun VoicesScreen(
                         .weight(1f)
                 )
             }
+        }
 
-            VoicesGroupedUiState.StandBy -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Text(stringResource(TankenR.string.voices_loading_groups_screen))
-                }
+        VoicesGroupedUiState.StandBy -> {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(stringResource(TankenR.string.voices_loading_groups_screen))
+            }
+        }
+
+        is VoicesGroupedUiState.Success -> {
+            val scope = rememberCoroutineScope()
+            val dailyVoiceUiState = uiState.dailyVoiceUiState
+            val voicesGrouped =
+                (uiState.voicesGroupedUiState as VoicesGroupedUiState.Success).voicesGrouped
+            val dailyVoiceMessagePrefix =
+                stringResource(R.string.daily_random_voice_play_prefix)
+            val pleaseWaitMessage = stringResource(CommonR.string.please_wait_message)
+            val dailyVoiceMessage = remember(dailyVoiceUiState) {
+                if (dailyVoiceUiState is DailyVoiceUiState.Loaded) {
+                    dailyVoiceMessagePrefix + dailyVoiceUiState.voice.label
+                } else pleaseWaitMessage
             }
 
-            is VoicesGroupedUiState.Success -> {
-                val scope = rememberCoroutineScope()
-                val dailyVoiceUiState = uiState.dailyVoiceUiState
-                val voicesGrouped =
-                    (uiState.voicesGroupedUiState as VoicesGroupedUiState.Success).voicesGrouped
-                val dailyVoiceMessagePrefix =
-                    stringResource(R.string.daily_random_voice_play_prefix)
-                val pleaseWaitMessage = stringResource(CommonR.string.please_wait_message)
-                val dailyVoiceMessage = remember(dailyVoiceUiState) {
-                    if (dailyVoiceUiState is DailyVoiceUiState.Loaded) {
-                        dailyVoiceMessagePrefix + dailyVoiceUiState.voice.label
-                    } else pleaseWaitMessage
-                }
-
-                Scaffold(
-                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
-                    snackbarHost = {
-                        SnackbarHost(snackBarHostState)
-                    },
-                    topBar = {
-                        VoicesTopBar(
-                            dailyVoiceUiState = dailyVoiceUiState,
-                            onDailyVoice = {
-                                viewModel.playDailyVoice()
-                                scope.launch {
-                                    snackBarHostState.showSnackbar(dailyVoiceMessage)
-                                }
-                            },
-                            voicesGroupedBy = voicesGrouped.voicesGroupedBy,
-                            onChangeVoicesGroupedBy = viewModel::updateVoicesGroupedBy,
-                        )
-                    }
-                ) { innerPadding ->
-                    VoicesScreen(
-                        voicesGrouped = voicesGrouped,
-                        onPlay = viewModel::onButtonClicked,
-                        onAddToPlaylist = viewModel::addToPlaylist,
-                        modifier = Modifier.consumeWindowInsets(innerPadding)
+            Scaffold(
+                contentWindowInsets = WindowInsets(top = 0),
+                snackbarHost = {
+                    SnackbarHost(snackBarHostState)
+                },
+                topBar = {
+                    VoicesTopBar(
+                        dailyVoiceUiState = dailyVoiceUiState,
+                        onDailyVoice = {
+                            viewModel.playDailyVoice()
+                            scope.launch {
+                                snackBarHostState.showSnackbar(dailyVoiceMessage)
+                            }
+                        },
+                        voicesGroupedBy = voicesGrouped.voicesGroupedBy,
+                        onChangeVoicesGroupedBy = viewModel::updateVoicesGroupedBy,
                     )
-                }
+                },
+                modifier = modifier
+            ) { innerPadding ->
+                VoicesScreen(
+                    voicesGrouped = voicesGrouped,
+                    onPlay = viewModel::onButtonClicked,
+                    onAddToPlaylist = viewModel::addToPlaylist,
+                    modifier = Modifier.padding(innerPadding)
+                )
             }
         }
     }
@@ -250,7 +251,12 @@ private fun VoicesScreen(
     if (showVoiceGroupDialog) {
         VoiceGroupDialog(
             items = headerTitleIndices,
-            onItemClicked = { scope.launch { lazyStaggeredGridState.scrollToItem(index = it) } },
+            onItemClicked = {
+                scope.launch {
+                    val index = headerTitleIndices[it].second
+                    lazyStaggeredGridState.scrollToItem(index)
+                }
+            },
             onDismiss = { showVoiceGroupDialog = false },
             modifier = Modifier
                 .fillMaxWidth(0.75f)

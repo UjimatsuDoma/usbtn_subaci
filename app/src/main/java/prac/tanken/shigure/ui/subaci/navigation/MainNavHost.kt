@@ -96,7 +96,7 @@ fun MainNavHost(
                         ) { innerPadding ->
                             MainNavHost(
                                 navController,
-                                modifier.padding(innerPadding)
+                                modifier.consumeWindowInsets(innerPadding)
                             )
                         }
                     }
