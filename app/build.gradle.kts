@@ -9,7 +9,6 @@ android {
 
     defaultConfig {
         applicationId = "prac.tanken.shigure.ui.subaci"
-        minSdk = 21
         targetSdk = 36
         versionCode = 9
         versionName = "Milestone 3 Revision 3"

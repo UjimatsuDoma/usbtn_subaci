@@ -1,11 +1,7 @@
-import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import prac.tanken.shigure.ui.subaci.build_logic.convention.configureCommonDependencies
-import prac.tanken.shigure.ui.subaci.build_logic.convention.configureFlavors
 import prac.tanken.shigure.ui.subaci.build_logic.convention.configureKotlinJvm
 import prac.tanken.shigure.ui.subaci.build_logic.convention.libs
 

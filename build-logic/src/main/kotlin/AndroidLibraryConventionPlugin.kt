@@ -6,9 +6,7 @@ import org.gradle.kotlin.dsl.configure
 import prac.tanken.shigure.ui.subaci.build_logic.convention.configureAndroidBase
 import prac.tanken.shigure.ui.subaci.build_logic.convention.configureAndroidCommonDependencies
 import prac.tanken.shigure.ui.subaci.build_logic.convention.configureCommonDependencies
-import prac.tanken.shigure.ui.subaci.build_logic.convention.configureFlavors
 import prac.tanken.shigure.ui.subaci.build_logic.convention.configureKotlinAndroid
-import prac.tanken.shigure.ui.subaci.build_logic.convention.configureSdkVersion
 import prac.tanken.shigure.ui.subaci.build_logic.convention.libs
 
 class AndroidLibraryConventionPlugin : Plugin<Project> {
@@ -21,9 +19,6 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             version = "unspecified"
 
             extensions.configure<LibraryExtension> {
-                configureFlavors(this) {
-                    configureSdkVersion(it)
-                }
                 configureAndroidBase(this)
                 configureKotlinAndroid(this)
 
