@@ -19,7 +19,7 @@ dependencies {
     implementation(projects.core.ui)
 
     // 7-Zip (de)compression library
-    implementation(files("libs/sevenzipjbinding_16.02-2.02_2025_0704_1436.aar"))
+    api(files("libs/sevenzipjbinding_16.02-2.02_2025_0704_1436.aar"))
 
     androidTestImplementation(libs.androidx.runner)
     androidTestImplementation(libs.androidx.rules)
