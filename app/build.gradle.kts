@@ -5,7 +5,6 @@ import prac.tanken.shigure.ui.subaci.build_logic.resource_download.downloadSourc
 plugins {
     alias(libs.plugins.subaci.android.application)
     alias(libs.plugins.subaci.android.application.compose)
-    alias(libs.plugins.subaci.resource.download)
 }
 
 android {
@@ -15,8 +14,8 @@ android {
     defaultConfig {
         applicationId = "prac.tanken.shigure.ui.subaci"
         targetSdk = 36
-        versionCode = 9
-        versionName = "Milestone 3 Revision 3"
+        versionCode = 10
+        versionName = "Milestone 3 Revision 4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,25 +36,6 @@ android {
             )
         }
     }
-
-    sourceSets {
-        getByName("main") {
-            assets.srcDir(project.layout.buildDirectory.dir("subaciTmp/assets").get().asFile.absolutePath)
-        }
-    }
-}
-
-tasks {
-    downloadVoices.dependsOn(checkIfTempDirExist)
-    downloadSources.dependsOn(checkIfTempDirExist)
-    downloadCategories.dependsOn(checkIfTempDirExist)
-    val log = register("log") {
-        doLast {
-            logger.info("RESOURCE DOWNLOAD FINISHED")
-        }
-    }
-    log.dependsOn(downloadVoices, downloadSources, downloadCategories)
-    preBuild.dependsOn(log)
 }
 
 dependencies {

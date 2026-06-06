@@ -1,10 +1,14 @@
 package prac.tanken.shigure.ui.subaci.build_logic.resource_download
 
+import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.TaskContainer
 
+val Project.jsonDir get() = project.layout.buildDirectory.dir("subaciTmp/assets/subaciJson").get().asFile
 val Task.jsonDir get() = project.layout.buildDirectory.dir("subaciTmp/assets/subaciJson").get().asFile
+val Project.voicesDir get() = project.layout.buildDirectory.dir("subaciTmp/assets/subaciAudio").get().asFile
 val Task.voicesDir get() = project.layout.buildDirectory.dir("subaciTmp/assets/subaciAudio").get().asFile
+val Project.thumbnailsDir get() = project.layout.buildDirectory.dir("subaciTmp/assets/subaciThumbs").get().asFile
 val Task.thumbnailsDir get() = project.layout.buildDirectory.dir("subaciTmp/assets/subaciThumbs").get().asFile
 
 val TaskContainer.downloadVoices get() = named("downloadVoices")
