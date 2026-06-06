@@ -3,6 +3,7 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 plugins {
     alias(libs.plugins.subaci.android.library)
     alias(libs.plugins.subaci.android.library.compose)
+    alias(libs.plugins.subaci.resource.download)
 
     alias(libs.plugins.androidx.room)
 }
@@ -13,6 +14,16 @@ android {
     room {
         schemaDirectory("$projectDir/schemas")
     }
+
+    sourceSets {
+        getByName("main") {
+            assets.srcDir(project.layout.buildDirectory.dir("subaciTmp/assets").get().asFile.absolutePath)
+        }
+    }
+}
+
+tasks.preBuild {
+    dependsOn(tasks.named("logDownloadFin"))
 }
 
 dependencies {

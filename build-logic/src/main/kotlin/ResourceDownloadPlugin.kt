@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.register
@@ -9,10 +10,20 @@ import prac.tanken.shigure.ui.subaci.build_logic.resource_download.VoicesDownloa
 class ResourceDownloadPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            tasks.register<VoicesDownloadTask>("downloadVoices")
-            tasks.register<CategoriesDownloadTask>("downloadCategories")
-            tasks.register<SourcesDownloadTask>("downloadSources")
-            tasks.register<ResTempDirCreationTask>("checkIfTempDirExist")
+            val vdt = tasks.register<VoicesDownloadTask>("downloadVoices")
+            val cdt = tasks.register<CategoriesDownloadTask>("downloadCategories")
+            val sdt = tasks.register<SourcesDownloadTask>("downloadSources")
+            val rtdct = tasks.register<ResTempDirCreationTask>("checkIfTempDirExist")
+            val log = tasks.register("logDownloadFin") {
+                doLast {
+                    logger.info("RESOURCE DOWNLOAD FINISHED")
+                }
+            }
+
+            listOf(vdt, cdt, sdt).forEach {
+                it.dependsOn(rtdct)
+                log.dependsOn(it)
+            }
         }
     }
 }
