@@ -22,7 +22,7 @@ android {
         configureEach {
             buildConfigField("String", "BUILT_IN_COLOR_SOURCE", "\"22523677\"")
             buildConfigField("String", "BUILD_TIME", "\"$now\"")
-            buildConfigField("String", "VERSION_NAME", "\"Milestone 3 Revision 2\"")
+            buildConfigField("String", "VERSION_NAME", "\"Milestone 3 Revision 3\"")
         }
     }
     buildFeatures {
