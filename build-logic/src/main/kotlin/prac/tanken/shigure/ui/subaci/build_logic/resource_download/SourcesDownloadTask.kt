@@ -15,9 +15,6 @@ import java.net.HttpURLConnection
 import java.net.URI
 
 abstract class SourcesDownloadTask : DefaultTask() {
-    @get:InputDirectory
-    abstract val destination: DirectoryProperty
-
     fun fetchSources(): List<SourceEntity> {
         val html = URI(HTML_URL).toURL().readToString()
         val matches = sourceRegex.findAll(html)
@@ -27,25 +24,22 @@ abstract class SourcesDownloadTask : DefaultTask() {
 
     @TaskAction
     fun run() {
-        val file = destination.asFile.get()
-
         for(currentTry in 0 until 10) {
             try {
                 println("fetching sources json...")
                 val sources = fetchSources()
-                FileWriter("$file/src/main/res/raw/video_list.json").use {
+                FileWriter(File(jsonDir, "video_list.json")).use {
                     it.write(encodeJsonString(sources))
                 }
                 println("fetching thumbnails...")
-                val sourcesThumbnailPath = "$file/src/main/assets/subaciThumbs/"
                 sources.forEach { source ->
                     val id = source.videoId
                     val fileName = "$id.jpg"
-                    val downloadFile = File(sourcesThumbnailPath, fileName)
+                    val downloadFile = File(thumbnailsDir, fileName)
                     if (!downloadFile.exists()) {
                         val downloadUrl = getMaxResolutionThumbUrl(id)
                         URI(downloadUrl).toURL().downloadFile(
-                            sourcesThumbnailPath + fileName,
+                            downloadFile.absolutePath.replace("\\", "/")
                         )
                     }
                 }

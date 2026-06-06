@@ -3,8 +3,8 @@ package prac.tanken.shigure.ui.subaci.build_logic.resource_download
 import kotlinx.serialization.Serializable
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import prac.tanken.shigure.ui.subaci.build_logic.common.downloadFile
 import prac.tanken.shigure.ui.subaci.build_logic.common.encodeJsonString
@@ -15,8 +15,6 @@ import java.io.FileWriter
 import java.net.URI
 
 abstract class VoicesDownloadTask : DefaultTask() {
-    @get:InputDirectory
-    abstract val destination: DirectoryProperty
 
     fun fetchVoices(): List<Voice> {
         val html = URI(HTML_URL).toURL().readToString()
@@ -27,27 +25,24 @@ abstract class VoicesDownloadTask : DefaultTask() {
 
     @TaskAction
     fun run() {
-        val file = destination.asFile.get()
-
         for(currentTry in 0 until 10) {
             try {
                 logger.info("fetching voices json...")
                 val voices = fetchVoices()
-                FileWriter("$file/src/main/res/raw/audio_list.json").use {
+                FileWriter(File(jsonDir, "audio_list.json")).use {
                     it.write(encodeJsonString(voices))
                 }
                 logger.info("fetching voices files...")
-                val voicePath = "$file/src/main/assets/subaciAudio/"
+                val voicePath = voicesDir.absolutePath
                 voices.forEach { voice ->
                     voice.src.apply {
                         val relPath = substringAfter("/")
                         val fileName = substringAfterLast("/")
                         val downloadUrl = "${BASE_URL}/$relPath"
-                        val downloadDest = voicePath + fileName
                         val downloadFile = File(voicePath, fileName)
                         if (!downloadFile.exists()) {
                             URI(downloadUrl).toURL().downloadFile(
-                                downloadDest,
+                                downloadFile.absolutePath.replace("\\", "/"),
                                 mapOf(
                                     "Referer" to "https://leiros.cloudfree.jp/usbtn/usbtn.html"
                                 )

@@ -1,6 +1,11 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
+import prac.tanken.shigure.ui.subaci.build_logic.resource_download.checkIfTempDirExist
+import prac.tanken.shigure.ui.subaci.build_logic.resource_download.downloadSources
+
 plugins {
     alias(libs.plugins.subaci.android.application)
     alias(libs.plugins.subaci.android.application.compose)
+    alias(libs.plugins.subaci.resource.download)
 }
 
 android {
@@ -32,6 +37,25 @@ android {
             )
         }
     }
+
+    sourceSets {
+        getByName("main") {
+            assets.srcDir(project.layout.buildDirectory.dir("subaciTmp/assets").get().asFile.absolutePath)
+        }
+    }
+}
+
+tasks {
+    downloadVoices.dependsOn(checkIfTempDirExist)
+    downloadSources.dependsOn(checkIfTempDirExist)
+    downloadCategories.dependsOn(checkIfTempDirExist)
+    val log = register("log") {
+        doLast {
+            logger.info("RESOURCE DOWNLOAD FINISHED")
+        }
+    }
+    log.dependsOn(downloadVoices, downloadSources, downloadCategories)
+    preBuild.dependsOn(log)
 }
 
 dependencies {

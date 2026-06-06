@@ -9,12 +9,11 @@ import org.gradle.api.tasks.TaskAction
 import prac.tanken.shigure.ui.subaci.build_logic.common.encodeJsonString
 import prac.tanken.shigure.ui.subaci.build_logic.common.parseJsonString
 import prac.tanken.shigure.ui.subaci.build_logic.common.readToString
+import java.io.File
 import java.io.FileWriter
 import java.net.URI
 
 abstract class CategoriesDownloadTask : DefaultTask() {
-    @get:InputDirectory
-    abstract val destination: DirectoryProperty
 
     fun fetchCategories(): List<Category> {
         val html = URI(HTML_URL).toURL().readToString()
@@ -36,13 +35,11 @@ abstract class CategoriesDownloadTask : DefaultTask() {
 
     @TaskAction
     fun run() {
-        val file = destination.asFile.get()
-
         for(currentTry in 0 until 10) {
             try {
                 println("fetching categories json...")
                 val categories = fetchCategories()
-                FileWriter("$file/src/main/res/raw/class_list.json").use {
+                FileWriter(File(jsonDir, "class_list.json")).use {
                     it.write(encodeJsonString(categories))
                 }
                 break
