@@ -21,7 +21,7 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
         Revision 2: Migrate from Compose `FontFamily` to manual `Typeface` injection for `MODERN` build, to make use of [Noto CJK Variable OTC](https://github.com/notofonts/noto-cjk) and eventually reducing APK file size. [Jul. 26, 2025 ~ Oct. 31, 2025]. Yet this causes app to break at random time, to be fixed in Milestone 3.
       - Revision 3: Optimize font management by utilizing 7-Zip ~and `fonttools` libraries~ Leave that for a separate repo [Nov. 4, 2025 ~ May 31. 2026]  
         [Note: see *Notes - about support for below Android 8* section]
-      - Revision 4: Migrate Toasts to Snackbars [TBA]
+      - Revision 4: Migrate Toasts to Snackbars [June 5, 2026 ~ TBA]
     - Milestone 4: Introduce animation and optimize UX [2026? ~ TBA]
 - 1st Edition "Master Up": TBA
 - 2nd Edition "SuiCYAN": TBA
@@ -44,6 +44,8 @@ For typeface consistency, Noto Sans & Serif CJK font is globally used and embedd
 support for PRE_OREO Android versions are DEPRECATED on this version(maybe there'll be a separate edition of this app for this purpose), for Compose is now progressively deprecating these old Android versions(for instance, on 20260605, things in AndroidX stops working on Android 5.X), and mechanisms for font loading, etc. are so different that maintaining these two in a single repo has become a burden(elaborated below). I believe that those who would install this niche app on such archaic - I couldn't believe I would say something like this back in my junior high days - smartphones would very probably just accept what exists right there.
 
 What makes PRE_OREO nasty the most for me is FONT: I need Noto CJK to be the app's global UI typeface, but since PRE_OREO Android have absolutely no support for variable fonts and in-app TTC, I have to figure out a way to turn variable fonts to static fonts, and I somehow got the versatile font processing library `fontTools` working on Android, but the performance is soooooooooo bad that it would just crash on a 2011 smartphone powered by an Android 7 custom ROM. Looking back, I'm still astonished that the development of this project essentially halted for a year or so because of THIS!
+
+I assume I would build this separate app in Flutter because it said TTC support in its documentation - who knows? :)
 
 ## Things that would NOT be included
 
