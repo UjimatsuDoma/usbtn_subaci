@@ -86,6 +86,7 @@ fun MainNavHost(
                             snackbarHost = {
                                 SnackbarHost(snackbarHostState)
                             },
+                            contentWindowInsets = WindowInsets(),
                             bottomBar = {
                                 MainNavigationBar(
                                     navController = navController,
@@ -96,7 +97,9 @@ fun MainNavHost(
                         ) { innerPadding ->
                             MainNavHost(
                                 navController,
-                                modifier.consumeWindowInsets(innerPadding)
+                                modifier
+                                    .padding(innerPadding)
+                                    .consumeWindowInsets(innerPadding)
                             )
                         }
                     }
