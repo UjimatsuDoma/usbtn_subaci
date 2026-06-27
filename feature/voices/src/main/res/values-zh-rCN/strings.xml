@@ -14,4 +14,5 @@
     <string name="voices_grouped_by_reset_prefix">语音分组依据初始化为：</string>
     <string name="daily_random_voice_play_prefix">今天的语音：</string>
     <string name="voices_loading_groups_screen">请稍候……</string>
+    <string name="voices_info_no_playlist_selected">未选择要添加到的播放列表。</string>
 </resources>

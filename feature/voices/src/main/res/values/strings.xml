@@ -15,4 +15,5 @@
     <string name="daily_random_voice_play_prefix">"Voice today: "</string>
     <string name="voices_grouped_by_reset_prefix">"Set voices grouped by "</string>
     <string name="voices_loading_groups_screen">Please wait...</string>
+    <string name="voices_info_no_playlist_selected">No playlist selected.</string>
 </resources>

@@ -1,12 +1,13 @@
 package prac.tanken.shigure.ui.subaci.feature.voices.ui
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,11 +33,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,15 +52,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.voicesGroupedByItems
+import prac.tanken.shigure.ui.subaci.core.ui.font.LocalJPFont
 import prac.tanken.shigure.ui.subaci.core.ui.util.combineKey
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingTopBar
@@ -77,6 +92,15 @@ fun VoicesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.snackbarMessage.collect {
+                snackBarHostState.showSnackbar(message = it.message)
+            }
+        }
+    }
 
     when (uiState.voicesGroupedUiState) {
         is VoicesGroupedUiState.Error -> {
@@ -118,24 +142,66 @@ fun VoicesScreen(
             val dailyVoiceMessagePrefix =
                 stringResource(R.string.daily_random_voice_play_prefix)
             val pleaseWaitMessage = stringResource(CommonR.string.please_wait_message)
-            val dailyVoiceMessage = remember(dailyVoiceUiState) {
-                if (dailyVoiceUiState is DailyVoiceUiState.Loaded) {
-                    dailyVoiceMessagePrefix + dailyVoiceUiState.voice.label
-                } else pleaseWaitMessage
-            }
 
             Scaffold(
                 contentWindowInsets = WindowInsets(top = 0),
                 snackbarHost = {
-                    SnackbarHost(snackBarHostState)
+                    SnackbarHost(
+                        hostState = snackBarHostState,
+                        snackbar = { snackbarData ->
+                            val dailyVoiceSnackbarVisuals =
+                                snackbarData.visuals as? DailyVoiceSnackbarVisuals
+                            dailyVoiceSnackbarVisuals?.let {
+                                Snackbar(
+                                    content = {
+                                        Text(
+                                            text = buildAnnotatedString {
+                                                append(dailyVoiceSnackbarVisuals.message)
+                                                withStyle(
+                                                    style = SpanStyle(
+                                                        fontFamily = FontFamily(
+                                                            Font(resId = LocalJPFont.current.fontResId)
+                                                        )
+                                                    )
+                                                ) {
+                                                    append(dailyVoiceSnackbarVisuals.voice.label)
+                                                }
+                                            },
+                                            modifier = Modifier.basicMarquee()
+                                        )
+                                    },
+                                    modifier = Modifier.padding(12.dp)
+                                )
+                            } ?: run {
+                                Snackbar(snackbarData)
+                            }
+                        }
+                    )
                 },
                 topBar = {
                     VoicesTopBar(
                         dailyVoiceUiState = dailyVoiceUiState,
                         onDailyVoice = {
-                            viewModel.playDailyVoice()
-                            scope.launch {
-                                snackBarHostState.showSnackbar(dailyVoiceMessage)
+                            if(dailyVoiceUiState is DailyVoiceUiState.Loaded) {
+                                val dailyVoice = dailyVoiceUiState.voice
+                                viewModel.playDailyVoice()
+                                scope.launch {
+                                    snackBarHostState.showSnackbar(
+                                        visuals = DailyVoiceSnackbarVisuals(
+                                            actionLabel = null,
+                                            duration = SnackbarDuration.Long,
+                                            withDismissAction = false,
+                                            voice = dailyVoice,
+                                            message = dailyVoiceMessagePrefix,
+                                        )
+                                    )
+                                }
+                            } else {
+                                scope.launch {
+                                    snackBarHostState.showSnackbar(
+                                        message = pleaseWaitMessage
+                                    )
+                                }
                             }
                         },
                         voicesGroupedBy = voicesGrouped.voicesGroupedBy,
@@ -356,3 +422,11 @@ fun VoiceGroupDialog(
         )
     }
 }
+
+data class DailyVoiceSnackbarVisuals(
+    override val actionLabel: String?,
+    override val duration: SnackbarDuration,
+    override val message: String,
+    override val withDismissAction: Boolean,
+    val voice: Voice,
+): SnackbarVisuals

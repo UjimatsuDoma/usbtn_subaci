@@ -14,4 +14,5 @@
     <string name="daily_random_voice_play_prefix">今日のランダムボイス：</string>
     <string name="voices_grouped_by_reset_prefix">ボイスの組み分け初期設定：</string>
     <string name="voices_loading_groups_screen">少々お待ちください……</string>
+    <string name="voices_info_no_playlist_selected">追加先を選択してからやり直してください。</string>
 </resources>

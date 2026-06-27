@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.core.common.android.toast.ToastUtil
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
@@ -14,7 +16,9 @@ import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.core.player.MyPlayer
+import prac.tanken.shigure.ui.subaci.feature.base.SnackbarMessage
 import prac.tanken.shigure.ui.subaci.feature.base.domain.UseCaseEvent
+import prac.tanken.shigure.ui.subaci.feature.base.model.voices.VoicesVO
 import prac.tanken.shigure.ui.subaci.feature.playlist.domain.PlaylistUseCase
 import prac.tanken.shigure.ui.subaci.feature.voices.domain.DailyVoiceUseCase
 import prac.tanken.shigure.ui.subaci.feature.voices.domain.VoicesUseCase
@@ -31,12 +35,15 @@ class VoicesViewModel @Inject constructor(
     val dailyVoiceUseCase: DailyVoiceUseCase,
     val voicesUseCase: VoicesUseCase,
     val playlistUseCase: PlaylistUseCase,
-    val toastUtil: ToastUtil,
     val myPlayer: MyPlayer
 ) : ViewModel() {
     // 新增：封装的UI状态
     var uiState = MutableStateFlow(initialVoicesUiState)
         private set
+
+    // snackbar
+    private val _snackbarMessage = Channel<SnackbarMessage>()
+    val snackbarMessage = _snackbarMessage.receiveAsFlow()
 
     // 新增：选中的播放列表的ID
     private var selectedPlaylistId = mutableLongStateOf(0L)
@@ -61,7 +68,10 @@ class VoicesViewModel @Inject constructor(
                     is UseCaseEvent.Error -> {
                         val newState = DailyVoiceUiState.Error
                         uiState.value = uiState.value.copy(dailyVoiceUiState = newState)
-                        launch(Dispatchers.Main) { toastUtil.toast(event.message) }
+                        launch(Dispatchers.Main) {
+//                            toastUtil.toast(event.message)
+                            _snackbarMessage.send(SnackbarMessage(event.message))
+                        }
                     }
 
                     is UseCaseEvent.Info -> {
@@ -70,7 +80,10 @@ class VoicesViewModel @Inject constructor(
                          * 答：线程名字叫DefaultDispatcher-worker
                          * 解决方案：Dispatchers.Main
                          */
-                        launch(Dispatchers.Main) { toastUtil.toast(event.message) }
+                        launch(Dispatchers.Main) {
+//                            toastUtil.toast(event.message)
+                            _snackbarMessage.send(SnackbarMessage(event.message))
+                        }
                     }
 
                     UseCaseEvent.Loading -> {
@@ -102,11 +115,17 @@ class VoicesViewModel @Inject constructor(
                     is UseCaseEvent.Error -> {
                         val newState = VoicesGroupedUiState.Error(event.message)
                         uiState.value = uiState.value.copy(voicesGroupedUiState = newState)
-                        launch(Dispatchers.Main) { toastUtil.toast(event.message) }
+                        launch(Dispatchers.Main) {
+//                            toastUtil.toast(event.message)
+                            _snackbarMessage.send(SnackbarMessage(event.message))
+                        }
                     }
 
                     is UseCaseEvent.Info -> {
-                        launch(Dispatchers.Main) { toastUtil.toast(event.message) }
+                        launch(Dispatchers.Main) {
+//                            toastUtil.toast(event.message)
+                            _snackbarMessage.send(SnackbarMessage(event.message))
+                        }
                     }
 
                     UseCaseEvent.Loading -> {
@@ -135,7 +154,8 @@ class VoicesViewModel @Inject constructor(
     fun addToPlaylist(voiceReference: VoiceReference) =
         viewModelScope.launch {
             if (selectedPlaylistId.longValue == 0L) {
-                toastUtil.toast("No playlist selected.")
+//                toastUtil.toast("No playlist selected.")
+                _snackbarMessage.send(SnackbarMessage(resRepository.stringRes(R.string.voices_info_no_playlist_selected)))
             } else {
                 playlistUseCase.addToPlaylist(selectedPlaylistId.longValue, voiceReference.id)
             }
