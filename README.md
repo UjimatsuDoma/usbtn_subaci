@@ -21,8 +21,9 @@ inspired by [しぐれういボタン](https://leiros.cloudfree.jp/usbtn/usbtn.h
         Revision 2: Migrate from Compose `FontFamily` to manual `Typeface` injection for `MODERN` build, to make use of [Noto CJK Variable OTC](https://github.com/notofonts/noto-cjk) and eventually reducing APK file size. [Jul. 26, 2025 ~ Oct. 31, 2025]. Yet this causes app to break at random time, to be fixed in Milestone 3.
       - Revision 3: Optimize font management by utilizing 7-Zip ~and `fonttools` libraries~ Leave that for a separate repo [Nov. 4, 2025 ~ May 31. 2026]  
         [Note: see *Notes - about support for below Android 8* section]
-      - Revision 4: Migrate Toasts to Snackbars [June 5, 2026 ~ TBA]
-    - Milestone 4: Introduce animation and optimize UX [2026? ~ TBA]
+      - Revision 4: Migrate Toasts to Snackbars [Jun. 5, 2026 ~ Jun. 28, 2026]
+    - Milestone 4: Introduce animation and optimize UX [Jun. 28, 2026 ~ TBA]
+      - Revision 1: Migrate to true MVI architecture [TBA]
 - 1st Edition "Master Up": TBA
 - 2nd Edition "SuiCYAN": TBA
 
