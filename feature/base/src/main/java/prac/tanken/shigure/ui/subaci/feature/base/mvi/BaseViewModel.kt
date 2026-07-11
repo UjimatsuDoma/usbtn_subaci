@@ -9,12 +9,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 abstract class BaseViewModel<S: UiState, I: UiIntent, E: UiEffect>: ViewModel() {
     abstract fun initState(): S
 
-    private val _state = MutableStateFlow(initState())
+    protected val _state = MutableStateFlow(initState())
     val state = _state.asStateFlow()
 
     // 部分 ViewModel 功能不复杂，可以不实现Intent
     open fun sendIntent(intent: I) {}
 
-    private val _effect = Channel<E>()
+    protected val _effect = Channel<E>()
     val effect = _effect.receiveAsFlow()
 }
