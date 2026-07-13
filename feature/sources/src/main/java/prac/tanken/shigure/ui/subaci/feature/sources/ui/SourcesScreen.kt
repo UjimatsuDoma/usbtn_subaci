@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,7 +51,7 @@ import coil3.compose.SubcomposeAsyncImage
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.core.data.mock.sourcesPreviewData
 import prac.tanken.shigure.ui.subaci.core.data.mock.voicesPreviewData
-import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 import prac.tanken.shigure.ui.subaci.core.ui.font.LocalJPFont
 import prac.tanken.shigure.ui.subaci.core.ui.font.NotoStyle
 import prac.tanken.shigure.ui.subaci.core.ui.getNotoFamilyByLocalesNonComposable
@@ -62,7 +61,6 @@ import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoiceButton
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoicesFlowRow
-import prac.tanken.shigure.ui.subaci.feature.base.model.voices.toVoicesVO
 import prac.tanken.shigure.ui.subaci.feature.sources.SourcesViewModel
 import prac.tanken.shigure.ui.subaci.feature.sources.model.SourcesListItem
 import prac.tanken.shigure.ui.subaci.feature.sources.model.SourcesUiState
@@ -164,7 +162,7 @@ fun SourcesScreen(
 private fun SourcesScreen(
     modifier: Modifier = Modifier,
     sources: List<SourcesListItem>,
-    onPlay: (VoiceReference) -> Unit = {},
+    onPlay: (Voice) -> Unit = {},
 ) {
     LazyColumn(
         modifier = modifier,
@@ -188,7 +186,7 @@ private fun SourcesScreen(
 private fun SourcesListItem(
     modifier: Modifier = Modifier,
     item: SourcesListItem,
-    onPlay: (VoiceReference) -> Unit = {},
+    onPlay: (Voice) -> Unit = {},
 ) = Card(modifier) {
     Column {
         var expanded by rememberSaveable { mutableStateOf(false) }
@@ -274,7 +272,7 @@ private fun SourcesListItem(
                             .padding(8.dp),
                     ) { voice ->
                         VoiceButton(
-                            voicesVO = voice,
+                            voice = voice,
                             onPlay = onPlay,
                         )
                     }
@@ -298,7 +296,7 @@ private fun SourcesListItemPreview(
     val source = sourcesPreviewData().random()
     val voices = voicesPreviewData().filter {
         it.videoId == source.videoId
-    }.map { it.toVoicesVO() }.toList()
+    }.toList()
 
     SourcesListItem(
         item = SourcesListItem(source.videoId, source.title, voices),

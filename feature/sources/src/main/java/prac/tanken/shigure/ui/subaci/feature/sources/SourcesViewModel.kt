@@ -10,8 +10,10 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 import prac.tanken.shigure.ui.subaci.feature.base.domain.UseCaseEvent
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.toReference
 import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.core.player.MyPlayer
 import prac.tanken.shigure.ui.subaci.feature.sources.domain.SourcesUseCase
@@ -75,5 +77,5 @@ class SourcesViewModel @Inject constructor(
         }
     }
 
-    fun playByReference(voiceReference: VoiceReference) = myPlayer.playByReference(voiceReference)
+    fun playByReference(voice: Voice) = myPlayer.playByReference(voice.toReference())
 }

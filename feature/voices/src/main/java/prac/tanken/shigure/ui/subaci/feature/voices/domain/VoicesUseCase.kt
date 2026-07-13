@@ -7,7 +7,6 @@ import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.core.data.repository.VoicesRepository
 import prac.tanken.shigure.ui.subaci.feature.base.domain.BaseUseCase
 import prac.tanken.shigure.ui.subaci.feature.base.domain.UseCaseEvent
-import prac.tanken.shigure.ui.subaci.feature.base.model.voices.toVoicesVO
 import prac.tanken.shigure.ui.subaci.feature.voices.R
 import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGrouped
 import prac.tanken.shigure.ui.subaci.feature.voices.model.mutableVoiceGroups
@@ -36,7 +35,6 @@ class VoicesUseCase(
                                 val idList = category.idList
                                 val categoryVoices = voicesSorted
                                     .filter { it.id in idList.map { it.id } }
-                                    .map { it.toVoicesVO() }
                                     .toList()
                                 this.put(category.className, categoryVoices)
                             }
@@ -62,10 +60,14 @@ class VoicesUseCase(
                                     else -> "その他"
                                 }
                             }
-                            .mapValues { entry ->
-                                entry.value.map { voice -> voice.toVoicesVO() }
-                            }
                         emit(UseCaseEvent.Success(VoicesGrouped.ByKana(voicesGrouped)))
+                    }
+
+                    VoicesGroupedBy.None -> {
+                        val voicesGrouped = mapOf(
+                            "voices" to voicesSorted
+                        )
+                        emit(UseCaseEvent.Success(VoicesGrouped.ByNone(voicesGrouped)))
                     }
                 }
             } ?: suspend {

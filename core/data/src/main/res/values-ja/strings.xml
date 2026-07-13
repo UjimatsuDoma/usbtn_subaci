@@ -11,4 +11,5 @@
     <string name="app_bottom_bar_label_always_show">表示する</string>
     <string name="app_bottom_bar_label_always_hide">表示しない</string>
     <string name="app_bottom_bar_label_show_when_selected">選択されたのを表示する</string>
+    <string name="voices_grouped_by_none">(無)</string>
 </resources>

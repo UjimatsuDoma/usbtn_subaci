@@ -14,17 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import prac.tanken.shigure.ui.subaci.core.data.mock.voicesPreviewData
-import prac.tanken.shigure.ui.subaci.feature.base.model.voices.VoicesVO
-import prac.tanken.shigure.ui.subaci.feature.base.model.voices.toVoicesVO
+import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @Composable
 fun VoicesFlowRow(
-    voices: List<VoicesVO>,
+    voices: List<Voice>,
     modifier: Modifier = Modifier,
-    elementContent: @Composable (VoicesVO) -> Unit = {}
+    elementContent: @Composable (Voice) -> Unit = {}
 ) {
     val state = rememberLazyStaggeredGridState()
 
@@ -47,8 +46,10 @@ fun VoicesFlowRow(
 private fun VoicesFlowRowPreview() = MaterialTheme {
     val voices = voicesPreviewData()
         .shuffled()
-        .take(Random(Clock.System.now().nanosecondsOfSecond).nextInt(50, 100))
-        .map { it.toVoicesVO() }
+        .take(
+            Random(Clock.System.now().nanosecondsOfSecond)
+                .nextInt(50, 100)
+        )
 
     VoicesFlowRow(voices) { voicesVO ->
         VoiceButton(voicesVO)

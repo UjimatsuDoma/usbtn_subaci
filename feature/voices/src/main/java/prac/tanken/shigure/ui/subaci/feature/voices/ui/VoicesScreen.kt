@@ -1,12 +1,12 @@
 package prac.tanken.shigure.ui.subaci.feature.voices.ui
 
+import android.util.Log
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,6 +57,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -69,18 +70,19 @@ import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.toReference
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.voicesGroupedByItems
 import prac.tanken.shigure.ui.subaci.core.ui.font.LocalJPFont
 import prac.tanken.shigure.ui.subaci.core.ui.util.combineKey
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoiceButton
-import prac.tanken.shigure.ui.subaci.feature.base.model.voices.toReference
+import prac.tanken.shigure.ui.subaci.feature.voices.DailyVoiceUiState
 import prac.tanken.shigure.ui.subaci.feature.voices.R
+import prac.tanken.shigure.ui.subaci.feature.voices.VoicesContract
+import prac.tanken.shigure.ui.subaci.feature.voices.VoicesGroupedUiState
 import prac.tanken.shigure.ui.subaci.feature.voices.VoicesViewModel
-import prac.tanken.shigure.ui.subaci.feature.voices.model.DailyVoiceUiState
 import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGrouped
-import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGroupedUiState
 import prac.tanken.shigure.ui.subaci.core.common.R as CommonR
 import prac.tanken.shigure.ui.subaci.feature.voices.R as TankenR
 
@@ -90,14 +92,38 @@ fun VoicesScreen(
     modifier: Modifier = Modifier,
     viewModel: VoicesViewModel,
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
     val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.snackbarMessage.collect {
-                snackBarHostState.showSnackbar(message = it.message)
+            viewModel.effect.collect {
+                when(it) {
+                    is VoicesContract.Effect.ShowDailyVoiceToast -> {
+                        scope.launch {
+                            snackBarHostState.currentSnackbarData?.dismiss()
+                            snackBarHostState.showSnackbar(
+                                visuals = DailyVoiceSnackbarVisuals(
+                                    actionLabel = null,
+                                    duration = SnackbarDuration.Long,
+                                    withDismissAction = false,
+                                    voice = it.voice,
+                                    message = "",
+                                )
+                            )
+                        }
+                    }
+                    is VoicesContract.Effect.ShowToast -> {
+                        scope.launch {
+                            snackBarHostState.showSnackbar(
+                                message = it.message
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -110,7 +136,24 @@ fun VoicesScreen(
             ) {
                 val actualState = uiState.voicesGroupedUiState as VoicesGroupedUiState.Error
 
-                Text("Something went wrong.\n${actualState.message}")
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = stringResource(CommonR.string.error_generic),
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        text = actualState.message,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
 
@@ -135,13 +178,9 @@ fun VoicesScreen(
         }
 
         is VoicesGroupedUiState.Success -> {
-            val scope = rememberCoroutineScope()
             val dailyVoiceUiState = uiState.dailyVoiceUiState
             val voicesGrouped =
                 (uiState.voicesGroupedUiState as VoicesGroupedUiState.Success).voicesGrouped
-            val dailyVoiceMessagePrefix =
-                stringResource(R.string.daily_random_voice_play_prefix)
-            val pleaseWaitMessage = stringResource(CommonR.string.please_wait_message)
 
             Scaffold(
                 contentWindowInsets = WindowInsets(top = 0),
@@ -152,25 +191,8 @@ fun VoicesScreen(
                             val dailyVoiceSnackbarVisuals =
                                 snackbarData.visuals as? DailyVoiceSnackbarVisuals
                             dailyVoiceSnackbarVisuals?.let {
-                                Snackbar(
-                                    content = {
-                                        Text(
-                                            text = buildAnnotatedString {
-                                                append(dailyVoiceSnackbarVisuals.message)
-                                                withStyle(
-                                                    style = SpanStyle(
-                                                        fontFamily = FontFamily(
-                                                            Font(resId = LocalJPFont.current.fontResId)
-                                                        )
-                                                    )
-                                                ) {
-                                                    append(dailyVoiceSnackbarVisuals.voice.label)
-                                                }
-                                            },
-                                            modifier = Modifier.basicMarquee()
-                                        )
-                                    },
-                                    modifier = Modifier.padding(12.dp)
+                                DailyVoiceSnackbar(
+                                    voice = it.voice
                                 )
                             } ?: run {
                                 Snackbar(snackbarData)
@@ -182,43 +204,56 @@ fun VoicesScreen(
                     VoicesTopBar(
                         dailyVoiceUiState = dailyVoiceUiState,
                         onDailyVoice = {
-                            if(dailyVoiceUiState is DailyVoiceUiState.Loaded) {
-                                val dailyVoice = dailyVoiceUiState.voice
-                                viewModel.playDailyVoice()
-                                scope.launch {
-                                    snackBarHostState.showSnackbar(
-                                        visuals = DailyVoiceSnackbarVisuals(
-                                            actionLabel = null,
-                                            duration = SnackbarDuration.Long,
-                                            withDismissAction = false,
-                                            voice = dailyVoice,
-                                            message = dailyVoiceMessagePrefix,
-                                        )
-                                    )
-                                }
-                            } else {
-                                scope.launch {
-                                    snackBarHostState.showSnackbar(
-                                        message = pleaseWaitMessage
-                                    )
-                                }
-                            }
+                            viewModel.sendIntent(VoicesContract.Intent.PlayDailyVoice)
                         },
                         voicesGroupedBy = voicesGrouped.voicesGroupedBy,
-                        onChangeVoicesGroupedBy = viewModel::updateVoicesGroupedBy,
+                        onChangeVoicesGroupedBy = {
+                            viewModel.sendIntent(VoicesContract.Intent.ChangeVoicesGroupedBy(it))
+                        },
                     )
                 },
                 modifier = modifier
             ) { innerPadding ->
                 VoicesScreen(
                     voicesGrouped = voicesGrouped,
-                    onPlay = viewModel::onButtonClicked,
+                    onPlay = {
+                        viewModel.sendIntent(VoicesContract.Intent.PlayVoice(it))
+                    },
                     onAddToPlaylist = viewModel::addToPlaylist,
                     modifier = Modifier.padding(innerPadding)
                 )
             }
         }
     }
+}
+
+@Composable
+fun DailyVoiceSnackbar(
+    voice: Voice,
+    modifier: Modifier = Modifier,
+) {
+    val dailyVoiceMessagePrefix = stringResource(R.string.daily_random_voice_play_prefix)
+
+    Snackbar(
+        content = {
+            Text(
+                text = buildAnnotatedString {
+                    append(dailyVoiceMessagePrefix)
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily = FontFamily(
+                                Font(resId = LocalJPFont.current.fontResId)
+                            )
+                        )
+                    ) {
+                        append(voice.label)
+                    }
+                },
+                modifier = Modifier.basicMarquee()
+            )
+        },
+        modifier = modifier.padding(12.dp)
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -301,7 +336,7 @@ private fun VoicesTopBar(
 private fun VoicesScreen(
     modifier: Modifier = Modifier,
     voicesGrouped: VoicesGrouped?,
-    onPlay: (VoiceReference) -> Unit,
+    onPlay: (Voice) -> Unit,
     onAddToPlaylist: (VoiceReference) -> Unit,
 ) {
     val scope: CoroutineScope = rememberCoroutineScope()
@@ -338,7 +373,7 @@ private fun VoicesScreen(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier.padding(horizontal = 4.dp)
     ) {
-        mapEntries.forEach { (title, voicesVOs) ->
+        mapEntries.forEach { (title, voices) ->
             item(span = StaggeredGridItemSpan.FullLine) {
                 Text(
                     text = title,
@@ -350,12 +385,12 @@ private fun VoicesScreen(
                         .padding(8.dp)
                 )
             }
-            items(items = voicesVOs, key = { it.id }) { voicesVO ->
+            items(items = voices, key = { it.id }) { voice ->
                 var expanded by remember { mutableStateOf(false) }
 
                 Column {
                     VoiceButton(
-                        voicesVO = voicesVO,
+                        voice = voice,
                         onPlay = onPlay,
                         onLongPress = { expanded = true },
                         modifier = Modifier.fillMaxWidth()
@@ -368,7 +403,7 @@ private fun VoicesScreen(
                             text = { Text(stringResource(TankenR.string.voices_add_to_playlist)) },
                             onClick = {
                                 expanded = false
-                                onAddToPlaylist(voicesVO.toReference())
+                                onAddToPlaylist(voice.toReference())
                             }
                         )
                     }
@@ -429,4 +464,4 @@ data class DailyVoiceSnackbarVisuals(
     override val message: String,
     override val withDismissAction: Boolean,
     val voice: Voice,
-): SnackbarVisuals
+) : SnackbarVisuals

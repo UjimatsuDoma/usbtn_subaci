@@ -5,14 +5,14 @@ import androidx.compose.ui.platform.LocalContext
 import com.drew.imaging.ImageMetadataReader
 import com.drew.metadata.jpeg.JpegDirectory
 import kotlinx.serialization.Serializable
-import prac.tanken.shigure.ui.subaci.feature.base.model.voices.VoicesVO
+import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 import java.io.InputStream
 
 @Serializable
 data class SourcesListItem(
     val videoId: String,
     val title: String,
-    val voices: List<VoicesVO>,
+    val voices: List<Voice>,
 ) {
     val url: String
         get() = "file:///android_asset/subaciThumbs/$videoId.jpg"

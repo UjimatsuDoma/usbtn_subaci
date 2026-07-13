@@ -6,9 +6,9 @@ package prac.tanken.shigure.ui.subaci.feature.base.domain
  *
  * @author UjimatsuDoma
  */
-sealed interface UseCaseEvent {
+interface UseCaseEvent {
     data object Loading: UseCaseEvent
-    data class Success<T>(val data: T) : UseCaseEvent
+    open class Success<T>(val data: T) : UseCaseEvent
     data class Info(val message: String) : UseCaseEvent
     data class Error(val message: String) : UseCaseEvent
 }

@@ -16,4 +16,9 @@ sealed class VoicesGrouped(
     @Serializable
     data class ByKana(override val voiceGroups: VoiceGroups) :
         VoicesGrouped(VoicesGroupedBy.Kana)
+
+    // Default value in constructor for fallback
+    @Serializable
+    data class ByNone(override val voiceGroups: VoiceGroups = emptyMap()) :
+        VoicesGrouped(VoicesGroupedBy.None)
 }

@@ -11,4 +11,5 @@
     <string name="app_bottom_bar_label_always_show">总是显示</string>
     <string name="app_bottom_bar_label_always_hide">从不显示</string>
     <string name="app_bottom_bar_label_show_when_selected">选中显示</string>
+    <string name="voices_grouped_by_none">不分组</string>
 </resources>
