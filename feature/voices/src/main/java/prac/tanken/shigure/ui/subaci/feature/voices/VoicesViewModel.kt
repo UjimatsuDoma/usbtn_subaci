@@ -4,49 +4,69 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import prac.tanken.shigure.ui.subaci.core.data.model.Voice
+import prac.tanken.shigure.ui.subaci.core.common.datetime.todayStr
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.toReference
 import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
+import prac.tanken.shigure.ui.subaci.core.data.repository.VoicesRepository
+import prac.tanken.shigure.ui.subaci.core.domain.usecase.voices.GetVoicesUseCase
 import prac.tanken.shigure.ui.subaci.core.player.MyPlayer
-import prac.tanken.shigure.ui.subaci.feature.base.SnackbarMessage
-import prac.tanken.shigure.ui.subaci.feature.base.domain.UseCaseEvent
 import prac.tanken.shigure.ui.subaci.feature.base.mvi.BaseViewModel
 import prac.tanken.shigure.ui.subaci.feature.playlist.domain.PlaylistUseCase
-import prac.tanken.shigure.ui.subaci.feature.voices.domain.DailyVoiceUseCase
-import prac.tanken.shigure.ui.subaci.feature.voices.domain.VoicesUseCase
-import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGrouped
+import prac.tanken.shigure.ui.subaci.feature.voices.VoicesContract.Effect.DailyVoiceSnackbar
+import prac.tanken.shigure.ui.subaci.feature.voices.VoicesContract.Effect.SettingsInitializationSnackbar
+import prac.tanken.shigure.ui.subaci.feature.voices.VoicesContract.Effect.ShowSnackbar
+import prac.tanken.shigure.ui.subaci.feature.voices.model.DailyVoiceUiState
+import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGroupedUiState.Error
+import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGroupedUiState.Loading
+import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGroupedUiState.Success
+import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesSettingsState
 import javax.inject.Inject
 
 @HiltViewModel
 class VoicesViewModel @Inject constructor(
     val resRepository: ResRepository,
-    val dailyVoiceUseCase: DailyVoiceUseCase,
-    val voicesUseCase: VoicesUseCase,
+    val voicesRepository: VoicesRepository,
     val playlistUseCase: PlaylistUseCase,
+    // for querying voices
+    val getVoicesUseCase: GetVoicesUseCase,
+    // for playing voices
     val myPlayer: MyPlayer
 ) : BaseViewModel<VoicesContract.State, VoicesContract.Intent, VoicesContract.Effect>() {
 
     override fun initState(): VoicesContract.State = VoicesContract.State()
 
+    override fun loadState() {
+        viewModelScope.launch(Dispatchers.IO) {
+            observeVoicesSettings()
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            observeVoicesGroupedBy()
+        }
+        observeDailyVoice()
+        observePlaylist()
+    }
+
     override fun sendIntent(intent: VoicesContract.Intent) {
-        when(intent) {
+        when (intent) {
             is VoicesContract.Intent.ChangeVoicesGroupedBy -> {
                 updateVoicesGroupedBy(intent.newValue)
             }
+
             VoicesContract.Intent.PlayDailyVoice -> {
                 if (state.value.dailyVoiceUiState is DailyVoiceUiState.Loaded) {
                     val actualState = state.value.dailyVoiceUiState as DailyVoiceUiState.Loaded
                     val dailyVoice = actualState.voice
                     myPlayer.playByReference(VoiceReference(dailyVoice.id))
-                    sendEffect(VoicesContract.Effect.ShowDailyVoiceToast(dailyVoice))
+                    sendEffect(DailyVoiceSnackbar(dailyVoice))
                 }
             }
+
             is VoicesContract.Intent.PlayVoice -> {
                 viewModelScope.launch(Dispatchers.Default) {
                     myPlayer.playByReference(intent.voice.toReference())
@@ -58,43 +78,56 @@ class VoicesViewModel @Inject constructor(
     // 新增：选中的播放列表的ID
     private var selectedPlaylistId = mutableLongStateOf(0L)
 
-    init {
-        observeDailyVoice()
-        observePlaylist()
-        observeVoicesGroupedBy()
-    }
+    private suspend fun observeVoicesSettings() =
+        voicesRepository.voicesGroupedByFlow
+            .collect { voicesGroupedBy ->
+                if (voicesGroupedBy == null) {
+                    updateVoicesGroupedBy(VoicesGroupedBy.Kana)
+                    sendEffect(SettingsInitializationSnackbar)
+                } else {
+                    println("updating settings")
+                    setState {
+                        copy(
+                            voicesSettingsState = VoicesSettingsState.Loaded(
+                                voicesGroupedBy = voicesGroupedBy
+                            )
+                        )
+                    }
+                    println("updated settings")
+                }
+            }
 
-    // 启动数据流
+    // TODO: business logic in viewmodel - is use case necessary since it's feature-specific?
     private fun observeDailyVoice() = viewModelScope.launch(Dispatchers.IO) {
-        dailyVoiceUseCase.dailyVoiceEventFlow
-            .collect { event ->
-                when (event) {
-                    is UseCaseEvent.Error -> {
-                        val newState = DailyVoiceUiState.Error
-                        setState {
-                            copy(dailyVoiceUiState = newState)
-                        }
-                        sendEffect(VoicesContract.Effect.ShowToast(event.message))
-                    }
+        val voices = voicesRepository.voicesMetadata
+            ?: error("Voices are not loaded yet.")
 
-                    is UseCaseEvent.Info -> {
-                        sendEffect(VoicesContract.Effect.ShowToast(event.message))
-                    }
-
-                    UseCaseEvent.Loading -> {
-                        val newState = DailyVoiceUiState.StandBy
-                        setState {
-                            copy(dailyVoiceUiState = newState)
-                        }
-                    }
-
-                    is UseCaseEvent.Success<*> -> {
-                        val newState = if (event.data is Voice) {
-                            DailyVoiceUiState.Loaded(event.data as Voice)
-                        } else DailyVoiceUiState.Error
-                        setState {
-                            copy(dailyVoiceUiState = newState)
-                        }
+        val dailyVoiceEntityFlow = voicesRepository.dailyVoiceEntityFlow
+        dailyVoiceEntityFlow
+            .onEach { dailyVoiceEntity ->
+                val expired = dailyVoiceEntity?.addDate?.let { todayStr != it } == true
+                if (dailyVoiceEntity == null || expired) {
+                    voicesRepository.updateDailyVoice(voices.random().id)
+                    sendEffect(ShowSnackbar(resRepository.stringRes(R.string.daily_random_voice_refreshed)))
+                }
+            }
+            .catch { throwable ->
+                setState {
+                    copy(
+                        dailyVoiceUiState = DailyVoiceUiState.Error
+                    )
+                }
+            }
+            .collect { dailyVoiceEntity ->
+                val voice = voices.firstOrNull { it.id == dailyVoiceEntity?.voiceId }
+                if (voice == null) {
+                    voicesRepository.updateDailyVoice(voices.random().id)
+                    sendEffect(ShowSnackbar(resRepository.stringRes(R.string.daily_random_voice_refreshed)))
+                } else {
+                    setState {
+                        copy(
+                            dailyVoiceUiState = DailyVoiceUiState.Loaded(voice)
+                        )
                     }
                 }
             }
@@ -107,50 +140,75 @@ class VoicesViewModel @Inject constructor(
             }
     }
 
-    private fun observeVoicesGroupedBy() = viewModelScope.launch {
-        voicesUseCase.voicesGroupedEventFlow
-            .collect { event ->
-                when (event) {
-                    is UseCaseEvent.Error -> {
-                        val newState = VoicesGroupedUiState.Error(event.message)
-                        setState {
-                            copy(voicesGroupedUiState = newState)
+    private suspend fun observeVoicesGroupedBy(): Nothing =
+        state.collect { state ->
+            when (val state = state.voicesSettingsState) {
+                is VoicesSettingsState.Loaded -> {
+                    println("settings loaded")
+                    val voicesGroupedBy = state.voicesGroupedBy
+                    getVoicesUseCase(voicesGroupedBy)
+                        .catch {
+                            sendEffect(
+                                ShowSnackbar(
+                                    it.message ?: it.stackTraceToString()
+                                )
+                            )
                         }
-                        sendEffect(VoicesContract.Effect.ShowToast(event.message))
-                    }
+                        .collect { voicesGrouped ->
+                            when (voicesGrouped) {
+                                is VoicesGrouped.ByCategory,
+                                is VoicesGrouped.ByKana -> {
+                                    setState {
+                                        copy(
+                                            voicesGroupedUiState = Success(
+                                                voicesGrouped.voiceGroups
+                                            )
+                                        )
+                                    }
+                                }
 
-                    is UseCaseEvent.Info -> {
-                        sendEffect(VoicesContract.Effect.ShowToast(event.message))
-                    }
+                                is VoicesGrouped.ByNone -> {
+                                    setState {
+                                        copy(
+                                            voicesGroupedUiState = Success(
+                                                mapOf(
+                                                    "" to voicesGrouped.voiceGroups[Unit].orEmpty()
+                                                )
+                                            )
+                                        )
+                                    }
+                                }
 
-                    UseCaseEvent.Loading -> {
-                        val newState = VoicesGroupedUiState.Loading
-                        setState {
-                            copy(voicesGroupedUiState = newState)
+                                is VoicesGrouped.ByVideo -> Unit
+                            }
                         }
-                    }
+                }
 
-                    is UseCaseEvent.Success<*> -> {
-                        val newState = if (event.data is VoicesGrouped) {
-                            VoicesGroupedUiState.Success(event.data as VoicesGrouped)
-                        } else VoicesGroupedUiState.Error.fromThrowable(IllegalArgumentException())
-                        setState {
-                            copy(voicesGroupedUiState = newState)
-                        }
+                VoicesSettingsState.Loading -> {
+                    setState {
+                        copy(
+                            voicesGroupedUiState = Loading
+                        )
+                    }
+                }
+
+                is VoicesSettingsState.Error -> {
+                    setState {
+                        copy(voicesGroupedUiState = Error(state.message))
                     }
                 }
             }
-    }
+        }
 
     fun addToPlaylist(voiceReference: VoiceReference) =
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             if (selectedPlaylistId.longValue == 0L) {
-                sendEffect(VoicesContract.Effect.ShowToast(resRepository.stringRes(R.string.voices_info_no_playlist_selected)))
+                sendEffect(ShowSnackbar(resRepository.stringRes(R.string.voices_info_no_playlist_selected)))
             } else {
                 playlistUseCase.addToPlaylist(selectedPlaylistId.longValue, voiceReference.id)
             }
         }
 
     fun updateVoicesGroupedBy(newValue: VoicesGroupedBy) =
-        viewModelScope.launch { voicesUseCase.updateVoicesGroupedBy(newValue) }
+        viewModelScope.launch(Dispatchers.IO) { voicesRepository.updateVoicesGroupedBy(newValue) }
 }

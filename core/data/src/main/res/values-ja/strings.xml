@@ -2,6 +2,8 @@
 <resources>
     <string name="voices_grouped_by_category">用途</string>
     <string name="voices_grouped_by_kana">五十音</string>
+    <string name="voices_grouped_by_none">(無)</string>
+    <string name="voices_grouped_by_video">配信枠</string>
 
     <string name="app_color_dynamic">システム</string>
     <string name="app_color_built_in">アプリ</string>
@@ -11,5 +13,4 @@
     <string name="app_bottom_bar_label_always_show">表示する</string>
     <string name="app_bottom_bar_label_always_hide">表示しない</string>
     <string name="app_bottom_bar_label_show_when_selected">選択されたのを表示する</string>
-    <string name="voices_grouped_by_none">(無)</string>
 </resources>

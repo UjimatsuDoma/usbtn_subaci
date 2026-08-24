@@ -29,7 +29,6 @@ class ResRepository @Inject constructor(
     val sourcesFlow = _sourcesFlow.asStateFlow()
 
     suspend fun loadVoices() = withContext(Dispatchers.IO) {
-//        val voicesJson = res.openRawResource(R.raw.audio_list).readText()
         val voicesJson = am.open("subaciJson/audio_list.json").readText()
         val voices: List<Voice> = parseJsonString<MutableList<Voice>>(voicesJson).also {
             it.forEachIndexed { index, voice ->
@@ -40,14 +39,12 @@ class ResRepository @Inject constructor(
     }
 
     suspend fun loadCategories() = withContext(Dispatchers.IO) {
-//        val categoriesJson = res.openRawResource(R.raw.class_list).readText()
         val categoriesJson = am.open("subaciJson/class_list.json").readText()
         val categories: List<Category> = parseJsonString(categoriesJson)
         _categoriesFlow.value = categories
     }
 
     suspend fun loadSources() = withContext(Dispatchers.IO) {
-//        val sourcesJson = res.openRawResource(R.raw.video_list).readText()
         val sourcesJson = am.open("subaciJson/video_list.json").readText()
         val sources: List<SourceEntity> = parseJsonString(sourcesJson)
         _sourcesFlow.value = sources

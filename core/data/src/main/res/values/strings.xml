@@ -3,6 +3,7 @@
     <string name="voices_grouped_by_category">Category</string>
     <string name="voices_grouped_by_kana">Kana</string>
     <string name="voices_grouped_by_none">None</string>
+    <string name="voices_grouped_by_video">Stream</string>
 
     <string name="app_color_dynamic">Follow system</string>
     <string name="app_color_built_in">Built-in color</string>

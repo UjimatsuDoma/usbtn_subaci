@@ -46,3 +46,4 @@ include(":feature:settings")
 include(":fontman")
 
 includeBuild("build-logic")
+include(":core:domain")

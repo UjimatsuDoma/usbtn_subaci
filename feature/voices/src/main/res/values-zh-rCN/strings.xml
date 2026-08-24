@@ -11,7 +11,7 @@
     <string name="voices_grouped_by_kana">五十音</string>
 
     <string name="daily_random_voice_refreshed">已刷新每日随机语音。</string>
-    <string name="voices_grouped_by_reset_prefix">语音分组依据初始化为：</string>
+    <string name="voices_settings_reset">本页设置项初始化完成。</string>
     <string name="daily_random_voice_play_prefix">今天的语音：</string>
     <string name="voices_loading_groups_screen">请稍候……</string>
     <string name="voices_info_no_playlist_selected">未选择要添加到的播放列表。</string>

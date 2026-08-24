@@ -1,6 +1,5 @@
 package prac.tanken.shigure.ui.subaci.feature.voices.ui
 
-import android.util.Log
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -77,12 +76,13 @@ import prac.tanken.shigure.ui.subaci.core.ui.util.combineKey
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoiceButton
-import prac.tanken.shigure.ui.subaci.feature.voices.DailyVoiceUiState
+import prac.tanken.shigure.ui.subaci.feature.voices.model.DailyVoiceUiState
 import prac.tanken.shigure.ui.subaci.feature.voices.R
 import prac.tanken.shigure.ui.subaci.feature.voices.VoicesContract
-import prac.tanken.shigure.ui.subaci.feature.voices.VoicesGroupedUiState
+import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGroupedUiState
 import prac.tanken.shigure.ui.subaci.feature.voices.VoicesViewModel
-import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGrouped
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped
+import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesSettingsState
 import prac.tanken.shigure.ui.subaci.core.common.R as CommonR
 import prac.tanken.shigure.ui.subaci.feature.voices.R as TankenR
 
@@ -98,11 +98,13 @@ fun VoicesScreen(
     val snackBarHostState = remember { SnackbarHostState() }
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    val settingsInitMessage = stringResource(R.string.voices_settings_reset)
+
     LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.effect.collect {
-                when(it) {
-                    is VoicesContract.Effect.ShowDailyVoiceToast -> {
+                when (it) {
+                    is VoicesContract.Effect.DailyVoiceSnackbar -> {
                         scope.launch {
                             snackBarHostState.currentSnackbarData?.dismiss()
                             snackBarHostState.showSnackbar(
@@ -116,10 +118,19 @@ fun VoicesScreen(
                             )
                         }
                     }
-                    is VoicesContract.Effect.ShowToast -> {
+
+                    is VoicesContract.Effect.ShowSnackbar -> {
                         scope.launch {
                             snackBarHostState.showSnackbar(
                                 message = it.message
+                            )
+                        }
+                    }
+
+                    VoicesContract.Effect.SettingsInitializationSnackbar -> {
+                        scope.launch {
+                            snackBarHostState.showSnackbar(
+                                message = settingsInitMessage
                             )
                         }
                     }
@@ -128,14 +139,12 @@ fun VoicesScreen(
         }
     }
 
-    when (uiState.voicesGroupedUiState) {
+    when (val voicesGroupedUiState = uiState.voicesGroupedUiState) {
         is VoicesGroupedUiState.Error -> {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxSize()
             ) {
-                val actualState = uiState.voicesGroupedUiState as VoicesGroupedUiState.Error
-
                 Column(
                     modifier = Modifier
                         .fillMaxWidth(0.9f),
@@ -149,7 +158,7 @@ fun VoicesScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
-                        text = actualState.message,
+                        text = voicesGroupedUiState.message,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -178,9 +187,10 @@ fun VoicesScreen(
         }
 
         is VoicesGroupedUiState.Success -> {
+            val voicesGroupedBy =
+                (uiState.voicesSettingsState as? VoicesSettingsState.Loaded)!!.voicesGroupedBy
             val dailyVoiceUiState = uiState.dailyVoiceUiState
-            val voicesGrouped =
-                (uiState.voicesGroupedUiState as VoicesGroupedUiState.Success).voicesGrouped
+            val voicesGrouped = voicesGroupedUiState.voicesGroups
 
             Scaffold(
                 contentWindowInsets = WindowInsets(top = 0),
@@ -206,7 +216,7 @@ fun VoicesScreen(
                         onDailyVoice = {
                             viewModel.sendIntent(VoicesContract.Intent.PlayDailyVoice)
                         },
-                        voicesGroupedBy = voicesGrouped.voicesGroupedBy,
+                        voicesGroupedBy = voicesGroupedBy,
                         onChangeVoicesGroupedBy = {
                             viewModel.sendIntent(VoicesContract.Intent.ChangeVoicesGroupedBy(it))
                         },
@@ -335,15 +345,15 @@ private fun VoicesTopBar(
 @Composable
 private fun VoicesScreen(
     modifier: Modifier = Modifier,
-    voicesGrouped: VoicesGrouped?,
+    voicesGrouped: Map<String, List<Voice>>,
     onPlay: (Voice) -> Unit,
     onAddToPlaylist: (VoiceReference) -> Unit,
 ) {
     val scope: CoroutineScope = rememberCoroutineScope()
     val lazyStaggeredGridState = rememberLazyStaggeredGridState()
 
-    val mapEntries = voicesGrouped?.voiceGroups?.entries?.toList() ?: emptyList()
-    val headerTitleIndices = mutableListOf<Pair<String, Int>>().apply {
+    val headerTitleIndices = buildList<Pair<String, Int>> {
+        val mapEntries = voicesGrouped.entries.toList()
         mapEntries.forEachIndexed { index, (title, _) ->
             add(title to (if (index == 0) 0 else this[index - 1].second + mapEntries[index - 1].value.size + 1))
         }
@@ -365,7 +375,6 @@ private fun VoicesScreen(
         )
     }
 
-
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
         state = lazyStaggeredGridState,
@@ -373,7 +382,7 @@ private fun VoicesScreen(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier.padding(horizontal = 4.dp)
     ) {
-        mapEntries.forEach { (title, voices) ->
+        voicesGrouped.forEach { (title, voices) ->
             item(span = StaggeredGridItemSpan.FullLine) {
                 Text(
                     text = title,

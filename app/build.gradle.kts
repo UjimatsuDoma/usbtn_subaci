@@ -50,6 +50,8 @@ dependencies {
     implementation(projects.feature.settings)
     implementation(projects.fontman)
 
+    implementation(files("../fontman/libs/sevenzipjbinding_16.02-2.02_2025_0704_1436.aar"))
+
     implementation(libs.androidx.activity.compose)
 
     // Kotlin DateTime

@@ -11,11 +11,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import prac.tanken.shigure.ui.subaci.core.data.repository.RepositoryEvent
 import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.core.data.repository.SettingsRepository
+import prac.tanken.shigure.ui.subaci.core.data.repository.VoicesRepository
 import prac.tanken.shigure.ui.subaci.core.data.settings.AppSettings
 import prac.tanken.shigure.ui.subaci.feature.base.SnackbarMessage
 import prac.tanken.shigure.ui.subaci.feature.settings.R
@@ -25,6 +28,7 @@ import javax.inject.Inject
 class AppViewModel @Inject constructor(
     val settingsRepository: SettingsRepository,
     val resRepository: ResRepository,
+    val voicesRepository: VoicesRepository,
 ) : ViewModel() {
     private val appSettingsFlow = settingsRepository.appSettingsFlow
         .onEach { appSettings ->
@@ -50,6 +54,14 @@ class AppViewModel @Inject constructor(
         val sourcesLoaded = sourcesFlow.map { it.isNotEmpty() }
         combineTransform(voicesLoaded, categoriesLoaded, sourcesLoaded) { f1, f2, f3 ->
             emit(f1 && f2 && f3)
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    val newResourcesLoaded = voicesRepository.run {
+        val f1 = loadVoices().map { it is RepositoryEvent.Success }
+        val f2 = loadCategories().map { it is RepositoryEvent.Success }
+        val f3 = loadSources().map { it is RepositoryEvent.Success }
+        combineTransform(f1, f2, f3) { a, b, c ->
+            emit(a && b && c)
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
     private var _settingsLoaded = MutableStateFlow(false)

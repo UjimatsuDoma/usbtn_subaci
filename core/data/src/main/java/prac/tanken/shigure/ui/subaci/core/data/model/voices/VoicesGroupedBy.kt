@@ -15,6 +15,8 @@ sealed class VoicesGroupedBy(
 
     @Serializable
     data object None : VoicesGroupedBy(R.string.voices_grouped_by_none)
+
+    data object Video: VoicesGroupedBy(R.string.voices_grouped_by_none)
 }
 
 val voicesGroupedByItems = listOf(

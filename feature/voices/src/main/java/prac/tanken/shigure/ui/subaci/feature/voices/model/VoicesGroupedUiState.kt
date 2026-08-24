@@ -1,7 +1,7 @@
-package prac.tanken.shigure.ui.subaci.feature.voices
+package prac.tanken.shigure.ui.subaci.feature.voices.model
 
 import kotlinx.serialization.Serializable
-import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGrouped
+import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 
 @Serializable
 sealed interface VoicesGroupedUiState {
@@ -13,7 +13,7 @@ sealed interface VoicesGroupedUiState {
 
     @Serializable
     data class Success(
-        val voicesGrouped: VoicesGrouped
+        val voicesGroups: Map<String, List<Voice>>
     ) : VoicesGroupedUiState
 
     @Serializable

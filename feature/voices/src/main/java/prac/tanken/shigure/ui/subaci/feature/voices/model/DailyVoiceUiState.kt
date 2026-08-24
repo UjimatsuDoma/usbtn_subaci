@@ -1,4 +1,4 @@
-package prac.tanken.shigure.ui.subaci.feature.voices
+package prac.tanken.shigure.ui.subaci.feature.voices.model
 
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 

@@ -60,8 +60,8 @@ class MainActivity : ComponentActivity() {
             var ready by remember { mutableStateOf(false) }
             with(appViewModel) {
                 scope.launch {
-                    combine(resourcesLoaded, settingsLoaded) { f1, f2 ->
-                        f1 && f2
+                    combine(resourcesLoaded, settingsLoaded, newResourcesLoaded) { f1, f2, f3 ->
+                        f1 && f2 && f3
                     }.collect { ready = it }
                 }
             }
