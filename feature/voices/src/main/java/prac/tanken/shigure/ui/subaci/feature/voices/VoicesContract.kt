@@ -1,6 +1,5 @@
 package prac.tanken.shigure.ui.subaci.feature.voices
 
-import androidx.compose.runtime.Stable
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.feature.base.mvi.UiEffect
@@ -11,7 +10,6 @@ import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGroupedUiState
 import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesSettingsState
 
 object VoicesContract {
-    @Stable
     data class State(
         val dailyVoiceUiState: DailyVoiceUiState = DailyVoiceUiState.StandBy,
         val voicesGroupedUiState: VoicesGroupedUiState = VoicesGroupedUiState.StandBy,

@@ -47,11 +47,15 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.SubcomposeAsyncImage
+import com.drew.imaging.ImageMetadataReader
+import com.drew.metadata.jpeg.JpegDirectory
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.core.data.mock.sourcesPreviewData
 import prac.tanken.shigure.ui.subaci.core.data.mock.voicesPreviewData
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
+import prac.tanken.shigure.ui.subaci.core.data.model.sources.SourceEntity
 import prac.tanken.shigure.ui.subaci.core.ui.font.LocalJPFont
 import prac.tanken.shigure.ui.subaci.core.ui.font.NotoStyle
 import prac.tanken.shigure.ui.subaci.core.ui.getNotoFamilyByLocalesNonComposable
@@ -61,9 +65,11 @@ import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoiceButton
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoicesFlowRow
+import prac.tanken.shigure.ui.subaci.feature.sources.SourcesContract
 import prac.tanken.shigure.ui.subaci.feature.sources.SourcesViewModel
 import prac.tanken.shigure.ui.subaci.feature.sources.model.SourcesListItem
 import prac.tanken.shigure.ui.subaci.feature.sources.model.SourcesUiState
+import java.io.InputStream
 import prac.tanken.shigure.ui.subaci.feature.sources.R as TankenR
 
 @Composable
@@ -71,30 +77,25 @@ fun SourcesScreen(
     modifier: Modifier = Modifier,
     viewModel: SourcesViewModel,
 ) {
-    val uiState = viewModel.uiState
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val saveableStateHolder = rememberSaveableStateHolder()
 
-    when (uiState.value) {
-        is SourcesUiState.Error -> {
+    when (val uiState = state.sourcesUiState) {
+        is SourcesContract.SourcesUiState.Error -> {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxSize()
             ) {
-                val actualState = uiState.value as SourcesUiState.Error
-
-                Text("Something went wrong.\n${actualState.message}")
+                Text("Something went wrong.\n${uiState.message}")
             }
         }
 
-        is SourcesUiState.Loaded -> {
-            val actualState = uiState.value as SourcesUiState.Loaded
-            val tabs = actualState.tabs
-
+        is SourcesContract.SourcesUiState.Loaded -> {
             Column {
                 val pagerState = rememberPagerState(
                     initialPage = 0,
-                    pageCount = { tabs.size }
+                    pageCount = { 2 }
                 )
                 val selectedTab by remember {
                     derivedStateOf { pagerState.currentPage }
@@ -103,13 +104,16 @@ fun SourcesScreen(
                 PrimaryTabRow(
                     selectedTabIndex = selectedTab,
                 ) {
-                    tabs.forEachIndexed { index, tab ->
-                        Tab(
-                            selected = selectedTab == index,
-                            onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                            text = { Text(text = stringResource(tab.tabName)) }
-                        )
-                    }
+                    Tab(
+                        selected = selectedTab == 0,
+                        onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
+                        text = { Text(text = stringResource(TankenR.string.sources_tab_with_voices)) }
+                    )
+                    Tab(
+                        selected = selectedTab == 1,
+                        onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
+                        text = { Text(text = stringResource(TankenR.string.sources_tab_without_voices)) }
+                    )
                 }
                 saveableStateHolder.SaveableStateProvider(
                     key = selectedTab
@@ -119,12 +123,16 @@ fun SourcesScreen(
                         pageContent = {
                             var loading by remember { mutableStateOf(false) }
                             var sources by remember {
-                                mutableStateOf(emptyList<SourcesListItem>())
+                                mutableStateOf(emptyMap<SourceEntity, List<Voice>>())
                             }
 
                             LaunchedEffect(selectedTab) {
                                 loading = true
-                                sources = tabs[selectedTab].sourceList
+                                sources = when (selectedTab) {
+                                    0 -> uiState.sourcesWithVoice.voiceGroups
+                                    1 -> uiState.sourcesWithoutVoice.associateWith { emptyList() }
+                                    else -> emptyMap()
+                                }
                                 loading = false
                             }
 
@@ -143,7 +151,7 @@ fun SourcesScreen(
             }
         }
 
-        SourcesUiState.Loading -> {
+        SourcesContract.SourcesUiState.Loading -> {
             Column {
                 LoadingTopBar()
                 LoadingScreenBody(
@@ -153,15 +161,13 @@ fun SourcesScreen(
                 )
             }
         }
-
-        SourcesUiState.StandBy -> {}
     }
 }
 
 @Composable
 private fun SourcesScreen(
     modifier: Modifier = Modifier,
-    sources: List<SourcesListItem>,
+    sources: Map<SourceEntity, List<Voice>>,
     onPlay: (Voice) -> Unit = {},
 ) {
     LazyColumn(
@@ -169,7 +175,7 @@ private fun SourcesScreen(
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(sources) { source ->
+        items(sources.toList()) { source ->
             SourcesListItem(
                 item = source,
                 onPlay = onPlay,
@@ -185,9 +191,18 @@ private fun SourcesScreen(
 @Composable
 private fun SourcesListItem(
     modifier: Modifier = Modifier,
-    item: SourcesListItem,
+    item: Pair<SourceEntity, List<Voice>>,
     onPlay: (Voice) -> Unit = {},
 ) = Card(modifier) {
+    val videoId = item.first.videoId
+    val url = "file:///android_asset/subaciThumbs/$videoId.jpg"
+    val imageIs = LocalContext.current
+        .assets.openFd("subaciThumbs/$videoId.jpg")
+        .createInputStream()
+    val thumbAspectRatio = ImageMetadataReader.readMetadata(imageIs)
+        .getFirstDirectoryOfType(JpegDirectory::class.java)
+        .run { imageWidth.toFloat() / imageHeight.toFloat() }
+
     Column {
         var expanded by rememberSaveable { mutableStateOf(false) }
 
@@ -196,7 +211,7 @@ private fun SourcesListItem(
                 .fillMaxWidth()
                 .aspectRatio(aspectRatio)
         }
-        val hasVoices = item.voices.isNotEmpty()
+        val hasVoices = item.second.isNotEmpty()
         val isPreview = LocalInspectionMode.current
 
         if (isPreview) {
@@ -207,27 +222,31 @@ private fun SourcesListItem(
             )
         } else {
             SubcomposeAsyncImage(
-                model = item.url,
+                model = url,
                 loading = {
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = modifier(item.thumbAspectRatio),
+                        modifier = modifier(thumbAspectRatio),
                         content = { CircularProgressIndicator() }
                     )
                 },
                 contentDescription = null,
-                modifier = modifier(item.thumbAspectRatio)
+                modifier = modifier(thumbAspectRatio)
             )
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .clickable { if (hasVoices) { expanded = true } }
+                .clickable {
+                    if (hasVoices) {
+                        expanded = true
+                    }
+                }
                 .padding(16.dp)
         ) {
             Text(
-                text = item.title,
+                text = item.first.title,
                 modifier = Modifier.weight(1f),
                 fontFamily = FontFamily(Font(LocalJPFont.current.fontResId))
             )
@@ -248,26 +267,26 @@ private fun SourcesListItem(
                             .padding(8.dp)
                     ) {
                         SubcomposeAsyncImage(
-                            model = item.url,
+                            model = url,
                             loading = {
                                 Box(
                                     contentAlignment = Alignment.Center,
-                                    modifier = modifier(item.thumbAspectRatio),
+                                    modifier = modifier(thumbAspectRatio),
                                     content = { CircularProgressIndicator() }
                                 )
                             },
                             contentDescription = null,
-                            modifier = modifier(item.thumbAspectRatio)
+                            modifier = modifier(thumbAspectRatio)
                         )
                     }
                     Text(
-                        text = item.title,
+                        text = item.first.title,
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(8.dp),
                         fontFamily = FontFamily(Font(LocalJPFont.current.fontResId))
                     )
                     VoicesFlowRow(
-                        voices = item.voices,
+                        voices = item.second,
                         modifier = Modifier
                             .padding(8.dp),
                     ) { voice ->
@@ -299,7 +318,7 @@ private fun SourcesListItemPreview(
     }.toList()
 
     SourcesListItem(
-        item = SourcesListItem(source.videoId, source.title, voices),
+        item = source to voices,
         modifier = modifier
     )
 }

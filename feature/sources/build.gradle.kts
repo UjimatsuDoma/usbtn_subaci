@@ -10,6 +10,7 @@ android {
 dependencies {
     implementation(projects.core.common)
     implementation(projects.core.data)
+    implementation(projects.core.domain)
     implementation(projects.core.player)
     implementation(projects.core.ui)
     implementation(projects.feature.base)

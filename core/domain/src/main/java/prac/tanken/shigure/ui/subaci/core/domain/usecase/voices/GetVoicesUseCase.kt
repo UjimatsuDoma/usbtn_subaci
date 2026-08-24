@@ -71,14 +71,9 @@ class GetVoicesUseCase @Inject constructor(
                 }
 
                 VoicesGroupedBy.Video -> {
-                    val voicesGrouped = voices
-                        .filter { it.videoId != null }
-                        .groupBy { it.videoId }
-                        .map { voices ->
-                            val source = sources.first { it.videoId == voices.key }
-                            source to voices.value
-                        }
-                        .toMap()
+                    val voicesGrouped = sources.associateWith { sourceEntity ->
+                        voices.filter { it.videoId == sourceEntity.videoId }
+                    }
                     emit(ByVideo(voicesGrouped))
                 }
             }
