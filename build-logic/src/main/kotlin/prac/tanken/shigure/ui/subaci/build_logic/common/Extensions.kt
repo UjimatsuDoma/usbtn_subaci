@@ -64,12 +64,11 @@ fun URL.downloadFile(
 /**
  * Serialization & Deserialization
  */
-inline fun <reified T> parseJsonString(jsonString: String): T {
-    val json = Json { ignoreUnknownKeys = true }
-    return json.decodeFromString<T>(jsonString)
+val json = Json {
+    ignoreUnknownKeys = true
+    prettyPrint = true
 }
 
-inline fun <reified T> encodeJsonString(entity: T): String {
-    val json = Json { ignoreUnknownKeys = true }
-    return json.encodeToString(entity)
-}
+inline fun <reified T> parseJsonString(jsonString: String): T = json.decodeFromString(jsonString)
+
+inline fun <reified T> encodeJsonString(entity: T) = json.encodeToString(entity)
