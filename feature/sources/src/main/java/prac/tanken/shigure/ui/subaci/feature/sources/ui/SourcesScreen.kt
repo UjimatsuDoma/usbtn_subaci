@@ -55,7 +55,7 @@ import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.core.data.mock.sourcesPreviewData
 import prac.tanken.shigure.ui.subaci.core.data.mock.voicesPreviewData
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
-import prac.tanken.shigure.ui.subaci.core.data.model.sources.SourceEntity
+import prac.tanken.shigure.ui.subaci.core.data.model.Source
 import prac.tanken.shigure.ui.subaci.core.ui.font.LocalJPFont
 import prac.tanken.shigure.ui.subaci.core.ui.font.NotoStyle
 import prac.tanken.shigure.ui.subaci.core.ui.getNotoFamilyByLocalesNonComposable
@@ -67,9 +67,6 @@ import prac.tanken.shigure.ui.subaci.feature.base.component.VoiceButton
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoicesFlowRow
 import prac.tanken.shigure.ui.subaci.feature.sources.SourcesContract
 import prac.tanken.shigure.ui.subaci.feature.sources.SourcesViewModel
-import prac.tanken.shigure.ui.subaci.feature.sources.model.SourcesListItem
-import prac.tanken.shigure.ui.subaci.feature.sources.model.SourcesUiState
-import java.io.InputStream
 import prac.tanken.shigure.ui.subaci.feature.sources.R as TankenR
 
 @Composable
@@ -123,7 +120,7 @@ fun SourcesScreen(
                         pageContent = {
                             var loading by remember { mutableStateOf(false) }
                             var sources by remember {
-                                mutableStateOf(emptyMap<SourceEntity, List<Voice>>())
+                                mutableStateOf(emptyMap<Source, List<Voice>>())
                             }
 
                             LaunchedEffect(selectedTab) {
@@ -167,7 +164,7 @@ fun SourcesScreen(
 @Composable
 private fun SourcesScreen(
     modifier: Modifier = Modifier,
-    sources: Map<SourceEntity, List<Voice>>,
+    sources: Map<Source, List<Voice>>,
     onPlay: (Voice) -> Unit = {},
 ) {
     LazyColumn(
@@ -191,7 +188,7 @@ private fun SourcesScreen(
 @Composable
 private fun SourcesListItem(
     modifier: Modifier = Modifier,
-    item: Pair<SourceEntity, List<Voice>>,
+    item: Pair<Source, List<Voice>>,
     onPlay: (Voice) -> Unit = {},
 ) = Card(modifier) {
     val videoId = item.first.videoId

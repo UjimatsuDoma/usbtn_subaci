@@ -1,7 +1,7 @@
 package prac.tanken.shigure.ui.subaci.feature.sources
 
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
-import prac.tanken.shigure.ui.subaci.core.data.model.sources.SourceEntity
+import prac.tanken.shigure.ui.subaci.core.data.model.Source
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped
 import prac.tanken.shigure.ui.subaci.feature.base.mvi.UiEffect
 import prac.tanken.shigure.ui.subaci.feature.base.mvi.UiIntent
@@ -16,7 +16,7 @@ object SourcesContract {
         data object Loading : SourcesUiState
         data class Loaded(
             val sourcesWithVoice: VoicesGrouped.ByVideo,
-            val sourcesWithoutVoice: List<SourceEntity>,
+            val sourcesWithoutVoice: List<Source>,
         ) : SourcesUiState
         data class Error(val message: String) : SourcesUiState {
             companion object {

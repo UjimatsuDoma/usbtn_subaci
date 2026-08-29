@@ -11,18 +11,16 @@ import kotlinx.serialization.json.Json
 import prac.tanken.shigure.ui.subaci.core.common.datetime.todayStr
 import prac.tanken.shigure.ui.subaci.core.common.serialization.parseJsonString
 import prac.tanken.shigure.ui.subaci.core.data.datasource.AssetsDataSource
-import prac.tanken.shigure.ui.subaci.core.data.datasource.ResDataSource
 import prac.tanken.shigure.ui.subaci.core.data.di.DailyVoiceDataStore
 import prac.tanken.shigure.ui.subaci.core.data.di.VoicesDataStore
 import prac.tanken.shigure.ui.subaci.core.data.di.VoicesGroupedByJson
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
-import prac.tanken.shigure.ui.subaci.core.data.model.sources.SourceEntity
-import prac.tanken.shigure.ui.subaci.core.data.model.voices.Category
+import prac.tanken.shigure.ui.subaci.core.data.model.Source
+import prac.tanken.shigure.ui.subaci.core.data.model.Category
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.DailyVoiceEntity
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.core.data.preferences.DailyVoiceKeys
 import prac.tanken.shigure.ui.subaci.core.data.preferences.VoicesKeys
-import javax.inject.Inject
 import kotlin.concurrent.Volatile
 
 /**
@@ -39,7 +37,7 @@ class VoicesRepository(
         private set
     var categoriesMetadata: List<Category>? = null
         private set
-    var sourcesMetadata: List<SourceEntity>?=null
+    var sourcesMetadata: List<Source>?=null
         private set
 
     /**
@@ -85,7 +83,7 @@ class VoicesRepository(
             emit(RepositoryEvent.Working)
             try {
                 val sourcesJson = assetsDataSource openFileAsString SOURCES_JSON
-                val sources: List<SourceEntity> = parseJsonString(sourcesJson)
+                val sources: List<Source> = parseJsonString(sourcesJson)
                 sourcesMetadata = sources
                 emit(RepositoryEvent.Success(Unit))
             } catch (e: Exception) {

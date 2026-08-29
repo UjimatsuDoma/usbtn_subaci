@@ -4,8 +4,8 @@ import prac.tanken.shigure.ui.subaci.core.common.io.readText
 import prac.tanken.shigure.ui.subaci.core.common.serialization.parseJsonString
 import prac.tanken.shigure.ui.subaci.core.data.BuildConfig
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
-import prac.tanken.shigure.ui.subaci.core.data.model.sources.SourceEntity
-import prac.tanken.shigure.ui.subaci.core.data.model.voices.Category
+import prac.tanken.shigure.ui.subaci.core.data.model.Source
+import prac.tanken.shigure.ui.subaci.core.data.model.Category
 import java.io.File
 
 
@@ -23,9 +23,9 @@ fun categoriesPreviewData(): List<Category> {
     return categories
 }
 
-fun sourcesPreviewData(): List<SourceEntity> {
+fun sourcesPreviewData(): List<Source> {
     val sourcesJson = File(BuildConfig.SUBACI_JSON_DIR, "video_list.json").inputStream().readText()
-    val sources: List<SourceEntity> = parseJsonString(sourcesJson)
+    val sources: List<Source> = parseJsonString(sourcesJson)
 
     return sources
 }

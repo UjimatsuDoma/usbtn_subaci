@@ -6,14 +6,12 @@ import androidx.annotation.StringRes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import prac.tanken.shigure.ui.subaci.core.common.io.readText
 import prac.tanken.shigure.ui.subaci.core.common.serialization.parseJsonString
-import prac.tanken.shigure.ui.subaci.core.data.R
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
-import prac.tanken.shigure.ui.subaci.core.data.model.sources.SourceEntity
-import prac.tanken.shigure.ui.subaci.core.data.model.voices.Category
+import prac.tanken.shigure.ui.subaci.core.data.model.Source
+import prac.tanken.shigure.ui.subaci.core.data.model.Category
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
 import javax.inject.Inject
 
@@ -25,7 +23,7 @@ class ResRepository @Inject constructor(
     val voicesFlow = _voicesFlow.asStateFlow()
     private var _categoriesFlow = MutableStateFlow<List<Category>>(emptyList())
     val categoriesFlow = _categoriesFlow.asStateFlow()
-    private var _sourcesFlow = MutableStateFlow<List<SourceEntity>>(emptyList())
+    private var _sourcesFlow = MutableStateFlow<List<Source>>(emptyList())
     val sourcesFlow = _sourcesFlow.asStateFlow()
 
     suspend fun loadVoices() = withContext(Dispatchers.IO) {
@@ -46,7 +44,7 @@ class ResRepository @Inject constructor(
 
     suspend fun loadSources() = withContext(Dispatchers.IO) {
         val sourcesJson = am.open("subaciJson/video_list.json").readText()
-        val sources: List<SourceEntity> = parseJsonString(sourcesJson)
+        val sources: List<Source> = parseJsonString(sourcesJson)
         _sourcesFlow.value = sources
     }
 

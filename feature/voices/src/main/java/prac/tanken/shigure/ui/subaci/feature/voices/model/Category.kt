@@ -1,6 +1,6 @@
 package prac.tanken.shigure.ui.subaci.feature.voices.model
 
-import prac.tanken.shigure.ui.subaci.core.data.model.voices.Category
+import prac.tanken.shigure.ui.subaci.core.data.model.Category
 
 data class CategoryVO(
     val className: String,

@@ -2,7 +2,7 @@ package prac.tanken.shigure.ui.subaci.core.data.model.voices
 
 import kotlinx.serialization.Serializable
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
-import prac.tanken.shigure.ui.subaci.core.data.model.sources.SourceEntity
+import prac.tanken.shigure.ui.subaci.core.data.model.Source
 
 @Serializable
 sealed class VoicesGrouped<Key>(
@@ -19,8 +19,8 @@ sealed class VoicesGrouped<Key>(
         VoicesGrouped<String>(VoicesGroupedBy.Kana)
 
     @Serializable
-    data class ByVideo(override val voiceGroups: Map<SourceEntity, List<Voice>>) :
-        VoicesGrouped<SourceEntity>(VoicesGroupedBy.Video)
+    data class ByVideo(override val voiceGroups: Map<Source, List<Voice>>) :
+        VoicesGrouped<Source>(VoicesGroupedBy.Video)
 
     // Default value in constructor for fallback
     @Serializable
