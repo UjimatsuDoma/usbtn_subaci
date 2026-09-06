@@ -32,7 +32,6 @@ class VoicesRepository(
     @DailyVoiceDataStore val dailyVoiceDataStore: DataStore<Preferences>,
     val assetsDataSource: AssetsDataSource,
 ) {
-    @Volatile
     var voicesMetadata: List<Voice>? = null
         private set
     var categoriesMetadata: List<Category>? = null

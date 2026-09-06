@@ -76,29 +76,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            Scaffold(
-                snackbarHost = {
-                    SnackbarHost(
-                        hostState = snackbarHostState,
-                        modifier = Modifier.padding(bottom = 48.dp)
-                    )
-                },
+            Box(
                 modifier = Modifier.fillMaxSize()
-            ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding)
-                ) {
-                    if (ready) {
-                        AppNavHost(
-                            navController = rememberNavController(),
-                            appSettings = appSettingsState,
-                        )
-                    } else {
-                        MaterialTheme {
-                            LoadingIndefinitelyScreen(title = "Loading...")
-                        }
+            ) {
+                if (ready) {
+                    AppNavHost(
+                        navController = rememberNavController(),
+                        appSettings = appSettingsState,
+                    )
+                } else {
+                    MaterialTheme {
+                        LoadingIndefinitelyScreen(title = "Loading...")
                     }
                 }
             }

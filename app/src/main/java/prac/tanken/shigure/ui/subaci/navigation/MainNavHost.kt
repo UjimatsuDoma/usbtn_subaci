@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -86,12 +87,11 @@ fun MainNavHost(
                             snackbarHost = {
                                 SnackbarHost(snackbarHostState)
                             },
-                            contentWindowInsets = WindowInsets(),
                             bottomBar = {
                                 MainNavigationBar(
                                     navController = navController,
                                     bottomBarLabelBehaviour =
-                                        appSettingsState.uiSettings.bottomBarLabelBehaviour
+                                        appSettingsState.uiSettings.bottomBarLabelBehaviour,
                                 )
                             }
                         ) { innerPadding ->

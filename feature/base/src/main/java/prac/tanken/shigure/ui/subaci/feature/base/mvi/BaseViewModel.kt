@@ -27,14 +27,14 @@ abstract class BaseViewModel<S : UiState, I : UiIntent, E : UiEffect> : ViewMode
     protected val currentState get() = state.value
     protected fun setState(block:  S.()-> S) = _state.update {
         val newValue = it.block()
-        println(newValue)
+        println("update to $newValue")
         newValue
     }
 
     // 部分 ViewModel 功能不复杂，可以不实现Intent
-    open fun sendIntent(intent: I) {}
+    open fun sendIntent(intent: I) = Unit
 
-    protected val _effect = Channel<E>(Channel.BUFFERED)
+    private val _effect = Channel<E>(Channel.BUFFERED)
     val effect = _effect.receiveAsFlow()
     fun sendEffect(effect: E) = viewModelScope.launch { _effect.send(effect) }
 }

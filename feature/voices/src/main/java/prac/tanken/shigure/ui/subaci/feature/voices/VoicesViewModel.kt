@@ -8,12 +8,15 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.core.common.datetime.todayStr
+import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.toReference
 import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.core.data.repository.VoicesRepository
+import prac.tanken.shigure.ui.subaci.core.domain.model.UseCaseEvent
+import prac.tanken.shigure.ui.subaci.core.domain.usecase.playlist.AddToPlaylistUseCase
 import prac.tanken.shigure.ui.subaci.core.domain.usecase.voices.GetVoicesUseCase
 import prac.tanken.shigure.ui.subaci.core.player.MyPlayer
 import prac.tanken.shigure.ui.subaci.feature.base.mvi.BaseViewModel
@@ -33,9 +36,8 @@ class VoicesViewModel @Inject constructor(
     val resRepository: ResRepository,
     val voicesRepository: VoicesRepository,
     val playlistUseCase: PlaylistUseCase,
-    // for querying voices
     val getVoicesUseCase: GetVoicesUseCase,
-    // for playing voices
+    val addToPlaylistUseCase: AddToPlaylistUseCase,
     val myPlayer: MyPlayer
 ) : BaseViewModel<VoicesContract.State, VoicesContract.Intent, VoicesContract.Effect>() {
 
@@ -49,7 +51,6 @@ class VoicesViewModel @Inject constructor(
             observeVoicesGroupedBy()
         }
         observeDailyVoice()
-        observePlaylist()
     }
 
     override fun sendIntent(intent: VoicesContract.Intent) {
@@ -72,6 +73,12 @@ class VoicesViewModel @Inject constructor(
                     myPlayer.playByReference(intent.voice.toReference())
                 }
             }
+
+            is VoicesContract.Intent.AddToPlaylist -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    addToPlaylist(intent.voice)
+                }
+            }
         }
     }
 
@@ -85,7 +92,6 @@ class VoicesViewModel @Inject constructor(
                     updateVoicesGroupedBy(VoicesGroupedBy.Kana)
                     sendEffect(SettingsInitializationSnackbar)
                 } else {
-                    println("updating settings")
                     setState {
                         copy(
                             voicesSettingsState = VoicesSettingsState.Loaded(
@@ -93,7 +99,6 @@ class VoicesViewModel @Inject constructor(
                             )
                         )
                     }
-                    println("updated settings")
                 }
             }
 
@@ -133,18 +138,10 @@ class VoicesViewModel @Inject constructor(
             }
     }
 
-    private fun observePlaylist() = viewModelScope.launch {
-        playlistUseCase.playlistSelectedFlow
-            .collect { plistSelected ->
-                selectedPlaylistId.longValue = plistSelected.selectedId
-            }
-    }
-
     private suspend fun observeVoicesGroupedBy(): Nothing =
         state.collect { state ->
             when (val state = state.voicesSettingsState) {
                 is VoicesSettingsState.Loaded -> {
-                    println("settings loaded")
                     val voicesGroupedBy = state.voicesGroupedBy
                     getVoicesUseCase(voicesGroupedBy)
                         .catch {
@@ -200,14 +197,27 @@ class VoicesViewModel @Inject constructor(
             }
         }
 
-    fun addToPlaylist(voiceReference: VoiceReference) =
-        viewModelScope.launch(Dispatchers.IO) {
-            if (selectedPlaylistId.longValue == 0L) {
-                sendEffect(ShowSnackbar(resRepository.stringRes(R.string.voices_info_no_playlist_selected)))
-            } else {
-                playlistUseCase.addToPlaylist(selectedPlaylistId.longValue, voiceReference.id)
+    private suspend fun addToPlaylist(voice: Voice) =
+        addToPlaylistUseCase(voice)
+            .collect { event ->
+                when (event) {
+                    is UseCaseEvent.Error -> {
+                        sendEffect(
+                            ShowSnackbar(
+                                event.error.message ?: event.error.stackTraceToString()
+                            )
+                        )
+                    }
+
+                    is UseCaseEvent.Success -> {
+                        sendEffect(
+                            ShowSnackbar(
+                                "Voice added to playlist."
+                            )
+                        )
+                    }
+                }
             }
-        }
 
     fun updateVoicesGroupedBy(newValue: VoicesGroupedBy) =
         viewModelScope.launch(Dispatchers.IO) { voicesRepository.updateVoicesGroupedBy(newValue) }

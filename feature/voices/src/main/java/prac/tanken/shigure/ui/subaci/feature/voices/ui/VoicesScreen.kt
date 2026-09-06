@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,8 +31,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -67,21 +70,18 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
-import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
-import prac.tanken.shigure.ui.subaci.core.data.model.voices.toReference
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.voicesGroupedByItems
 import prac.tanken.shigure.ui.subaci.core.ui.font.LocalJPFont
 import prac.tanken.shigure.ui.subaci.core.ui.util.combineKey
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingScreenBody
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoiceButton
-import prac.tanken.shigure.ui.subaci.feature.voices.model.DailyVoiceUiState
 import prac.tanken.shigure.ui.subaci.feature.voices.R
 import prac.tanken.shigure.ui.subaci.feature.voices.VoicesContract
-import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGroupedUiState
 import prac.tanken.shigure.ui.subaci.feature.voices.VoicesViewModel
-import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped
+import prac.tanken.shigure.ui.subaci.feature.voices.model.DailyVoiceUiState
+import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesGroupedUiState
 import prac.tanken.shigure.ui.subaci.feature.voices.model.VoicesSettingsState
 import prac.tanken.shigure.ui.subaci.core.common.R as CommonR
 import prac.tanken.shigure.ui.subaci.feature.voices.R as TankenR
@@ -193,7 +193,9 @@ fun VoicesScreen(
             val voicesGrouped = voicesGroupedUiState.voicesGroups
 
             Scaffold(
-                contentWindowInsets = WindowInsets(top = 0),
+                contentWindowInsets = ScaffoldDefaults.contentWindowInsets.exclude(
+                    NavigationBarDefaults.windowInsets
+                ),
                 snackbarHost = {
                     SnackbarHost(
                         hostState = snackBarHostState,
@@ -229,7 +231,9 @@ fun VoicesScreen(
                     onPlay = {
                         viewModel.sendIntent(VoicesContract.Intent.PlayVoice(it))
                     },
-                    onAddToPlaylist = viewModel::addToPlaylist,
+                    onAddToPlaylist = {
+                        viewModel.sendIntent(VoicesContract.Intent.AddToPlaylist(it))
+                    },
                     modifier = Modifier.padding(innerPadding)
                 )
             }
@@ -347,7 +351,7 @@ private fun VoicesScreen(
     modifier: Modifier = Modifier,
     voicesGrouped: Map<String, List<Voice>>,
     onPlay: (Voice) -> Unit,
-    onAddToPlaylist: (VoiceReference) -> Unit,
+    onAddToPlaylist: (Voice) -> Unit,
 ) {
     val scope: CoroutineScope = rememberCoroutineScope()
     val lazyStaggeredGridState = rememberLazyStaggeredGridState()
@@ -412,7 +416,7 @@ private fun VoicesScreen(
                             text = { Text(stringResource(TankenR.string.voices_add_to_playlist)) },
                             onClick = {
                                 expanded = false
-                                onAddToPlaylist(voice.toReference())
+                                onAddToPlaylist(voice)
                             }
                         )
                     }

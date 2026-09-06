@@ -19,38 +19,7 @@ class PlaylistUseCase(
     val playlistRepository: PlaylistRepository,
     val resRepository: ResRepository,
 ) : BaseUseCase() {
-    val playlistsFlow = playlistRepository.playlistsFlow
-    val playlistSelectedFlow = playlistRepository.playlistSelectedFlow
-
-    val selectedPlaylist = combineTransform(
-        playlistSelectedFlow, playlistsFlow, resRepository.voicesFlow
-    ) { playlistSelected, playlists, voices ->
-        emit(UseCaseEvent.Loading)
-        val event = suspendTryOrFail {
-            if (playlistSelected == playlistNotSelected)
-                UseCaseEvent.Success(playlistNotSelectedVO)
-            else {
-                val entity = playlists.first { it.id == playlistSelected.selectedId }
-                val voicesIdList = Json.decodeFromString<List<String>>(entity.playlistItems)
-                val voices = voicesIdList
-                    .map { id -> voices.first { it.id == id }.toPlaylistVoiceVO() }
-                val playlistVO = PlaylistVO(
-                    entity.id,
-                    entity.playlistName,
-                    voices
-                )
-                UseCaseEvent.Success(playlistVO)
-            }
-        }
-        emit(event)
-    }
-
     // 操作播放列表整体
-
-    suspend fun createPlaylist(name: String) {
-        val createdId = playlistRepository.createPlaylist(name)
-        selectPlaylist(createdId)
-    }
 
     suspend fun deletePlaylist(id: Long) = suspendTryOrFail {
         unselectPlaylist()
@@ -61,33 +30,7 @@ class PlaylistUseCase(
         return@suspendTryOrFail UseCaseEvent.Success(Unit)
     }
 
-    suspend fun renamePlaylist(id: Long, name: String) = suspendTryOrFail {
-        val entity = playlistRepository.getById(id)
-        playlistRepository.updatePlaylist(entity.copy(playlistName = name))
-        return@suspendTryOrFail UseCaseEvent.Success(Unit)
-    }
-
-    suspend fun selectPlaylistById(id: Long) = playlistRepository.getById(id)
-
-    suspend fun selectPlaylistByName(name: String) =
-        playlistRepository.getByName(name).firstOrNull()
-
     // 操作播放列表内部项目
-
-    suspend fun addToPlaylist(plistId: Long, voiceId: String) = suspendTryOrFail {
-        val entity = playlistRepository.getById(plistId)
-        val oldList = Json.decodeFromString<List<String>>(entity.playlistItems)
-        if (oldList.contains(voiceId)) {
-            throw IllegalStateException(
-                resRepository.stringRes(PlaylistR.string.error_playlist_duplicate_item)
-            )
-        }
-        val newList = oldList + voiceId
-        playlistRepository.updatePlaylist(
-            entity.copy(playlistItems = Json.encodeToString(newList))
-        )
-        return@suspendTryOrFail UseCaseEvent.Success(Unit)
-    }
 
     suspend fun removePlaylistItem(plistId: Long, index: Int) = suspendTryOrFail {
         val entity = playlistRepository.getById(plistId)

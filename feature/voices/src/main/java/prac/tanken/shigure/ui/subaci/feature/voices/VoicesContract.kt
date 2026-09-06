@@ -20,6 +20,7 @@ object VoicesContract {
         data class PlayVoice(val voice: Voice) : Intent
         data object PlayDailyVoice : Intent
         data class ChangeVoicesGroupedBy(val newValue: VoicesGroupedBy) : Intent
+        data class AddToPlaylist(val voice: Voice) : Intent
     }
 
     sealed interface Effect : UiEffect {

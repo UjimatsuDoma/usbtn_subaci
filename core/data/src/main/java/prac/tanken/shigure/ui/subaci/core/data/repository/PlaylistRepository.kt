@@ -2,29 +2,56 @@ package prac.tanken.shigure.ui.subaci.core.data.repository
 
 import androidx.annotation.WorkerThread
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
 import prac.tanken.shigure.ui.subaci.core.data.database.PlaylistDatabase
+import prac.tanken.shigure.ui.subaci.core.data.model.Playlist
 import prac.tanken.shigure.ui.subaci.core.data.model.PlaylistEntity
 import prac.tanken.shigure.ui.subaci.core.data.model.PlaylistSelected
+import prac.tanken.shigure.ui.subaci.core.data.model.PlaylistSelectedEntity
 import prac.tanken.shigure.ui.subaci.core.data.model.playlistNotSelected
 import javax.inject.Inject
 
-class PlaylistRepository @Inject constructor(
+class PlaylistRepository(
     playlistDatabase: PlaylistDatabase,
 ) {
-    val playlistDao = playlistDatabase.playlistDao()
-    val playlistSelectedDao = playlistDatabase.playlistSelectedDao()
+    private val playlistDao = playlistDatabase.playlistDao()
+    private val playlistSelectedDao = playlistDatabase.playlistSelectedDao()
 
     // 所有播放列表数据的流
-    val playlistsFlow = playlistDao.getAll()
+    private val playlistEntitiesFlow = playlistDao.getAll()
+    val playlistsFlow: Flow<RepositoryEvent<List<Playlist>, Exception>> =
+        playlistEntitiesFlow
+            .transform { entities ->
+                try {
+                    emit(RepositoryEvent.Working)
+                    val playlists = entities.map {
+                        it.convertToPlaylist()
+                    }
+                    emit(RepositoryEvent.Success(playlists))
+                } catch (e: Exception) {
+                    emit(RepositoryEvent.Error(e))
+                }
+            }
+
     // 播放列表选择项数据的流
-    val playlistSelectedFlow = playlistSelectedDao.getSelected()
-        .map {
-            if(it.isNotEmpty()) it.first()
-            else playlistNotSelected
-        }
+    val playlistSelectedFlow: Flow<RepositoryEvent<PlaylistSelected, Exception>> =
+        playlistSelectedDao.getSelected()
+            .transform { selectedEntity ->
+                try {
+                    emit(RepositoryEvent.Working)
+                    val event = selectedEntity.firstOrNull()?.let {
+                        RepositoryEvent.Success(it.toPlaylistSelected())
+                    } ?: RepositoryEvent.Success(playlistNotSelected)
+                    emit(event)
+                } catch (e: Exception) {
+                    emit(RepositoryEvent.Error(e))
+                }
+            }
 
     @WorkerThread
     suspend fun getMaxId() = withContext(Dispatchers.IO) {
@@ -53,7 +80,7 @@ class PlaylistRepository @Inject constructor(
 
     @WorkerThread
     suspend fun selectPlaylist(id: Long) = withContext(Dispatchers.IO) {
-        playlistSelectedDao.selectPlaylist(PlaylistSelected(id))
+        playlistSelectedDao.selectPlaylist(PlaylistSelectedEntity(id))
     }
 
     @WorkerThread
