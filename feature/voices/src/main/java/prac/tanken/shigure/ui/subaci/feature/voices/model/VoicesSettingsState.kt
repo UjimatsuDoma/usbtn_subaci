@@ -13,13 +13,7 @@ sealed interface VoicesSettingsState {
         val voicesGroupedBy: VoicesGroupedBy,
     ): VoicesSettingsState
 
-    @Serializable
     data class Error(
-        val message: String
-    ): VoicesSettingsState {
-        companion object {
-            fun fromThrowable(throwable: Throwable)  =
-                Error(throwable.message ?: throwable.javaClass.simpleName)
-        }
-    }
+        val throwable: Throwable
+    ): VoicesSettingsState
 }

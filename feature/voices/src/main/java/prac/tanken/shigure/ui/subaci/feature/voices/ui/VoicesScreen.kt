@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.exclude
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,10 +31,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -59,7 +57,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -73,9 +70,9 @@ import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.voicesGroupedByItems
 import prac.tanken.shigure.ui.subaci.core.ui.font.LocalJPFont
+import prac.tanken.shigure.ui.subaci.core.ui.screen.ErrorScreen
+import prac.tanken.shigure.ui.subaci.core.ui.screen.LoadingIndefinitelyScreen
 import prac.tanken.shigure.ui.subaci.core.ui.util.combineKey
-import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingScreenBody
-import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingTopBar
 import prac.tanken.shigure.ui.subaci.feature.base.component.VoiceButton
 import prac.tanken.shigure.ui.subaci.feature.voices.R
 import prac.tanken.shigure.ui.subaci.feature.voices.VoicesContract
@@ -141,40 +138,14 @@ fun VoicesScreen(
 
     when (val voicesGroupedUiState = uiState.voicesGroupedUiState) {
         is VoicesGroupedUiState.Error -> {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = stringResource(CommonR.string.error_generic),
-                        style = MaterialTheme.typography.titleMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        text = voicesGroupedUiState.message,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
+            ErrorScreen(
+                message = voicesGroupedUiState.message,
+                stackTrace = voicesGroupedUiState.stackTrace,
+            )
         }
 
         VoicesGroupedUiState.Loading -> {
-            Column(modifier) {
-                LoadingTopBar()
-                LoadingScreenBody(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
-            }
+            LoadingIndefinitelyScreen(Modifier.fillMaxSize())
         }
 
         VoicesGroupedUiState.StandBy -> {
@@ -193,9 +164,6 @@ fun VoicesScreen(
             val voicesGrouped = voicesGroupedUiState.voicesGroups
 
             Scaffold(
-                contentWindowInsets = ScaffoldDefaults.contentWindowInsets.exclude(
-                    NavigationBarDefaults.windowInsets
-                ),
                 snackbarHost = {
                     SnackbarHost(
                         hostState = snackBarHostState,
@@ -234,7 +202,9 @@ fun VoicesScreen(
                     onAddToPlaylist = {
                         viewModel.sendIntent(VoicesContract.Intent.AddToPlaylist(it))
                     },
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding)
                 )
             }
         }

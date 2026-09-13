@@ -280,42 +280,7 @@ fun ShigureUiButtonAppComposeImplementationTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = typography,
-    ) {
-        val view = LocalView.current
-        if (!view.isInEditMode) {
-            SideEffect {
-                // copied from https://stackoverflow.com/a/73273051/24700045
-//                        (view.context as Activity).window.statusBarColor =
-//                            colorScheme.primary.toArgb()
-//                        ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars =
-//                            !appDarkModeReal
-
-                val window = (view.context as Activity).window
-//                if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-//
-//                } else {
-//                    window.statusBarColor = colorScheme.primary.toArgb()
-//                }
-                val color = colorScheme.primary.toArgb()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                    // Android 15+
-                    window.decorView.setOnApplyWindowInsetsListener { view, insets ->
-                        val statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars())
-                        view.setBackgroundColor(color)
-                        view.setPadding(0, statusBarInsets.top, 0, 0)
-                        insets
-                    }
-                } else {
-                    // 老版本还要用这个，压一压
-                    @Suppress("DEPRECATION")
-                    window.statusBarColor = color // For Android 14 and below
-                }
-                WindowCompat.getInsetsController(window, view)
-                    .isAppearanceLightStatusBars = !darkTheme
-            }
-        }
-
-        content()
-    }
+        content = content
+    )
 }
 

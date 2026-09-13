@@ -25,11 +25,7 @@ abstract class BaseViewModel<S : UiState, I : UiIntent, E : UiEffect> : ViewMode
             initState()
         )
     protected val currentState get() = state.value
-    protected fun setState(block:  S.()-> S) = _state.update {
-        val newValue = it.block()
-        println("update to $newValue")
-        newValue
-    }
+    protected fun setState(block: S.() -> S) = _state.update { it.block() }
 
     // 部分 ViewModel 功能不复杂，可以不实现Intent
     open fun sendIntent(intent: I) = Unit

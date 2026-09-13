@@ -1,7 +1,9 @@
 package prac.tanken.shigure.ui.subaci.feature.voices.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
+import prac.tanken.shigure.ui.subaci.feature.base.mvi.UiError
 
 @Serializable
 sealed interface VoicesGroupedUiState {
@@ -17,10 +19,8 @@ sealed interface VoicesGroupedUiState {
     ) : VoicesGroupedUiState
 
     @Serializable
-    data class Error(val message: String) : VoicesGroupedUiState {
-        companion object {
-            fun fromThrowable(throwable: Throwable) =
-                Error(throwable.message ?: throwable.javaClass.simpleName)
-        }
-    }
+    data class Error(
+        override val message: String?,
+        override val stackTrace: String,
+    ) : VoicesGroupedUiState, UiError(message, stackTrace)
 }

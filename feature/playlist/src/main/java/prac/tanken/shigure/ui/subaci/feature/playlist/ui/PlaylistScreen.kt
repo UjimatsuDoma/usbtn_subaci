@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import prac.tanken.shigure.ui.subaci.core.ui.screen.LoadingIndefinitelyScreen
 import prac.tanken.shigure.ui.subaci.core.ui.theme.ShigureUiButtonAppComposeImplementationTheme
 import prac.tanken.shigure.ui.subaci.feature.base.component.ErrorMessageStrip
 import prac.tanken.shigure.ui.subaci.feature.base.component.InfoMessageStrip
@@ -69,20 +71,13 @@ fun PlaylistScreen(
 
     when (state.playlistsUiState) {
         PlaylistContract.PlaylistsUiState.Loading -> {
-            Column(modifier) {
-                LoadingTopBar()
-                LoadingScreenBody(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
-            }
+            LoadingIndefinitelyScreen(modifier.fillMaxSize())
         }
 
         is PlaylistContract.PlaylistsUiState.Error -> {
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
+                modifier = modifier.fillMaxSize()
             ) {
                 Column(
                     modifier = Modifier
@@ -107,9 +102,7 @@ fun PlaylistScreen(
 
         is PlaylistContract.PlaylistsUiState.Loaded -> {
             Scaffold(
-                contentWindowInsets = ScaffoldDefaults.contentWindowInsets.exclude(
-                    NavigationBarDefaults.windowInsets
-                ),
+                modifier = modifier.fillMaxSize(),
                 snackbarHost = {
                     SnackbarHost(snackbarHostState)
                 },
@@ -127,7 +120,8 @@ fun PlaylistScreen(
                 PlaylistVoicesList(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding),
                     onItemClicked = viewModel::playItem,
                     onItemMove = viewModel::movePlaylistItem,
                     onItemDelete = viewModel::removePlaylistItem,

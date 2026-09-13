@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import prac.tanken.shigure.ui.subaci.core.ui.screen.LoadingWithProgressScreen
+import prac.tanken.shigure.ui.subaci.core.ui.screen.LargeLoadingWithProgressScreen
 import prac.tanken.shigure.ui.subaci.core.ui.screen.ProceedOrBackScreen
 import prac.tanken.shigure.ui.subaci.fontman.domain.FontDecompressState
 
@@ -41,7 +41,7 @@ fun FontDecompressingScreen(
         }
 
         is FontDecompressState.Progress -> {
-            LoadingWithProgressScreen(
+            LargeLoadingWithProgressScreen(
                 modifier,
                 "Decompressing",
                 (dState as FontDecompressState.Progress).percentage

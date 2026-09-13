@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import prac.tanken.shigure.ui.subaci.core.ui.screen.LoadingIndefinitelyScreen
+import prac.tanken.shigure.ui.subaci.core.ui.screen.LargeLoadingIndefinitelyScreen
 import prac.tanken.shigure.ui.subaci.fontman.domain.FontCheckingState
 
 @Composable
@@ -22,7 +22,7 @@ fun FontCheckingScreen(
 
     when (cState) {
         FontCheckingState.Checking -> {
-            LoadingIndefinitelyScreen(modifier, "Checking fonts...")
+            LargeLoadingIndefinitelyScreen(modifier, "Checking fonts...")
         }
 
         FontCheckingState.Passed -> {
@@ -38,7 +38,7 @@ fun FontCheckingScreen(
         }
 
         FontCheckingState.Cleaning -> {
-            LoadingIndefinitelyScreen(modifier, "Cleaning files...")
+            LargeLoadingIndefinitelyScreen(modifier, "Cleaning files...")
         }
     }
 }

@@ -47,15 +47,6 @@ class AppViewModel @Inject constructor(
     // snackbar
     private val _snackbarMessage = Channel<SnackbarMessage>()
     val snackbarMessage = _snackbarMessage.receiveAsFlow()
-
-    val resourcesLoaded = resRepository.run {
-        val voicesLoaded = voicesFlow.map { it.isNotEmpty() }
-        val categoriesLoaded = categoriesFlow.map { it.isNotEmpty() }
-        val sourcesLoaded = sourcesFlow.map { it.isNotEmpty() }
-        combineTransform(voicesLoaded, categoriesLoaded, sourcesLoaded) { f1, f2, f3 ->
-            emit(f1 && f2 && f3)
-        }
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val newResourcesLoaded = voicesRepository.run {
         val f1 = loadVoices().map { it is RepositoryEvent.Success }
         val f2 = loadCategories().map { it is RepositoryEvent.Success }
@@ -68,13 +59,6 @@ class AppViewModel @Inject constructor(
     val settingsLoaded = _settingsLoaded.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            resRepository.apply {
-                loadVoices()
-                loadCategories()
-                loadSources()
-            }
-        }
         viewModelScope.launch {
             appSettingsFlow.collect { appSettings ->
                 appSettings?.let {

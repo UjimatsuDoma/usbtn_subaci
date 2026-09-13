@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.core.common.datetime.todayStr
@@ -87,7 +88,7 @@ class VoicesViewModel @Inject constructor(
 
     private suspend fun observeVoicesSettings() =
         voicesRepository.voicesGroupedByFlow
-            .collect { voicesGroupedBy ->
+            .onEach { voicesGroupedBy ->
                 if (voicesGroupedBy == null) {
                     updateVoicesGroupedBy(VoicesGroupedBy.Kana)
                     sendEffect(SettingsInitializationSnackbar)
@@ -101,6 +102,14 @@ class VoicesViewModel @Inject constructor(
                     }
                 }
             }
+            .catch { throwable->
+                setState {
+                    copy(
+                        voicesSettingsState = VoicesSettingsState.Error(throwable)
+                    )
+                }
+            }
+            .collect()
 
     // TODO: business logic in viewmodel - is use case necessary since it's feature-specific?
     private fun observeDailyVoice() = viewModelScope.launch(Dispatchers.IO) {
@@ -139,8 +148,8 @@ class VoicesViewModel @Inject constructor(
     }
 
     private suspend fun observeVoicesGroupedBy(): Nothing =
-        state.collect { state ->
-            when (val state = state.voicesSettingsState) {
+        state.collect { currentState ->
+            when (val state = currentState.voicesSettingsState) {
                 is VoicesSettingsState.Loaded -> {
                     val voicesGroupedBy = state.voicesGroupedBy
                     getVoicesUseCase(voicesGroupedBy)
@@ -191,7 +200,12 @@ class VoicesViewModel @Inject constructor(
 
                 is VoicesSettingsState.Error -> {
                     setState {
-                        copy(voicesGroupedUiState = Error(state.message))
+                        copy(
+                            voicesGroupedUiState = Error(
+                                message = state.throwable.message,
+                                stackTrace = state.throwable.stackTraceToString()
+                            )
+                        )
                     }
                 }
             }

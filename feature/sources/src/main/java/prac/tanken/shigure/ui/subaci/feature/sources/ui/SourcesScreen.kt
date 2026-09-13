@@ -59,6 +59,7 @@ import prac.tanken.shigure.ui.subaci.core.data.model.Source
 import prac.tanken.shigure.ui.subaci.core.ui.font.LocalJPFont
 import prac.tanken.shigure.ui.subaci.core.ui.font.NotoStyle
 import prac.tanken.shigure.ui.subaci.core.ui.getNotoFamilyByLocalesNonComposable
+import prac.tanken.shigure.ui.subaci.core.ui.screen.LoadingIndefinitelyScreen
 import prac.tanken.shigure.ui.subaci.core.ui.theme.ShigureUiButtonAppComposeImplementationTheme
 import prac.tanken.shigure.ui.subaci.core.ui.theme.getTypographyByFontFamily
 import prac.tanken.shigure.ui.subaci.feature.base.component.LoadingScreenBody
@@ -79,6 +80,10 @@ fun SourcesScreen(
     val saveableStateHolder = rememberSaveableStateHolder()
 
     when (val uiState = state.sourcesUiState) {
+        SourcesContract.SourcesUiState.Loading -> {
+            LoadingIndefinitelyScreen(modifier.fillMaxSize())
+        }
+
         is SourcesContract.SourcesUiState.Error -> {
             Box(
                 contentAlignment = Alignment.Center,
@@ -89,7 +94,11 @@ fun SourcesScreen(
         }
 
         is SourcesContract.SourcesUiState.Loaded -> {
-            Column {
+            Column(
+                modifier = modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
                 val pagerState = rememberPagerState(
                     initialPage = 0,
                     pageCount = { 2 }
@@ -145,17 +154,6 @@ fun SourcesScreen(
                     )
                 }
 
-            }
-        }
-
-        SourcesContract.SourcesUiState.Loading -> {
-            Column {
-                LoadingTopBar()
-                LoadingScreenBody(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
             }
         }
     }
