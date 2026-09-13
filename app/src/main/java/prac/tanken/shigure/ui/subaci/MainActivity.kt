@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -37,22 +39,12 @@ import kotlinx.coroutines.launch
 import prac.tanken.shigure.ui.subaci.core.ui.getNotoFamilyByLocalesNonComposable
 import prac.tanken.shigure.ui.subaci.core.ui.screen.ErrorScreen
 import prac.tanken.shigure.ui.subaci.core.ui.screen.LargeLoadingIndefinitelyScreen
+import prac.tanken.shigure.ui.subaci.core.ui.screen.LoadingIndefinitelyScreen
 import prac.tanken.shigure.ui.subaci.navigation.AppNavHost
 
 @OptIn(ExperimentalMaterial3Api::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    sealed interface State {
-        data object Loading : State
-        data class Loaded(
-            val fontFamily: FontFamily,
-        ) : State
-
-        data class Error(
-            val throwable: Throwable
-        ) : State
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -60,64 +52,76 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val appViewModel: AppViewModel = hiltViewModel()
-            val appSettingsState by appViewModel.appSettings
+            val appState by appViewModel.state.collectAsStateWithLifecycle()
             val appCxt = LocalContext.current.applicationContext
-
-            val scope = rememberCoroutineScope()
-            var _state = MutableStateFlow<State>(State.Loading)
-            val state = _state.collectAsStateWithLifecycle()
-            with(appViewModel) {
-                scope.launch {
-                    combine(
-                        settingsLoaded,
-                        newResourcesLoaded
-                    ) { f1, f2 ->
-                        f1 && f2
-                    }.collect {
-                        if (it) {
-                            val fontFamily = getNotoFamilyByLocalesNonComposable(
-                                appCxt,
-                                appSettingsState.uiSettings.notoStyle,
-                            )
-                            _state.update { State.Loaded(fontFamily) }
-                        }
-                    }
-                }
-            }
 
             val lifecycleOwner = LocalLifecycleOwner.current
             val snackbarHostState = remember { SnackbarHostState() }
             LaunchedEffect(lifecycleOwner) {
                 lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    appViewModel.snackbarMessage.collect {
-                        snackbarHostState.showSnackbar(it.message)
+                    appViewModel.effect.collect {
+                        when (it) {
+                            is AppContract.Effect.ShowSnackbar -> snackbarHostState.showSnackbar(it.message)
+                        }
                     }
                 }
             }
 
-            when (val state = state.value) {
-                State.Loading -> {
+            when {
+                appState.appSettingsState is AppContract.AppSettingsState.Loading
+                        || appState.appResourceState is AppContract.AppResourceState.Loading -> {
                     LargeLoadingIndefinitelyScreen()
                 }
 
-                is State.Error -> {
-                    ErrorScreen(
-                        message = state.throwable.message,
-                        stackTrace = state.throwable.stackTraceToString()
-                    )
+                appState.appResourceState is AppContract.AppResourceState.Loaded
+                        && appState.appSettingsState is AppContract.AppSettingsState.Loaded -> {
+                    val appSettings =
+                        (appState.appSettingsState as AppContract.AppSettingsState.Loaded).appSettings
+                    val fontFamily =
+                        (appState.appResourceState as AppContract.AppResourceState.Loaded).fontFamily
+
+                    val subaciAssetsLoaded by appViewModel.subaciAssetsLoaded.collectAsStateWithLifecycle()
+
+                    ShigureUiButtonAppComposeImplementationTheme(
+                        appColor = appSettings.uiSettings.appColor,
+                        appDarkMode = appSettings.uiSettings.appDarkMode,
+                        fontFamily = fontFamily,
+//                        fontFamily = FontFamily.SansSerif,
+                        jpFont = appSettings.uiSettings.jpFont
+                    ) {
+                        if(subaciAssetsLoaded) {
+                            AppNavHost(
+                                navController = rememberNavController(),
+                                appSettings = appSettings,
+                            )
+                        } else {
+                            LoadingIndefinitelyScreen()
+                        }
+                    }
                 }
 
-                is State.Loaded -> {
-                    ShigureUiButtonAppComposeImplementationTheme(
-                        appSettingsState.uiSettings.appColor,
-                        appSettingsState.uiSettings.appDarkMode,
-                        fontFamily = state.fontFamily,
-                        jpFont = appSettingsState.uiSettings.jpFont
-                    ) {
-                        AppNavHost(
-                            navController = rememberNavController(),
-                            appSettings = appSettingsState,
-                        )
+                else -> {
+                    val pagerState = rememberPagerState(0) { 2 }
+                    HorizontalPager(
+                        state = pagerState
+                    ) { page ->
+                        if (page == 0) {
+                            val state =
+                                appState.appResourceState as AppContract.AppResourceState.Error
+
+                            ErrorScreen(
+                                message = state.throwable.message,
+                                stackTrace = state.throwable.stackTraceToString()
+                            )
+                        } else {
+                            val state =
+                                appState.appSettingsState as AppContract.AppSettingsState.Error
+
+                            ErrorScreen(
+                                message = state.throwable.message,
+                                stackTrace = state.throwable.stackTraceToString()
+                            )
+                        }
                     }
                 }
             }

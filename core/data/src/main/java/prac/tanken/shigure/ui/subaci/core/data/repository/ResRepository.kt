@@ -1,8 +1,14 @@
 package prac.tanken.shigure.ui.subaci.core.data.repository
 
+import android.content.Context
 import android.content.res.AssetManager
 import android.content.res.Resources
 import androidx.annotation.StringRes
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
+import androidx.compose.ui.text.font.FontWeight
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,42 +19,20 @@ import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 import prac.tanken.shigure.ui.subaci.core.data.model.Source
 import prac.tanken.shigure.ui.subaci.core.data.model.Category
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
+import prac.tanken.shigure.ui.subaci.core.ui.font.NotoStyle
+import prac.tanken.shigure.ui.subaci.core.ui.getNotoFamilyByLocalesNonComposable
+import java.io.File
 import javax.inject.Inject
 
 class ResRepository @Inject constructor(
     val res: Resources,
     val am: AssetManager,
+    @ApplicationContext val appContext: Context,
 ) {
-    private var _voicesFlow = MutableStateFlow<List<Voice>>(emptyList())
-    val voicesFlow = _voicesFlow.asStateFlow()
-    private var _categoriesFlow = MutableStateFlow<List<Category>>(emptyList())
-    val categoriesFlow = _categoriesFlow.asStateFlow()
-    private var _sourcesFlow = MutableStateFlow<List<Source>>(emptyList())
-    val sourcesFlow = _sourcesFlow.asStateFlow()
-
-    suspend fun loadVoices() = withContext(Dispatchers.IO) {
-        val voicesJson = am.open("subaciJson/audio_list.json").readText()
-        val voices: List<Voice> = parseJsonString<MutableList<Voice>>(voicesJson).also {
-            it.forEachIndexed { index, voice ->
-                if (voice.a == "AS" || voice.a == "ZA") it[index] = voice.copy(a = "SA")
-            }
-        }
-        _voicesFlow.value = voices
-    }
-
-    suspend fun loadCategories() = withContext(Dispatchers.IO) {
-        val categoriesJson = am.open("subaciJson/class_list.json").readText()
-        val categories: List<Category> = parseJsonString(categoriesJson)
-        _categoriesFlow.value = categories
-    }
-
-    suspend fun loadSources() = withContext(Dispatchers.IO) {
-        val sourcesJson = am.open("subaciJson/video_list.json").readText()
-        val sources: List<Source> = parseJsonString(sourcesJson)
-        _sourcesFlow.value = sources
-    }
-
     fun stringRes(@StringRes stringRes: Int) = res.getString(stringRes)
 
     fun getVoiceAFD(vr: VoiceReference) = am.openFd("subaciAudio/${vr.id}.mp3")
+
+    fun getVariableFontFamily(notoStyle: NotoStyle) =
+        getNotoFamilyByLocalesNonComposable(appContext, notoStyle)
 }

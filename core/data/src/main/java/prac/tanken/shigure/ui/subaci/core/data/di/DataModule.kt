@@ -53,7 +53,8 @@ object DataModule {
     fun provideResRepository(
         res: Resources,
         am: AssetManager,
-    ) = ResRepository(res, am)
+        @ApplicationContext appContext: Context,
+    ) = ResRepository(res, am, appContext)
 
     // feature repo
     @Singleton
