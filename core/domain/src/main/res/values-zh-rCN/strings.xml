@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_to_playlist_usecase_success">已添加到当前选择的播放列表</string>
+    <string name="add_to_playlist_usecase_error_no_selected">当前未选择播放列表。</string>
+    <string name="add_to_playlist_error_not_added">未添加到当前选择的播放列表</string>
+    <string name="added_to_playlist_usecase_info_already_added">播放列表中已存在该条目。</string>
+</resources>

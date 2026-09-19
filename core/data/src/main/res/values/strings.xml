@@ -13,4 +13,8 @@
     <string name="app_bottom_bar_label_always_show">Always show</string>
     <string name="app_bottom_bar_label_always_hide">Always hide</string>
     <string name="app_bottom_bar_label_show_when_selected">Show when selected</string>
+
+    <string name="error_voices_not_loaded">Voices metadata is not loaded yet.</string>
+    <string name="error_sources_not_loaded">Sources metadata is not loaded yet.</string>
+    <string name="error_categories_not_loaded">Categories metadata is not loaded yet.</string>
 </resources>

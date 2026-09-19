@@ -22,7 +22,7 @@ fun MainNavigationBar(
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry.value?.destination
 
-    destinations.forEachIndexed { index, dest ->
+    destinations.forEachIndexed { _, dest ->
         val selected = currentDestination?.route == dest.javaClass.canonicalName
         val icon = if (selected) {
             painterResource(dest.selectedIcon)

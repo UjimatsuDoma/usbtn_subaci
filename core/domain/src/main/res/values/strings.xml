@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="add_to_playlist_usecase_success">Voice added to selected playlist.</string>
+    <string name="add_to_playlist_usecase_error_no_selected">No playlist selected.</string>
+    <string name="add_to_playlist_error_not_added">Voice was not added to selected playlist.</string>
+    <string name="added_to_playlist_usecase_info_already_added">Voice was already in the selected playlist.</string>
+</resources>

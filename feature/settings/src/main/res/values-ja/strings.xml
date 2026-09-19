@@ -18,7 +18,7 @@
     <string name="app_dark_mode_light">ダークモードOFF</string>
     <string name="app_bottom_bar_label_always_show">表示する</string>
     <string name="app_bottom_bar_label_always_hide">表示しない</string>
-    <string name="app_bottom_bar_label_show_when_selected">選択されたのを表示する</string>
+    <string name="app_bottom_bar_label_show_when_selected">選択表示</string>
 
     <string name="settings_initialized_message">設定を初期化しました。</string>
     <string name="settings_ui_noto_style">Notoフォント書体</string>

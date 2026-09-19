@@ -43,22 +43,24 @@ internal fun PlaylistVoicesList(
     val lazyListState = rememberLazyListState()
 
     Box(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        when(playlistUiState) {
+        when (playlistUiState) {
             PlaylistContract.PlaylistUiState.StandBy -> {
                 Text(stringResource(PlaylistR.string.playlist_select_playlist))
             }
+
             PlaylistContract.PlaylistUiState.Loading -> {
                 CircularProgressIndicator()
             }
+
             is PlaylistContract.PlaylistUiState.Loaded -> {
                 if (playlistUiState.voices.isNotEmpty()) {
                     val voices = playlistUiState.voices
 
                     LazyColumn(
-                        modifier = modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         state = lazyListState,
                         horizontalAlignment = Alignment.Start,
                     ) {
@@ -75,9 +77,7 @@ internal fun PlaylistVoicesList(
                                     modifier = Modifier
                                         .combinedClickable(
                                             onClick = { onItemClicked(index) },
-                                            onLongClick = {
-                                                expanded = true
-                                            }
+                                            onLongClick = { expanded = true }
                                         )
                                         .fillMaxWidth()
                                         .padding(16.dp),

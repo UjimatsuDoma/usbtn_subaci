@@ -13,4 +13,7 @@
     <string name="app_bottom_bar_label_always_show">表示する</string>
     <string name="app_bottom_bar_label_always_hide">表示しない</string>
     <string name="app_bottom_bar_label_show_when_selected">選択されたのを表示する</string>
+    <string name="error_voices_not_loaded">ボイスメタデータの読み込みはまだ完了しておりません。</string>
+    <string name="error_sources_not_loaded">切り抜き元動画のメタデータの読み込みはまだ完了しておりません。</string>
+    <string name="error_categories_not_loaded">ボイス用途別メタデータの読み込みはまだ完了しておりません。</string>
 </resources>

@@ -43,4 +43,5 @@
 
     <string name="error_playlist_duplicate_item">Item already exists in playlist.</string>
     <string name="error_playlist_move_item_oob">Cannot move item: out of bounds.</string>
+    <string name="playlist_info_no_selected">No playlist selected.</string>
 </resources>

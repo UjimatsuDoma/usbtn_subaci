@@ -1,6 +1,6 @@
 package prac.tanken.shigure.ui.subaci.feature.playlist
 
-import androidx.annotation.IntRange
+import androidx.compose.runtime.Stable
 import prac.tanken.shigure.ui.subaci.core.data.model.Playlist
 import prac.tanken.shigure.ui.subaci.core.data.model.Voice
 import prac.tanken.shigure.ui.subaci.feature.base.mvi.UiEffect
@@ -17,6 +17,7 @@ object PlaylistContract {
 
     sealed interface PlaylistsUiState {
         data object Loading : PlaylistsUiState
+        @Stable
         data class Loaded(
             val playlists: List<Playlist> = emptyList(),
         ) : PlaylistsUiState
@@ -32,6 +33,7 @@ object PlaylistContract {
     sealed interface PlaylistUiState {
         data object StandBy : PlaylistUiState
         data object Loading : PlaylistUiState
+        @Stable
         data class Loaded(
             val selectedPlaylistIndex: Long,
             val voices: List<Voice>,
@@ -55,5 +57,7 @@ object PlaylistContract {
         data class SelectPlaylist(val playlist: Playlist) : Intent
     }
 
-    sealed interface Effect : UiEffect
+    sealed interface Effect : UiEffect {
+        data class ShowSnackbar(val message: String): Effect
+    }
 }

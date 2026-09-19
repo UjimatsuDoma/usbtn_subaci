@@ -5,11 +5,14 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.serialization.json.Json
 import prac.tanken.shigure.ui.subaci.core.common.datetime.todayStr
 import prac.tanken.shigure.ui.subaci.core.common.serialization.parseJsonString
+import prac.tanken.shigure.ui.subaci.core.data.R
 import prac.tanken.shigure.ui.subaci.core.data.datasource.AssetsDataSource
 import prac.tanken.shigure.ui.subaci.core.data.di.DailyVoiceDataStore
 import prac.tanken.shigure.ui.subaci.core.data.di.VoicesDataStore
@@ -31,13 +34,28 @@ class VoicesRepository(
     @VoicesDataStore val voicesDataStore: DataStore<Preferences>,
     @DailyVoiceDataStore val dailyVoiceDataStore: DataStore<Preferences>,
     val assetsDataSource: AssetsDataSource,
+    val resRepository: ResRepository,
 ) {
-    var voicesMetadata: List<Voice>? = null
-        private set
+    private var voicesMetadataFlow = MutableStateFlow<List<Voice>>(emptyList())
+    val voicesMetadata: List<Voice> = requireNotNull(voicesMetadataFlow.value) {
+        resRepository.stringRes(R.string.error_voices_not_loaded)
+    }
     var categoriesMetadata: List<Category>? = null
         private set
-    var sourcesMetadata: List<Source>?=null
+        get() {
+            require(field != null) {
+                resRepository.stringRes(R.string.error_categories_not_loaded)
+            }
+            return field
+        }
+    var sourcesMetadata: List<Source>? = null
         private set
+        get() {
+            require(field != null) {
+                resRepository.stringRes(R.string.error_sources_not_loaded)
+            }
+            return field
+        }
 
     /**
      * useful for initializing voices data when app opens up
@@ -53,7 +71,7 @@ class VoicesRepository(
                         if (voice.a == "AS" || voice.a == "ZA") it[index] = voice.copy(a = "SA")
                     }
                 }
-                voicesMetadata = voices
+                voicesMetadataFlow.update { voices }
                 emit(RepositoryEvent.Success(Unit))
             } catch (e: Exception) {
                 e.printStackTrace()

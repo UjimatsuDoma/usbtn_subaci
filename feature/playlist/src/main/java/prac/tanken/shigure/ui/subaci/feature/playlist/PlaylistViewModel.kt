@@ -1,16 +1,12 @@
 package prac.tanken.shigure.ui.subaci.feature.playlist
 
-import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combineTransform
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
+import prac.tanken.shigure.ui.subaci.core.data.model.PlaylistEntity
 import prac.tanken.shigure.ui.subaci.core.data.model.playlistNotSelected
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoiceReference
 import prac.tanken.shigure.ui.subaci.core.data.repository.PlaylistRepository
@@ -18,11 +14,8 @@ import prac.tanken.shigure.ui.subaci.core.data.repository.RepositoryEvent
 import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.core.data.repository.VoicesRepository
 import prac.tanken.shigure.ui.subaci.core.player.MyPlayer
-import prac.tanken.shigure.ui.subaci.feature.base.domain.UseCaseEvent
 import prac.tanken.shigure.ui.subaci.feature.base.mvi.BaseViewModel
 import prac.tanken.shigure.ui.subaci.feature.playlist.domain.PlaylistUseCase
-import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistPlaybackSettings
-import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistPlaybackState
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistUpsertError
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistUpsertIntent
 import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistUpsertState
@@ -42,25 +35,17 @@ class PlaylistViewModel @Inject constructor(
 
     override fun loadState() {
         viewModelScope.launch(Dispatchers.IO) {
-            observePlaylistsAndSelection()
+            observePlaylists()
         }
         viewModelScope.launch(Dispatchers.IO) {
-            observePlaybackSettings()
+            observePlaylistSelected()
         }
     }
 
-    private suspend fun observePlaylistsAndSelection() =
-        combineTransform(
-            playlistRepository.playlistSelectedFlow,
-            playlistRepository.playlistsFlow
-        ) { f1, f2 ->
-            println("combx $f1, $f2")
-            emit(Pair(f1, f2))
-        }
-            .collect { (playlistSelected, playlists) ->
-                println("collect $playlistSelected $playlists")
-                println(state.value)
-                when (playlists) {
+    private suspend fun observePlaylists() =
+        playlistRepository.playlistsFlow
+            .collect { event ->
+                when (event) {
                     RepositoryEvent.Working -> {
                         setState {
                             copy(
@@ -73,7 +58,8 @@ class PlaylistViewModel @Inject constructor(
                         setState {
                             copy(
                                 playlistsUiState = PlaylistContract.PlaylistsUiState.Error(
-                                    playlists.error.message ?: playlists.error.stackTraceToString()
+                                    message = event.error.message
+                                        ?: event.error.stackTraceToString()
                                 )
                             )
                         }
@@ -83,108 +69,117 @@ class PlaylistViewModel @Inject constructor(
                         setState {
                             copy(
                                 playlistsUiState = PlaylistContract.PlaylistsUiState.Loaded(
-                                    playlists.data
+                                    playlists = event.data
                                 )
                             )
-                        }
-
-                        when (playlistSelected) {
-                            RepositoryEvent.Working -> {
-                                setState {
-                                    copy(
-                                        playlistUiState = PlaylistContract.PlaylistUiState.Loading
-                                    )
-                                }
-                            }
-
-                            is RepositoryEvent.Error -> {
-                                setState {
-                                    copy(
-                                        playlistUiState = PlaylistContract.PlaylistUiState.Error(
-                                            playlistSelected.error.message
-                                                ?: playlistSelected.error.stackTraceToString()
-                                        )
-                                    )
-                                }
-                            }
-
-                            is RepositoryEvent.Success -> {
-                                val allVoices = voicesRepository.voicesMetadata
-                                    ?: error("Voices metadata is not loaded yet.")
-                                val allPlaylists = playlists.data
-                                if (playlistSelected.data == playlistNotSelected) {
-                                    setState {
-                                        copy(
-                                            playlistUiState = PlaylistContract.PlaylistUiState.Loaded(
-                                                selectedPlaylistIndex = playlistSelected.data.selectedId,
-                                                voices = emptyList()
-                                            )
-                                        )
-                                    }
-                                } else {
-                                    val selectedPlaylist = allPlaylists.firstOrNull {
-                                        it.id == playlistSelected.data.selectedId
-                                    }
-                                    selectedPlaylist?.let {
-                                        val selectedVoices = allVoices.filter {
-                                            it.id in selectedPlaylist.playlistItemIds
-                                        }
-                                        setState {
-                                            copy(
-                                                playlistUiState = PlaylistContract.PlaylistUiState.Loaded(
-                                                    selectedPlaylistIndex = playlistSelected.data.selectedId,
-                                                    voices = selectedVoices
-                                                )
-                                            )
-                                        }
-                                    } ?: run {
-                                        setState {
-                                            copy(
-                                                playlistUiState = PlaylistContract.PlaylistUiState.Error(
-                                                    "Cannot find playlist with id ${playlistSelected.data.selectedId}"
-                                                )
-                                            )
-                                        }
-                                    }
-                                }
-                            }
                         }
                     }
                 }
             }
 
-    // 播放状态
-    var playbackState = mutableStateOf<PlaylistPlaybackState>(PlaylistPlaybackState.StandBy)
-        private set
-    private val _playbackSettings = MutableStateFlow(PlaylistPlaybackSettings())
-    val playbackSettings = _playbackSettings.asStateFlow()
+    private suspend fun observePlaylistSelected() =
+        playlistRepository.selectedPlaylistFlow
+            .collect { event ->
+                when (event) {
+                    RepositoryEvent.Working -> {
+                        setState {
+                            copy(
+                                playlistUiState = PlaylistContract.PlaylistUiState.Loading
+                            )
+                        }
+                    }
 
-    // 创建/修改播放列表相关状态
-    private var _upsertState = mutableStateOf<PlaylistUpsertState>(PlaylistUpsertState.Closed)
-    val upsertState get() = _upsertState
+                    is RepositoryEvent.Error -> {
+                        setState {
+                            copy(
+                                playlistUiState = PlaylistContract.PlaylistUiState.Error(
+                                    message = event.error.message
+                                        ?: event.error.stackTraceToString()
+                                )
+                            )
+                        }
+                    }
 
-    private suspend fun observePlaybackSettings(): Nothing =
-        playbackSettings.collect { settings ->
-            with(settings) {
-                myPlayer.toggleLooping(looping)
+                    is RepositoryEvent.Success -> {
+                        event.data?.let { selectedPlaylist ->
+                            val allVoices = voicesRepository.voicesMetadata
+                            val selectedVoices = selectedPlaylist.playlistItemIds
+                                .mapNotNull { playlistItemId ->
+                                    allVoices?.firstOrNull { it.id == playlistItemId }
+                                }
+                            setState {
+                                copy(
+                                    playlistUiState = PlaylistContract.PlaylistUiState.Loaded(
+                                        selectedPlaylistIndex = selectedPlaylist.id,
+                                        voices = selectedVoices
+                                    )
+                                )
+                            }
+                        } ?: setState {
+                            copy(
+                                playlistUiState = PlaylistContract.PlaylistUiState.Loaded(
+                                    selectedPlaylistIndex = playlistNotSelected.selectedId,
+                                    voices = emptyList()
+                                )
+                            )
+                        }
+                    }
+                }
             }
+
+    // convenient functions
+    private fun <R> requirePlaylistsLoaded(
+        block: (PlaylistContract.PlaylistsUiState.Loaded)->R
+    ) {
+        val playlistsUiState = state.value.playlistsUiState
+        require(playlistsUiState is PlaylistContract.PlaylistsUiState.Loaded) {
+            "Illegal state: ${state.value.playlistsUiState.javaClass.simpleName}"
         }
+
+        block(playlistsUiState)
+    }
+    private fun <R> requirePlaylistSelected(
+        block: (PlaylistContract.PlaylistsUiState.Loaded, PlaylistContract.PlaylistUiState.Loaded) -> R
+    ) {
+        val playlistsUiState = state.value.playlistsUiState
+        val playlistUiState = state.value.playlistUiState
+        require(playlistsUiState is PlaylistContract.PlaylistsUiState.Loaded) {
+            "Illegal state: ${state.value.playlistsUiState.javaClass.simpleName}"
+        }
+        require(playlistUiState is PlaylistContract.PlaylistUiState.Loaded) {
+            "Illegal state: ${state.value.playlistUiState.javaClass.simpleName}"
+        }
+
+        block(playlistsUiState, playlistUiState)
+    }
+    private fun <R> operateOnSelectedPlaylist(
+        block: (PlaylistEntity)->R
+    ) = requirePlaylistSelected { playlistsUiState, playlistUiState ->
+        val selectedPlaylistEntity = playlistsUiState.playlists
+            .firstOrNull { it.id == playlistUiState.selectedPlaylistIndex }
+            ?.toEntity()
+        selectedPlaylistEntity?.let(block)
+            ?: sendEffect(
+                PlaylistContract.Effect.ShowSnackbar(
+                    resRepository.stringRes(R.string.playlist_info_no_selected)
+                )
+            )
+    }
+
+    /**
+     * 创建/修改播放列表相关状态
+     */
+    private var _upsertState = MutableStateFlow<PlaylistUpsertState>(PlaylistUpsertState.Closed)
+    val upsertState = _upsertState.asStateFlow()
 
     /**
      * 播放单个项目。
      *
      * @param index 该项目在播放列表中的序号
      */
-    fun playItem(index: Int) {
-        require(playbackState.value is PlaylistPlaybackState.Loaded.Stopped) {
-            "Illegal state: ${playbackState.javaClass.simpleName}"
-        }
-
-        val currentState = playbackState.value as PlaylistPlaybackState.Loaded.Stopped
+    fun playItem(index: Int) = requirePlaylistSelected { _, playlist->
         myPlayer.playByReference(
-            VoiceReference(currentState.playlist.voices[index].id),
-            onStart = { playbackState.value = currentState.play(index) },
-            onComplete = { playbackState.value = currentState }
+            VoiceReference(playlist.voices[index].id),
         )
     }
 
@@ -194,11 +189,7 @@ class PlaylistViewModel @Inject constructor(
      *
      * @param id 播放列表实体在数据库中的主键ID
      */
-    fun selectPlaylist(id: Long) {
-        require(state.value.playlistsUiState is PlaylistContract.PlaylistsUiState.Loaded) {
-            "Illegal state: ${state.value.playlistsUiState.javaClass.simpleName}"
-        }
-
+    fun selectPlaylist(id: Long) = requirePlaylistsLoaded {
         viewModelScope.launch(Dispatchers.IO) {
             playlistRepository.selectPlaylist(id)
         }
@@ -207,17 +198,14 @@ class PlaylistViewModel @Inject constructor(
     /**
      * 删除当前选中的播放列表。
      */
-    suspend fun deletePlaylist() {
-        require(playbackState.value is PlaylistPlaybackState.Loaded) {
-            "Illegal state: ${playbackState.value.javaClass.simpleName}"
+    fun deletePlaylist() =
+        operateOnSelectedPlaylist { playlistEntity ->
+            viewModelScope.launch(Dispatchers.Default) {
+                playlistRepository.unselectPlaylist()
+                playlistRepository.deletePlaylist(playlistEntity)
+                playlistRepository.getMaxId()?.let { selectPlaylist(it) }
+            }
         }
-
-        val actualState = playbackState.value as PlaylistPlaybackState.Loaded
-        val event = playlistUseCase.deletePlaylist(actualState.playlist.id)
-        if (event is UseCaseEvent.Error) {
-            Log.d(this@PlaylistViewModel::class.simpleName, event.message)
-        }
-    }
 
     /**
      * 更改添加或重命名播放列表对话框的界面状态。
@@ -245,18 +233,21 @@ class PlaylistViewModel @Inject constructor(
     private suspend fun validateUpsertDraft(
         draft: PlaylistUpsertState.Draft
     ): PlaylistUpsertState.Draft {
-        val errors = mutableListOf<PlaylistUpsertError>()
-        if (draft.name.isEmpty()) {
-            errors + PlaylistUpsertError.BlankName
-        } else if (playlistRepository.getByName(draft.name).isNotEmpty()) {
-            if (draft.action is PlaylistUpsertIntent.Insert)
-                errors + PlaylistUpsertError.ReplicatedName
-            else {
-                val action = draft.action as PlaylistUpsertIntent.Update
-                val playlist = playlistRepository.getById(action.originalId)
-                errors += if (draft.name == playlist.playlistName)
-                    PlaylistUpsertError.NameNotChanged
-                else PlaylistUpsertError.ReplicatedName
+        val errors = buildList {
+            if (draft.name.isEmpty()) {
+                add(PlaylistUpsertError.BlankName)
+            } else if (playlistRepository.getByName(draft.name).isNotEmpty()) {
+                if (draft.action is PlaylistUpsertIntent.Insert)
+                    add(PlaylistUpsertError.ReplicatedName)
+                else {
+                    val action = draft.action as PlaylistUpsertIntent.Update
+                    val playlist = playlistRepository.getById(action.originalId)
+                    add(
+                        if (draft.name == playlist.playlistName)
+                            PlaylistUpsertError.NameNotChanged
+                        else PlaylistUpsertError.ReplicatedName
+                    )
+                }
             }
         }
         return draft.copy(errors = errors.toList())
@@ -274,15 +265,14 @@ class PlaylistViewModel @Inject constructor(
                 selectPlaylist(createdId)
             }
 
-            is PlaylistUpsertIntent.Update -> {
-                require(playbackState.value is PlaylistPlaybackState.Loaded.Stopped) {
-                    resRepository.stringRes(CommonR.string.error_illegal_state)
+            is PlaylistUpsertIntent.Update ->
+                operateOnSelectedPlaylist { playlistEntity ->
+                    viewModelScope.launch(Dispatchers.Default) {
+                        playlistRepository.updatePlaylist(
+                            playlistEntity.copy(playlistName = draft.name)
+                        )
+                    }
                 }
-
-                val actualState = playbackState.value as PlaylistPlaybackState.Loaded.Stopped
-                val entity = playlistRepository.getById(actualState.playlist.id)
-                playlistRepository.updatePlaylist(entity.copy(playlistName = draft.name))
-            }
         }
     }
 
@@ -295,17 +285,19 @@ class PlaylistViewModel @Inject constructor(
         )
     }
 
-    fun showUpdateDialog(playbackState: PlaylistPlaybackState.Loaded) = viewModelScope.launch {
-        val selectedPlaylist = playbackState.playlist
-        updateUpsertState(
-            PlaylistUpsertState.Draft(
-                action = PlaylistUpsertIntent.Update(
-                    originalId = selectedPlaylist.id
-                ),
-                name = selectedPlaylist.playlistName
-            )
-        )
-    }
+    fun showUpdateDialog() =
+        operateOnSelectedPlaylist { playlistEntity ->
+            viewModelScope.launch(Dispatchers.IO) {
+                updateUpsertState(
+                    PlaylistUpsertState.Draft(
+                        action = PlaylistUpsertIntent.Update(
+                            originalId = playlistEntity.id
+                        ),
+                        name = playlistEntity.playlistName
+                    )
+                )
+            }
+        }
 
     fun submitUpsert() = viewModelScope.launch {
         upsertPlaylist()
@@ -324,34 +316,24 @@ class PlaylistViewModel @Inject constructor(
      * @param index 要移动的项目在播放列表内部的序号
      * @param moveUp 指定是向上还是向下移动，为true表示向上。
      */
-    fun movePlaylistItem(index: Int, moveUp: Boolean) {
-        if (playbackState.value !is PlaylistPlaybackState.Loaded.Stopped) {
-            val message = "Illegal state: ${playbackState.javaClass.simpleName}"
-            throw IllegalStateException(message)
+    fun movePlaylistItem(index: Int, moveUp: Boolean) =
+        operateOnSelectedPlaylist { playlistEntity ->
+            viewModelScope.launch(Dispatchers.IO) {
+                playlistUseCase.movePlaylistItem(
+                    plistId = playlistEntity.id,
+                    index = index,
+                    moveUp = moveUp
+                )
+            }
         }
 
-        val actualState = playbackState.value as PlaylistPlaybackState.Loaded.Stopped
-        viewModelScope.launch(Dispatchers.IO) {
-            playlistUseCase.movePlaylistItem(
-                plistId = actualState.playlist.id,
-                index = index,
-                moveUp = moveUp
-            )
+    fun removePlaylistItem(index: Int) =
+        operateOnSelectedPlaylist { playlistEntity ->
+            viewModelScope.launch(Dispatchers.IO) {
+                playlistUseCase.removePlaylistItem(
+                    plistId = playlistEntity.id,
+                    index = index,
+                )
+            }
         }
-    }
-
-    fun removePlaylistItem(index: Int) {
-        if (playbackState.value !is PlaylistPlaybackState.Loaded.Stopped) {
-            val message = "Illegal state: ${playbackState.javaClass.simpleName}"
-            throw IllegalStateException(message)
-        }
-
-        val actualState = playbackState.value as PlaylistPlaybackState.Loaded.Stopped
-        viewModelScope.launch(Dispatchers.IO) {
-            playlistUseCase.removePlaylistItem(
-                plistId = actualState.playlist.id,
-                index = index,
-            )
-        }
-    }
 }

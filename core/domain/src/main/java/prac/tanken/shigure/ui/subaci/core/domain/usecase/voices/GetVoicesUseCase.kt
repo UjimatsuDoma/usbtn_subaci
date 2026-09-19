@@ -2,16 +2,14 @@ package prac.tanken.shigure.ui.subaci.core.domain.usecase.voices
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.transform
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped
-import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped.*
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped.ByCategory
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped.ByKana
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped.ByNone
+import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGrouped.ByVideo
 import prac.tanken.shigure.ui.subaci.core.data.model.voices.VoicesGroupedBy
 import prac.tanken.shigure.ui.subaci.core.data.repository.VoicesRepository
-import prac.tanken.shigure.ui.subaci.core.domain.model.UseCaseEvent
-import prac.tanken.shigure.ui.subaci.core.domain.model.UseCaseEvent.*
-import prac.tanken.shigure.ui.subaci.core.ui.UiText
 import javax.inject.Inject
-import kotlin.to
 
 class GetVoicesUseCase @Inject constructor(
     val voicesRepository: VoicesRepository,
@@ -19,15 +17,13 @@ class GetVoicesUseCase @Inject constructor(
     operator fun invoke(
         voicesGroupedBy: VoicesGroupedBy,
     ): Flow<VoicesGrouped<*>> {
-        val voices = voicesRepository.voicesMetadata
-            ?: error("Voices are not loaded yet.")
         val categories = voicesRepository.categoriesMetadata
             ?: error("Categories are not loaded yet.")
         val sources = voicesRepository.sourcesMetadata
             ?: error("Voice sources are not loaded yet.")
 
         return flow {
-            val voicesSorted = voices.sortedBy { it.k }
+            val voicesSorted = voicesRepository.voicesMetadata.sortedBy { it.k }
             when (voicesGroupedBy) {
                 VoicesGroupedBy.Category -> {
                     val voicesGrouped = buildMap {
@@ -72,7 +68,9 @@ class GetVoicesUseCase @Inject constructor(
 
                 VoicesGroupedBy.Video -> {
                     val voicesGrouped = sources.associateWith { sourceEntity ->
-                        voices.filter { it.videoId == sourceEntity.videoId }
+                        voicesRepository.voicesMetadata.filter {
+                            it.videoId == sourceEntity.videoId
+                        }
                     }
                     emit(ByVideo(voicesGrouped))
                 }

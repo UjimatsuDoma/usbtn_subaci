@@ -13,4 +13,7 @@
     <string name="app_bottom_bar_label_always_show">总是显示</string>
     <string name="app_bottom_bar_label_always_hide">从不显示</string>
     <string name="app_bottom_bar_label_show_when_selected">选中显示</string>
+    <string name="error_voices_not_loaded">语音元数据未加载。</string>
+    <string name="error_sources_not_loaded">语音来源元数据未加载。</string>
+    <string name="error_categories_not_loaded">语音分类元数据未加载。</string>
 </resources>

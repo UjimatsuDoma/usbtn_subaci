@@ -41,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import prac.tanken.shigure.ui.subaci.core.common.android.version.androidVersionErrorMessage
@@ -230,14 +231,6 @@ private fun AppColorSettingPreview() {
         AppColorSetting()
     }
 }
-
-//@Preview(apiLevel = Build.VERSION_CODES.Q)
-//@Composable
-//private fun AppColorSettingPreviewLegacy() {
-//    Card {
-//        AppColorSetting()
-//    }
-//}
 
 @Composable
 private fun ColumnScope.AppDarkModeSetting(
@@ -546,7 +539,12 @@ private fun ColumnScope.JPFontSetting(
                 Text(
                     text = stringResource(jpFont.displayName),
                     style = MaterialTheme.typography.bodyLarge,
-                    fontFamily = FontFamily(Font(resId = jpFont.fontResId))
+                    fontFamily = FontFamily(
+                        Font(
+                            resId = jpFont.fontResId,
+                            weight = FontWeight.Normal
+                        )
+                    )
                 )
             },
             trailingContent = {

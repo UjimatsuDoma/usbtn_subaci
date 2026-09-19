@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_to_playlist_usecase_success">プレイリストに追加されました。</string>
+    <string name="add_to_playlist_usecase_error_no_selected">プレイリストを選択してからやり直してください。</string>
+    <string name="add_to_playlist_error_not_added">プレイリストに追加されませんでした。</string>
+    <string name="added_to_playlist_usecase_info_already_added">すでにプレイリストにあります。</string>
+</resources>

@@ -42,4 +42,5 @@
 
     <string name="error_playlist_duplicate_item">このアイテムは既に存在しています。</string>
     <string name="error_playlist_move_item_oob">範囲外なため、移動は出来ません。</string>
+    <string name="playlist_info_no_selected">プレイリストを選択してからやり直してください。</string>
 </resources>

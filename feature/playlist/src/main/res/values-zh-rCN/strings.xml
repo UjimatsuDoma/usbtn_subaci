@@ -42,4 +42,5 @@
 
     <string name="error_playlist_duplicate_item">选中的播放列表已存在该语音。</string>
     <string name="error_playlist_move_item_oob">已在列表边界， 无法移动</string>
+    <string name="playlist_info_no_selected">当前未选择播放列表。</string>
 </resources>

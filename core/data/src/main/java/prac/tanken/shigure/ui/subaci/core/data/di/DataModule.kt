@@ -63,12 +63,14 @@ object DataModule {
         @VoicesGroupedByJson json: Json,
         @VoicesDataStore voicesDataStore: DataStore<Preferences>,
         @DailyVoiceDataStore dailyVoiceDataStore: DataStore<Preferences>,
-        assetsDataSource: AssetsDataSource
+        assetsDataSource: AssetsDataSource,
+        resRepository: ResRepository,
     ) = VoicesRepository(
         json,
         voicesDataStore,
         dailyVoiceDataStore,
-        assetsDataSource
+        assetsDataSource,
+        resRepository
     )
 
     @Singleton

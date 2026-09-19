@@ -28,53 +28,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import prac.tanken.shigure.ui.subaci.core.data.model.Playlist
-import prac.tanken.shigure.ui.subaci.core.ui.theme.ShigureUiButtonAppComposeImplementationTheme
-import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistPlaybackState
-import prac.tanken.shigure.ui.subaci.feature.playlist.model.playlistNotSelectedVO
 import com.microsoft.fluent.mobile.icons.R as FluentR
-import prac.tanken.shigure.ui.subaci.feature.base.R as BaseR
 import prac.tanken.shigure.ui.subaci.feature.playlist.R as PlaylistR
 
 @Composable
 internal fun PlaylistTopBar(
     modifier: Modifier = Modifier,
     playlists: List<Playlist> = emptyList(),
-    playbackState: PlaylistPlaybackState,
+    selectedPlaylist: Playlist? = null,
     onAddPlaylist: () -> Unit = {},
     onDeletePlaylist: () -> Unit = {},
     onPlaylistSelect: (Long) -> Unit = {},
-    onShowUpdateDialog: (PlaylistPlaybackState.Loaded) -> Unit = {},
+    onShowUpdateDialog: () -> Unit = {},
 ) {
     val hasPlaylist = playlists.isNotEmpty()
-    val title = when (playbackState) {
-        PlaylistPlaybackState.Error -> "__ERROR__"
-        PlaylistPlaybackState.Loading -> stringResource(BaseR.string.loading)
-        PlaylistPlaybackState.StandBy -> {
-            if (!hasPlaylist) {
-                stringResource(PlaylistR.string.playlist_no_playlists)
-            } else {
-                stringResource(PlaylistR.string.playlist_select_playlist)
-            }
+    val title = selectedPlaylist?.playlistName
+        ?: if (!hasPlaylist) {
+            stringResource(PlaylistR.string.playlist_no_playlists)
+        } else {
+            stringResource(PlaylistR.string.playlist_select_playlist)
         }
-
-        is PlaylistPlaybackState.Loaded -> playbackState.playlist.playlistName
-    }
 
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     TopAppBar(
         title = {
             Column {
-                val canToggleSelectionMenu =
-                    playbackState is PlaylistPlaybackState.Loaded.Stopped && hasPlaylist
-
                 Row(
                     modifier = Modifier
                         .clickable {
-                            if (canToggleSelectionMenu) {
+                            if (hasPlaylist) {
                                 expanded = !expanded
                             }
                         },
@@ -94,7 +79,7 @@ internal fun PlaylistTopBar(
                         fontWeight = FontWeight.Black,
                         modifier = Modifier.basicMarquee()
                     )
-                    if (canToggleSelectionMenu) {
+                    if (hasPlaylist) {
                         Spacer(Modifier.width(8.dp))
                         Icon(
                             painter = trailingIcon,
@@ -123,52 +108,31 @@ internal fun PlaylistTopBar(
             }
         },
         actions = {
-            if (playbackState is PlaylistPlaybackState.Loaded.Stopped) {
-                IconButton(
-                    onClick = { onAddPlaylist() }
-                ) {
-                    Icon(
-                        painter = painterResource(FluentR.drawable.ic_fluent_add_24_filled),
-                        contentDescription = stringResource(PlaylistR.string.playlist_desc_add_playlist)
-                    )
-                }
-                IconButton(
-                    onClick = { onDeletePlaylist() }
-                ) {
-                    Icon(
-                        painter = painterResource(FluentR.drawable.ic_fluent_bin_recycle_24_filled),
-                        contentDescription = stringResource(PlaylistR.string.playlist_desc_delete_playlist)
-                    )
-                }
-                IconButton(
-                    onClick = { onShowUpdateDialog(playbackState) }
-                ) {
-                    Icon(
-                        painter = painterResource(FluentR.drawable.ic_fluent_rename_24_filled),
-                        contentDescription = stringResource(PlaylistR.string.playlist_desc_rename_playlist)
-                    )
-                }
-            } else if (playbackState is PlaylistPlaybackState.StandBy && !hasPlaylist) {
-                IconButton(
-                    onClick = { onAddPlaylist() }
-                ) {
-                    Icon(
-                        painter = painterResource(FluentR.drawable.ic_fluent_add_24_filled),
-                        contentDescription = stringResource(PlaylistR.string.playlist_desc_add_playlist)
-                    )
-                }
+            IconButton(
+                onClick = { onAddPlaylist() }
+            ) {
+                Icon(
+                    painter = painterResource(FluentR.drawable.ic_fluent_add_24_filled),
+                    contentDescription = stringResource(PlaylistR.string.playlist_desc_add_playlist)
+                )
+            }
+            IconButton(
+                onClick = { onDeletePlaylist() }
+            ) {
+                Icon(
+                    painter = painterResource(FluentR.drawable.ic_fluent_bin_recycle_24_filled),
+                    contentDescription = stringResource(PlaylistR.string.playlist_desc_delete_playlist)
+                )
+            }
+            IconButton(
+                onClick = { onShowUpdateDialog() }
+            ) {
+                Icon(
+                    painter = painterResource(FluentR.drawable.ic_fluent_rename_24_filled),
+                    contentDescription = stringResource(PlaylistR.string.playlist_desc_rename_playlist)
+                )
             }
         },
         modifier = modifier
     )
-}
-
-@Preview
-@Composable
-private fun PlaylistTopBarPreview() {
-    ShigureUiButtonAppComposeImplementationTheme {
-        PlaylistTopBar(
-            playbackState = PlaylistPlaybackState.Loaded.Stopped(playlistNotSelectedVO)
-        )
-    }
 }

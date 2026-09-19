@@ -1,17 +1,11 @@
 package prac.tanken.shigure.ui.subaci.feature.playlist.domain
 
-import kotlinx.coroutines.flow.combineTransform
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import prac.tanken.shigure.ui.subaci.core.common.serialization.parseJsonString
-import prac.tanken.shigure.ui.subaci.core.data.model.playlistNotSelected
 import prac.tanken.shigure.ui.subaci.core.data.repository.PlaylistRepository
 import prac.tanken.shigure.ui.subaci.core.data.repository.ResRepository
 import prac.tanken.shigure.ui.subaci.feature.base.domain.BaseUseCase
 import prac.tanken.shigure.ui.subaci.feature.base.domain.UseCaseEvent
-import prac.tanken.shigure.ui.subaci.feature.playlist.model.PlaylistVO
-import prac.tanken.shigure.ui.subaci.feature.playlist.model.playlistNotSelectedVO
-import prac.tanken.shigure.ui.subaci.feature.playlist.model.toPlaylistVoiceVO
 import prac.tanken.shigure.ui.subaci.core.common.R as CommonR
 import prac.tanken.shigure.ui.subaci.feature.playlist.R as PlaylistR
 
@@ -19,16 +13,6 @@ class PlaylistUseCase(
     val playlistRepository: PlaylistRepository,
     val resRepository: ResRepository,
 ) : BaseUseCase() {
-    // 操作播放列表整体
-
-    suspend fun deletePlaylist(id: Long) = suspendTryOrFail {
-        unselectPlaylist()
-        val entity = playlistRepository.getById(id)
-        playlistRepository.deletePlaylist(entity)
-        // 如果已无播放列表，则保持未选状态，否则选择ID最大的那个。
-        playlistRepository.getMaxId()?.let { selectPlaylist(it) }
-        return@suspendTryOrFail UseCaseEvent.Success(Unit)
-    }
 
     // 操作播放列表内部项目
 
@@ -73,9 +57,4 @@ class PlaylistUseCase(
         playlistRepository.updatePlaylist(entity.copy(playlistItems = newArrStr))
         return@suspendTryOrFail UseCaseEvent.Success(Unit)
     }
-
-    // 操作播放列表选择项
-    suspend fun selectPlaylist(id: Long) = playlistRepository.selectPlaylist(id)
-
-    suspend fun unselectPlaylist() = playlistRepository.unselectPlaylist()
 }

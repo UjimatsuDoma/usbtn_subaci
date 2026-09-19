@@ -4,6 +4,7 @@ import androidx.annotation.WorkerThread
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transform
@@ -17,7 +18,7 @@ import prac.tanken.shigure.ui.subaci.core.data.model.playlistNotSelected
 import javax.inject.Inject
 
 class PlaylistRepository(
-    playlistDatabase: PlaylistDatabase,
+    val playlistDatabase: PlaylistDatabase,
 ) {
     private val playlistDao = playlistDatabase.playlistDao()
     private val playlistSelectedDao = playlistDatabase.playlistSelectedDao()
@@ -39,19 +40,30 @@ class PlaylistRepository(
             }
 
     // 播放列表选择项数据的流
-    val playlistSelectedFlow: Flow<RepositoryEvent<PlaylistSelected, Exception>> =
-        playlistSelectedDao.getSelected()
-            .transform { selectedEntity ->
-                try {
+    private val playlistSelectedFlow = playlistSelectedDao.getSelected()
+
+    val selectedPlaylistFlow: Flow<RepositoryEvent<Playlist?, Exception>> =
+        combine(playlistsFlow, playlistSelectedFlow) { f1, f2 ->
+            f1 to f2.first().toPlaylistSelected()
+        }.transform { (event, playlistSelected) ->
+            when (event) {
+                RepositoryEvent.Working -> {
                     emit(RepositoryEvent.Working)
-                    val event = selectedEntity.firstOrNull()?.let {
-                        RepositoryEvent.Success(it.toPlaylistSelected())
-                    } ?: RepositoryEvent.Success(playlistNotSelected)
-                    emit(event)
-                } catch (e: Exception) {
-                    emit(RepositoryEvent.Error(e))
+                }
+
+                is RepositoryEvent.Error -> {
+                    emit(RepositoryEvent.Error(event.error))
+                }
+
+                is RepositoryEvent.Success -> {
+                    val allPlaylists = event.data
+                    val selectedPlaylist = allPlaylists.firstOrNull {
+                        it.id == playlistSelected.selectedId
+                    }
+                    emit(RepositoryEvent.Success(selectedPlaylist))
                 }
             }
+        }
 
     @WorkerThread
     suspend fun getMaxId() = withContext(Dispatchers.IO) {

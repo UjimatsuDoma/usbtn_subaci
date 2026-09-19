@@ -36,7 +36,6 @@ import javax.inject.Inject
 class VoicesViewModel @Inject constructor(
     val resRepository: ResRepository,
     val voicesRepository: VoicesRepository,
-    val playlistUseCase: PlaylistUseCase,
     val getVoicesUseCase: GetVoicesUseCase,
     val addToPlaylistUseCase: AddToPlaylistUseCase,
     val myPlayer: MyPlayer
@@ -83,9 +82,6 @@ class VoicesViewModel @Inject constructor(
         }
     }
 
-    // 新增：选中的播放列表的ID
-    private var selectedPlaylistId = mutableLongStateOf(0L)
-
     private suspend fun observeVoicesSettings() =
         voicesRepository.voicesGroupedByFlow
             .onEach { voicesGroupedBy ->
@@ -116,8 +112,7 @@ class VoicesViewModel @Inject constructor(
         val voices = voicesRepository.voicesMetadata
             ?: error("Voices are not loaded yet.")
 
-        val dailyVoiceEntityFlow = voicesRepository.dailyVoiceEntityFlow
-        dailyVoiceEntityFlow
+        voicesRepository.dailyVoiceEntityFlow
             .onEach { dailyVoiceEntity ->
                 val expired = dailyVoiceEntity?.addDate?.let { todayStr != it } == true
                 if (dailyVoiceEntity == null || expired) {
@@ -150,6 +145,25 @@ class VoicesViewModel @Inject constructor(
     private suspend fun observeVoicesGroupedBy(): Nothing =
         state.collect { currentState ->
             when (val state = currentState.voicesSettingsState) {
+                VoicesSettingsState.Loading -> {
+                    setState {
+                        copy(
+                            voicesGroupedUiState = Loading
+                        )
+                    }
+                }
+
+                is VoicesSettingsState.Error -> {
+                    setState {
+                        copy(
+                            voicesGroupedUiState = Error(
+                                message = state.throwable.message,
+                                stackTrace = state.throwable.stackTraceToString()
+                            )
+                        )
+                    }
+                }
+
                 is VoicesSettingsState.Loaded -> {
                     val voicesGroupedBy = state.voicesGroupedBy
                     getVoicesUseCase(voicesGroupedBy)
@@ -189,25 +203,6 @@ class VoicesViewModel @Inject constructor(
                             }
                         }
                 }
-
-                VoicesSettingsState.Loading -> {
-                    setState {
-                        copy(
-                            voicesGroupedUiState = Loading
-                        )
-                    }
-                }
-
-                is VoicesSettingsState.Error -> {
-                    setState {
-                        copy(
-                            voicesGroupedUiState = Error(
-                                message = state.throwable.message,
-                                stackTrace = state.throwable.stackTraceToString()
-                            )
-                        )
-                    }
-                }
             }
         }
 
@@ -225,9 +220,13 @@ class VoicesViewModel @Inject constructor(
 
                     is UseCaseEvent.Success -> {
                         sendEffect(
-                            ShowSnackbar(
-                                "Voice added to playlist."
-                            )
+                            ShowSnackbar(event.data)
+                        )
+                    }
+
+                    is UseCaseEvent.Info -> {
+                        sendEffect(
+                            ShowSnackbar(event.message)
                         )
                     }
                 }
